@@ -1,4 +1,6 @@
-![NTI Banner](assets/nti.png)
+<div align="center">
+  <img src="assets/nti.png" alt="NTI Banner" width="100%" style="max-width: 800px; height: auto; margin: 20px 0;" />
+</div>
 
 # 🛍️ E-Commerce Flutter App
 
