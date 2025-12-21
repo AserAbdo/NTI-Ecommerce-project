@@ -1,16 +1,48 @@
-# nti_project
+<div align="center">
+  <img src="assets/nti.png" alt="NTI Banner" width="100%" style="max-width: 800px; height: auto; margin: 20px 0;" />
+</div>
 
-A new Flutter project.
+# 🛍️ E-Commerce Flutter App
 
-## Getting Started
+> **NTI Graduation Project** - A modern e-commerce mobile application built with Flutter, Firebase, and Clean State Management using Cubit/BLoC pattern.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 📱 About The Project
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+This is a full-featured e-commerce mobile application developed as part of the **National Telecommunication Institute (NTI)** graduation requirements. The app demonstrates modern Flutter development practices with Firebase backend integration, responsive design, and professional state management.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## ✨ Features Implemented
+
+### 🔐 Authentication Module
+- ✅ Splash screen with auto-navigation
+- ✅ User registration (Sign Up) with validation
+- ✅ User login with Firebase Authentication
+- ✅ Session persistence
+- ✅ Secure logout functionality
+
+### 🛒 Products Module  
+- ✅ Product catalog with Firestore integration
+- ✅ 15 sample products across 4 categories
+- ✅ Categories: Electronics, Fashion, Home, Beauty
+- ✅ Firebase seeding utility for products
+
+### 👤 User Profile
+- ✅ User profile with personal information
+- ✅ Name, email, phone, and address fields
+- ✅ Data stored in Firestore
+
+### 📐 Responsive Design
+- ✅ Mobile-first design (360px - 480px)
+- ✅ Tablet support (600px+)
+- ✅ Adaptive layouts and spacing
+- ✅ Responsive typography
+
+---
+
+## 🏗️ Architecture
+
+### Core-Features Architecture
+
