@@ -1,4 +1,18 @@
 class AppStrings {
+  // Bottom Navigation
+  static const String home = 'Home';
+  static const String favorites = 'Favorites';
+  static const String orders = 'Orders';
+  static const String account = 'Account';
+  static const String myFavorites = 'My Favorites';
+  static const String myOrders = 'My Orders';
+  static const String myAccount = 'My Account';
+  static const String noFavorites = 'No favorites yet';
+  static const String noOrders = 'No orders yet';
+  static const String startShopping = 'Start Shopping';
+  static const String editProfile = 'Edit Profile';
+  static const String personalInfo = 'Personal Information';
+  static const String logout = 'Logout';
   // Existing strings
   static const String appName = 'E-Commerce App';
   static const String login = 'Login';
@@ -27,4 +41,24 @@ class AppStrings {
   static const String cart = 'Cart';
   static const String profile = 'Profile';
   static const String address = 'Address (Optional)';
+
+  // Product/Cart/Order Flow
+  static const String productDetails = 'Product Details';
+  static const String egp = 'EGP';
+  static const String inStock = 'In Stock';
+  static const String outOfStock = 'Out of Stock';
+  static const String description = 'Description';
+  static const String addToCart = 'Add to Cart';
+  static const String proceedToCheckout = 'Proceed to Checkout';
+  static const String orderSummary = 'Order Summary';
+  static const String total = 'Total';
+  static const String shippingAddress = 'Shipping Address';
+  static const String placeOrder = 'Place Order';
+  static const String orderConfirmation = 'Order Confirmation';
+  static const String thankYou = 'Thank you for your order!';
+  static const String orderPlaced = 'Your order has been placed successfully.';
+  static const String orderId = 'Order ID';
+  static const String items = 'Items';
+  static const String status = 'Status';
+  static const String backToHome = 'Back to Home';
 }

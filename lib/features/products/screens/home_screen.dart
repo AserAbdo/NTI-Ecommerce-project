@@ -2,202 +2,216 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../../../core/widgets/empty_state_widget.dart';
 import '../../../services/seed_service.dart';
-import '../../auth/cubits/auth_cubit.dart';
-import '../../auth/cubits/auth_state.dart';
+import '../../../services/hive_service.dart';
+import '../cubits/products_cubit.dart';
+import '../widgets/product_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isSearching = false;
+  final _searchController = TextEditingController();
+  List<String> _searchHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductsCubit>().fetchProducts();
+    _loadSearchHistory();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSearchHistory() async {
+    final history = await HiveService.getSearchHistory();
+    setState(() {
+      _searchHistory = history;
+    });
+  }
+
+  void _performSearch(String query) async {
+    if (query.trim().isEmpty) {
+      context.read<ProductsCubit>().fetchProducts();
+      return;
+    }
+    await HiveService.saveSearchQuery(query);
+    await _loadSearchHistory();
+    // TODO: Implement actual search in ProductsCubit
+    context.read<ProductsCubit>().searchProducts(query);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppStrings.appName,
-          style: TextStyle(
-            fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-          ),
-        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search products...',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withAlpha((0.7 * 255).toInt()),
+                  ),
+                  border: InputBorder.none,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.white),
+                    onPressed: () {
+                      _searchController.clear();
+                      _performSearch('');
+                    },
+                  ),
+                ),
+                onSubmitted: (value) {
+                  _performSearch(value);
+                  setState(() {
+                    _isSearching = false;
+                  });
+                },
+              )
+            : Text(
+                AppStrings.appName,
+                style: TextStyle(
+                  fontSize: ResponsiveHelper.getSubtitleFontSize(context),
+                ),
+              ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            iconSize: ResponsiveHelper.isMobile(context) ? 24 : 28,
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            iconSize: ResponsiveHelper.isMobile(context) ? 24 : 28,
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            iconSize: ResponsiveHelper.isMobile(context) ? 24 : 28,
-            onPressed: () {},
-          ),
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                setState(() {
+                  _isSearching = true;
+                });
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () {
+                setState(() {
+                  _isSearching = false;
+                  _searchController.clear();
+                });
+                _performSearch('');
+              },
+            ),
         ],
       ),
-      body: BlocBuilder<AuthCubit, AuthState>(
-        builder: (context, state) {
-          if (state is AuthAuthenticated) {
-            return Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(
-                    ResponsiveHelper.getHorizontalPadding(context) * 0.66,
+      body: Column(
+        children: [
+          // Recent Searches Dropdown (when searching)
+          if (_isSearching && _searchHistory.isNotEmpty)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha((0.05 * 255).toInt()),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                  color: AppColors.primary.withOpacity(0.1),
-                  child: Text(
-                    'Welcome, ${state.user.name}!',
-                    style: TextStyle(
-                      fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                ],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _searchHistory.length,
+                itemBuilder: (context, index) {
+                  final query = _searchHistory[index];
+                  return ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.history, size: 20),
+                    title: Text(query),
+                    onTap: () {
+                      _searchController.text = query;
+                      _performSearch(query);
+                      setState(() {
+                        _isSearching = false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          // Products Grid (NO WELCOME BANNER)
+          Expanded(
+            child: BlocBuilder<ProductsCubit, ProductsState>(
+              builder: (context, productsState) {
+                if (productsState is ProductsLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (productsState is ProductsError) {
+                  return EmptyStateWidget(
+                    message: productsState.message ?? 'Error',
+                    icon: Icons.error_outline,
+                    buttonText: 'Retry',
+                    onButtonPressed: () {
+                      context.read<ProductsCubit>().fetchProducts();
+                    },
+                  );
+                }
+                if (productsState is ProductsLoaded) {
+                  if (productsState.products.isEmpty) {
+                    return EmptyStateWidget(
+                      message: 'No products found',
+                      icon: Icons.shopping_bag_outlined,
+                      buttonText: 'Seed Products',
+                      onButtonPressed: () async {
+                        await SeedService.seedProducts();
+                        if (context.mounted) {
+                          context.read<ProductsCubit>().fetchProducts();
+                        }
+                      },
+                    );
+                  }
+                  return GridView.builder(
+                    padding: EdgeInsets.all(
+                      ResponsiveHelper.getHorizontalPadding(context) * 0.66,
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveHelper.getHorizontalPadding(
-                          context,
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            size: ResponsiveHelper.getIconSize(context),
-                            color: AppColors.textSecondary,
-                          ),
-                          SizedBox(
-                            height: ResponsiveHelper.getSpacing(context, 16),
-                          ),
-                          Text(
-                            'Products Coming Soon!',
-                            style: TextStyle(
-                              fontSize:
-                                  ResponsiveHelper.getSubtitleFontSize(
-                                    context,
-                                  ) +
-                                  4,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          SizedBox(
-                            height: ResponsiveHelper.getSpacing(context, 8),
-                          ),
-                          Text(
-                            'We are working on adding products',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: ResponsiveHelper.getBodyFontSize(
-                                context,
-                              ),
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          SizedBox(
-                            height: ResponsiveHelper.getSpacing(context, 24),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () async {
-                              // Check if products already exist
-                              final isEmpty =
-                                  await SeedService.isProductsEmpty();
-                              if (isEmpty) {
-                                await SeedService.seedProducts();
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        '✅ Products seeded successfully!',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        '⚠️ Products already exist!',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                            icon: const Icon(Icons.cloud_upload),
-                            label: Text(
-                              'Seed Products (Dev Only)',
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.getBodyFontSize(
-                                  context,
-                                ),
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveHelper.getSpacing(
-                                  context,
-                                  24,
-                                ),
-                                vertical: ResponsiveHelper.getSpacing(
-                                  context,
-                                  12,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: ResponsiveHelper.getSpacing(context, 16),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              context.read<AuthCubit>().logout();
-                            },
-                            icon: const Icon(Icons.logout),
-                            label: Text(
-                              'Logout',
-                              style: TextStyle(
-                                fontSize: ResponsiveHelper.getBodyFontSize(
-                                  context,
-                                ),
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.error,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: ResponsiveHelper.getSpacing(
-                                  context,
-                                  24,
-                                ),
-                                vertical: ResponsiveHelper.getSpacing(
-                                  context,
-                                  12,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: ResponsiveHelper.getGridColumns(context),
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
                     ),
-                  ),
-                ),
-              ],
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
+                    itemCount: productsState.products.length,
+                    itemBuilder: (context, index) {
+                      final product = productsState.products[index];
+                      return ProductCard(
+                        product: product,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.productDetails,
+                            arguments: product,
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
