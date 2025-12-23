@@ -1,8 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../services/firebase_service.dart';
-import '../../auth/cubits/auth_cubit.dart';
-import '../../auth/cubits/auth_state.dart';
 import '../../products/models/product_model.dart';
 import '../models/cart_item_model.dart';
 import 'cart_state.dart';
@@ -11,14 +9,6 @@ class CartCubit extends Cubit<CartState> {
   final FirebaseFirestore _firestore = FirebaseService.firestore;
 
   CartCubit() : super(CartInitial());
-
-  String? _getUserId(BlocBase authCubit) {
-    final state = authCubit.state;
-    if (state is AuthAuthenticated) {
-      return state.user.id;
-    }
-    return null;
-  }
 
   Future<void> loadCart(String userId) async {
     try {
@@ -69,6 +59,8 @@ class CartCubit extends Cubit<CartState> {
           price: product.price,
           imageUrl: product.imageUrl,
           quantity: quantity,
+          rating: product.rating,
+          reviewsCount: product.reviewsCount,
         );
         await docRef.set({
           ...item.toJson(),

@@ -5,6 +5,8 @@ import '../models/product_model.dart';
 
 abstract class ProductsState {}
 
+class ProductsInitial extends ProductsState {}
+
 class ProductsLoading extends ProductsState {}
 
 class ProductsLoaded extends ProductsState {
@@ -18,12 +20,11 @@ class ProductsError extends ProductsState {
 }
 
 class ProductsCubit extends Cubit<ProductsState> {
-  ProductsCubit() : super(ProductsLoading());
+  ProductsCubit() : super(ProductsInitial());
 
-  // Replace with your actual data source
   List<ProductModel> _allProducts = [];
 
-  void fetchProducts() async {
+  Future<void> fetchProducts() async {
     emit(ProductsLoading());
     try {
       final snapshot = await FirebaseService.firestore
@@ -39,14 +40,37 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
-  void searchProducts(String query) {
-    if (state is ProductsLoaded) {
-      final all = _allProducts;
-      final filtered = all
-          .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+  Future<void> fetchProductsByCategory(String category) async {
+    emit(ProductsLoading());
+    try {
+      if (category == 'All') {
+        await fetchProducts();
+        return;
+      }
+      final snapshot = await FirebaseService.firestore
+          .collection('products')
+          .where('category', isEqualTo: category)
+          .get();
+      final products = snapshot.docs
+          .map((doc) => ProductModel.fromJson(doc.data()))
           .toList();
-      emit(ProductsLoaded(filtered));
+      emit(ProductsLoaded(products));
+    } catch (e) {
+      emit(ProductsError(e.toString()));
     }
+  }
+
+  void searchProducts(String query) {
+    if (query.trim().isEmpty) {
+      emit(ProductsLoaded(_allProducts));
+      return;
+    }
+    final q = query.toLowerCase();
+    final filtered = _allProducts.where((p) {
+      return p.name.toLowerCase().contains(q) ||
+          p.description.toLowerCase().contains(q);
+    }).toList();
+    emit(ProductsLoaded(filtered));
   }
 
   // For seeding products in demo

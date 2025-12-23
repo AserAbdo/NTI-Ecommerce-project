@@ -1,706 +1,558 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_service.dart';
 
+import 'dart:math';
+
 class SeedService {
   static final FirebaseFirestore _firestore = FirebaseService.firestore;
+  static final Random _random = Random();
 
-  /// Seeds the products collection with sample data
-  /// Call this ONCE from a debug button or initial setup
   static Future<void> seedProducts() async {
-    final productsCollection = _firestore.collection('products');
-
-    final now = DateTime.now().toIso8601String();
-    final fakeReviews = [
-      {
-        'userId': 'user_001',
-        'userName': 'Aser Abdo',
-        'comment': 'Amazing product! Highly recommend.',
-        'rating': 5.0,
-        'createdAt': now,
-      },
-      {
-        'userId': 'user_002',
-        'userName': 'Sara Ahmed',
-        'comment': 'Good value for money.',
-        'rating': 4.0,
-        'createdAt': now,
-      },
-      {
-        'userId': 'user_003',
-        'userName': 'Mohamed Ali',
-        'comment': 'Decent, but could be better.',
-        'rating': 3.5,
-        'createdAt': now,
-      },
-    ];
-
     final products = [
-      // Electronics (8 products)
       {
-        'id': 'prod_001',
-        'name': 'iPhone 15 Pro Max',
-        'description':
-            'Latest Apple smartphone with A17 Pro chip, titanium design, and advanced camera system',
-        'price': 52000.0,
+        'id': 'p1',
+        'name': 'iPhone 13',
+        'description': 'Apple smartphone with A15 Bionic chip and dual camera.',
+        'oldPrice': 28999.0,
+        'newPrice': 26000.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/iphone15/400/400',
-        'stock': 25,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'reviews': fakeReviews,
+        'imageUrl':
+            'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg',
+        'rating': 4.8,
+        'reviewsCount': 156,
       },
       {
-        'id': 'prod_002',
-        'name': 'Samsung Galaxy S24 Ultra',
-        'description':
-            'Premium Android flagship with AI features, S Pen, and 200MP camera',
-        'price': 48000.0,
+        'id': 'p2',
+        'name': 'GTX 1650',
+        'description': 'NVIDIA GTX 1650 4GB GDDR6 graphics card.',
+        'oldPrice': 9500.0,
+        'newPrice': 8500.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/galaxys24/400/400',
-        'stock': 30,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'reviews': fakeReviews,
+        'imageUrl':
+            'https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 89,
       },
       {
-        'id': 'prod_003',
-        'name': 'Sony WH-1000XM5',
-        'description':
-            'Wireless noise-canceling headphones with premium sound quality',
-        'price': 15000.0,
+        'id': 'p3',
+        'name': 'RAM 16GB',
+        'description': '16GB DDR4 desktop memory module.',
+        'oldPrice': 1999.0,
+        'newPrice': 1700.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/sonyheadphones/400/400',
-        'stock': 50,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'reviews': fakeReviews,
+        'imageUrl':
+            'https://images.pexels.com/photos/2582928/pexels-photo-2582928.jpeg',
+        'rating': 4.7,
+        'reviewsCount': 124,
       },
       {
-        'id': 'prod_004',
-        'name': 'Apple Watch Series 9',
-        'description': 'Advanced fitness and health tracking smartwatch',
-        'price': 18000.0,
+        'id': 'p4',
+        'name': 'Intel Core i5',
+        'description': 'Intel Core i5 desktop processor (10th Gen).',
+        'oldPrice': 5200.0,
+        'newPrice': 4800.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/applewatch9/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'reviews': fakeReviews,
+        'imageUrl':
+            'https://images.pexels.com/photos/2582930/pexels-photo-2582930.jpeg',
+        'rating': 4.9,
+        'reviewsCount': 203,
       },
       {
-        'id': 'prod_005',
-        'name': 'iPad Air M2',
-        'description':
-            'Powerful tablet with M2 chip, 11-inch Liquid Retina display',
-        'price': 28000.0,
+        'id': 'p5',
+        'name': 'Wireless Earbuds',
+        'description': 'Bluetooth earbuds with charging case.',
+        'oldPrice': 1099.0,
+        'newPrice': 899.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/ipadair/400/400',
-        'stock': 20,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'reviews': fakeReviews,
+        'imageUrl':
+            'https://images.pexels.com/photos/3825517/pexels-photo-3825517.jpeg',
+        'rating': 4.5,
+        'reviewsCount': 178,
       },
       {
-        'id': 'prod_016',
-        'name': 'MacBook Pro M3',
-        'description': '14-inch laptop with M3 chip, 16GB RAM, 512GB SSD',
-        'price': 85000.0,
+        'id': 'p6',
+        'name': 'Smart TV 55"',
+        'description': '4K smart TV with HDR and apps.',
+        'oldPrice': 9999.0,
+        'newPrice': 8999.0,
         'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/macbookpro/400/400',
-        'stock': 15,
-        'reviews': fakeReviews,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/1201996/pexels-photo-1201996.jpeg',
+        'rating': 4.7,
+        'reviewsCount': 142,
       },
       {
-        'id': 'prod_017',
-        'name': 'AirPods Pro 2',
-        'description':
-            'Active noise cancellation, spatial audio, USB-C charging',
-        'price': 9500.0,
-        'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/airpodspro/400/400',
-        'stock': 60,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_018',
-        'name': 'PlayStation 5',
-        'description':
-            'Next-gen gaming console with 4K gaming and ultra-fast SSD',
-        'price': 22000.0,
-        'category': 'Electronics',
-        'imageUrl': 'https://picsum.photos/seed/ps5/400/400',
-        'stock': 12,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Fashion (8 products)
-      {
-        'id': 'prod_006',
-        'name': 'Nike Air Max 270',
-        'description':
-            'Comfortable running shoes with air cushioning technology',
-        'price': 3500.0,
+        'id': 'p7',
+        'name': 'Sneakers',
+        'description': 'Comfortable everyday sneakers with breathable mesh.',
+        'oldPrice': 699.0,
+        'newPrice': 499.0,
         'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/nikeairmax/400/400',
-        'stock': 100,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg',
+        'rating': 4.4,
+        'reviewsCount': 95,
       },
       {
-        'id': 'prod_007',
-        'name': 'Adidas Ultraboost',
-        'description': 'Premium running shoes with responsive boost cushioning',
-        'price': 4200.0,
+        'id': 'p8',
+        'name': 'Handbag',
+        'description': 'Medium-sized handbag with adjustable strap.',
+        'oldPrice': 1799.0,
+        'newPrice': 1299.0,
         'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/ultraboost/400/400',
-        'stock': 80,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 67,
       },
       {
-        'id': 'prod_008',
-        'name': 'Levi\'s 501 Jeans',
-        'description': 'Classic straight-fit denim jeans, authentic style',
-        'price': 2800.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/levis501/400/400',
-        'stock': 120,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_009',
-        'name': 'Ray-Ban Aviator',
-        'description': 'Iconic sunglasses with metal frame and UV protection',
-        'price': 1500.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/rayban/400/400',
-        'stock': 60,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_010',
-        'name': 'Zara Leather Jacket',
-        'description': 'Premium genuine leather jacket, modern design',
-        'price': 5500.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/zarajacket/400/400',
-        'stock': 35,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_019',
-        'name': 'H&M Cotton T-Shirt',
-        'description': 'Basic cotton t-shirt, available in multiple colors',
-        'price': 450.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/hmtshirt/400/400',
-        'stock': 200,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_020',
-        'name': 'Gucci Belt',
-        'description': 'Luxury leather belt with iconic GG buckle',
-        'price': 12000.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/guccibelt/400/400',
-        'stock': 25,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_021',
-        'name': 'Converse Chuck Taylor',
-        'description': 'Classic canvas sneakers, timeless design',
-        'price': 1800.0,
-        'category': 'Fashion',
-        'imageUrl': 'https://picsum.photos/seed/converse/400/400',
-        'stock': 90,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Home (7 products)
-      {
-        'id': 'prod_011',
-        'name': 'Dyson V15 Vacuum',
-        'description':
-            'Cordless vacuum cleaner with laser detection technology',
-        'price': 22000.0,
+        'id': 'p9',
+        'name': 'Cookware Set',
+        'description': '10-piece stainless steel cookware set.',
+        'oldPrice': 2499.0,
+        'newPrice': 1999.0,
         'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/dysonv15/400/400',
-        'stock': 15,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
+        'rating': 4.8,
+        'reviewsCount': 112,
       },
       {
-        'id': 'prod_012',
-        'name': 'Nespresso Coffee Machine',
-        'description': 'Premium espresso and coffee maker with milk frother',
-        'price': 8500.0,
+        'id': 'p10',
+        'name': 'Memory Foam Pillow',
+        'description': 'Ergonomic pillow with memory foam for neck support.',
+        'newPrice': 299.0,
         'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/nespresso/400/400',
-        'stock': 25,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/1034584/pexels-photo-1034584.jpeg',
+        'rating': 4.3,
+        'reviewsCount': 58,
       },
       {
-        'id': 'prod_013',
-        'name': 'IKEA Minimalist Desk',
+        'id': 'p11',
+        'name': 'Face Serum',
+        'description': 'Lightweight serum with hyaluronic acid.',
+        'newPrice': 249.0,
+        'category': 'Beauty',
+        'imageUrl':
+            'https://images.pexels.com/photos/3735612/pexels-photo-3735612.jpeg',
+        'rating': 4.5,
+        'reviewsCount': 134,
+      },
+      {
+        'id': 'p12',
+        'name': 'Lipstick Set',
+        'description': 'Set of 4 long-lasting matte lipsticks.',
+        'newPrice': 199.0,
+        'category': 'Beauty',
+        'imageUrl':
+            'https://images.pexels.com/photos/2113855/pexels-photo-2113855.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 89,
+      },
+      {
+        'id': 'p13',
+        'name': 'Laptop Backpack',
         'description':
-            'Modern white desk with cable management, perfect for home office',
-        'price': 3200.0,
+            'Water-resistant backpack with padded laptop compartment.',
+        'oldPrice': 799.0,
+        'newPrice': 599.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/2905238/pexels-photo-2905238.jpeg',
+        'rating': 4.7,
+        'reviewsCount': 76,
+      },
+      {
+        'id': 'p14',
+        'name': 'Smart Watch',
+        'description': 'Fitness tracker with heart rate monitor.',
+        'oldPrice': 1999.0,
+        'newPrice': 1499.0,
+        'category': 'Electronics',
+        'imageUrl':
+            'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg',
+        'rating': 4.5,
+        'reviewsCount': 198,
+      },
+      {
+        'id': 'p15',
+        'name': 'Coffee Maker',
+        'description': 'Programmable drip coffee maker, 12-cup capacity.',
+        'newPrice': 899.0,
         'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/ikeadesk/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'imageUrl':
+            'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg',
+        'rating': 4.4,
+        'reviewsCount': 102,
+      },
+      // Winter Men's Clothing
+      {
+        'id': 'p16',
+        'name': 'Winter Jacket',
+        'description': 'Warm padded jacket with hood for cold weather.',
+        'oldPrice': 2499.0,
+        'newPrice': 1899.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.7,
+        'reviewsCount': 145,
       },
       {
-        'id': 'prod_022',
-        'name': 'Philips Air Fryer',
-        'description':
-            'Healthy cooking with rapid air technology, 4.1L capacity',
-        'price': 3800.0,
-        'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/airfryer/400/400',
-        'stock': 35,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p17',
+        'name': 'Wool Sweater',
+        'description': 'Cozy wool blend sweater for winter.',
+        'oldPrice': 999.0,
+        'newPrice': 799.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 87,
       },
       {
-        'id': 'prod_023',
-        'name': 'Samsung Smart TV 55"',
-        'description': '4K QLED TV with smart features and HDR',
-        'price': 32000.0,
-        'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/samsungtv/400/400',
-        'stock': 18,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p18',
+        'name': 'Leather Boots',
+        'description': 'Waterproof leather boots with warm lining.',
+        'oldPrice': 1899.0,
+        'newPrice': 1499.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg',
+        'rating': 4.8,
+        'reviewsCount': 123,
       },
       {
-        'id': 'prod_024',
-        'name': 'Instant Pot Duo',
-        'description': '7-in-1 electric pressure cooker, 6 quart',
-        'price': 4500.0,
-        'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/instantpot/400/400',
-        'stock': 30,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p19',
+        'name': 'Wool Scarf',
+        'description': 'Soft wool scarf for extra warmth.',
+        'oldPrice': 399.0,
+        'newPrice': 299.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.5,
+        'reviewsCount': 54,
       },
       {
-        'id': 'prod_025',
-        'name': 'Roomba Robot Vacuum',
-        'description': 'Smart robot vacuum with mapping and app control',
-        'price': 15000.0,
-        'category': 'Home',
-        'imageUrl': 'https://picsum.photos/seed/roomba/400/400',
-        'stock': 20,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Beauty (7 products)
-      {
-        'id': 'prod_014',
-        'name': 'Dior Sauvage Perfume',
-        'description': 'Men\'s luxury fragrance, 100ml eau de toilette',
-        'price': 4800.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/diorsauvage/400/400',
-        'stock': 70,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p20',
+        'name': 'Thermal Shirt',
+        'description': 'Long sleeve thermal base layer shirt.',
+        'oldPrice': 549.0,
+        'newPrice': 399.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.4,
+        'reviewsCount': 68,
       },
       {
-        'id': 'prod_015',
-        'name': 'Fenty Beauty Foundation',
-        'description':
-            'Pro Filt\'r Soft Matte foundation, full coverage, 40 shades',
-        'price': 1800.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/fentybeauty/400/400',
-        'stock': 90,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p21',
+        'name': 'Fleece Hoodie',
+        'description': 'Soft fleece hoodie with front pocket.',
+        'oldPrice': 899.0,
+        'newPrice': 699.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 91,
       },
       {
-        'id': 'prod_026',
-        'name': 'MAC Ruby Woo Lipstick',
-        'description': 'Iconic matte red lipstick, retro matte formula',
-        'price': 950.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/maclipstick/400/400',
-        'stock': 100,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p22',
+        'name': 'Winter Gloves',
+        'description': 'Insulated gloves with touchscreen fingers.',
+        'oldPrice': 349.0,
+        'newPrice': 249.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.3,
+        'reviewsCount': 42,
       },
       {
-        'id': 'prod_027',
-        'name': 'The Ordinary Serum Set',
-        'description':
-            'Skincare essentials set with hyaluronic acid and niacinamide',
-        'price': 1200.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/theordinary/400/400',
-        'stock': 80,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p23',
+        'name': 'Beanie Hat',
+        'description': 'Warm knit beanie for cold days.',
+        'oldPrice': 299.0,
+        'newPrice': 199.0,
+        'category': 'Fashion',
+        'imageUrl':
+            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+        'rating': 4.4,
+        'reviewsCount': 36,
+      },
+      // Supermarket Products
+      {
+        'id': 'p24',
+        'name': 'Olive Oil 1L',
+        'description': 'Extra virgin olive oil, cold pressed.',
+        'oldPrice': 179.0,
+        'newPrice': 149.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.7,
+        'reviewsCount': 156,
+        'stock': 0, // Out of stock
       },
       {
-        'id': 'prod_028',
-        'name': 'Chanel No. 5',
-        'description': 'Iconic women\'s perfume, 100ml eau de parfum',
-        'price': 6500.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/chanelno5/400/400',
-        'stock': 45,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p25',
+        'name': 'Pasta 500g',
+        'description': 'Italian durum wheat pasta.',
+        'oldPrice': 55.0,
+        'newPrice': 45.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg',
+        'rating': 4.5,
+        'reviewsCount': 98,
       },
       {
-        'id': 'prod_029',
-        'name': 'Urban Decay Eyeshadow Palette',
-        'description': 'Naked palette with 12 neutral shades',
-        'price': 2200.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/urbandecay/400/400',
-        'stock': 55,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p26',
+        'name': 'Rice 5kg',
+        'description': 'Premium long grain white rice.',
+        'oldPrice': 229.0,
+        'newPrice': 199.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/1393382/pexels-photo-1393382.jpeg',
+        'rating': 4.6,
+        'reviewsCount': 187,
       },
       {
-        'id': 'prod_030',
-        'name': 'Dyson Airwrap',
-        'description': 'Multi-styler for hair drying and styling',
-        'price': 18000.0,
-        'category': 'Beauty',
-        'imageUrl': 'https://picsum.photos/seed/dysonairwrap/400/400',
-        'stock': 22,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Supermarket (10 products)
-      {
-        'id': 'prod_031',
-        'name': 'Organic Whole Milk',
-        'description': 'Fresh organic whole milk, 1 Gallon',
-        'price': 120.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/milk/400/400',
-        'stock': 50,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p27',
+        'name': 'Honey 500g',
+        'description': 'Pure natural honey.',
+        'oldPrice': 159.0,
+        'newPrice': 129.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.8,
+        'reviewsCount': 142,
       },
       {
-        'id': 'prod_032',
-        'name': 'Whole Wheat Bread',
-        'description': 'Freshly baked whole wheat bread loaf',
-        'price': 45.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/bread/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p28',
+        'name': 'Coffee 250g',
+        'description': 'Premium ground coffee beans.',
+        'oldPrice': 219.0,
+        'newPrice': 179.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg',
+        'rating': 4.7,
+        'reviewsCount': 234,
       },
       {
-        'id': 'prod_033',
-        'name': 'Free Range Eggs',
-        'description': 'Carton of 12 large free-range eggs',
-        'price': 160.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/eggs/400/400',
-        'stock': 60,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p29',
+        'name': 'Tea Box 100',
+        'description': 'Black tea bags, 100 count.',
+        'oldPrice': 109.0,
+        'newPrice': 89.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.4,
+        'reviewsCount': 76,
+        'stock': 0, // Out of stock
       },
       {
-        'id': 'prod_034',
-        'name': 'Basmati Rice',
-        'description': 'Premium long-grain basmati rice, 5kg bag',
-        'price': 450.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/rice/400/400',
-        'stock': 100,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p30',
+        'name': 'Milk 1L',
+        'description': 'Fresh whole milk.',
+        'newPrice': 35.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.3,
+        'reviewsCount': 45,
+        'stock': 0, // Out of stock
       },
       {
-        'id': 'prod_035',
-        'name': 'Extra Virgin Olive Oil',
-        'description': 'Cold-pressed extra virgin olive oil, 1L',
-        'price': 380.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/oliveoil/400/400',
-        'stock': 30,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p31',
+        'name': 'Eggs 12pcs',
+        'description': 'Fresh farm eggs, 12 pieces.',
+        'newPrice': 49.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.5,
+        'reviewsCount': 67,
       },
       {
-        'id': 'prod_036',
-        'name': 'Chicken Breast Fillets',
-        'description': 'Fresh boneless skinless chicken breast, 1kg',
-        'price': 220.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/chicken/400/400',
-        'stock': 25,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p32',
+        'name': 'Bread Loaf',
+        'description': 'Fresh whole wheat bread.',
+        'newPrice': 25.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg',
+        'rating': 4.2,
+        'reviewsCount': 34,
       },
       {
-        'id': 'prod_037',
-        'name': 'Italian Pasta',
-        'description': 'Authentic Italian spaghetti, 500g pack',
-        'price': 35.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/pasta/400/400',
-        'stock': 150,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p33',
+        'name': 'Cheese 500g',
+        'description': 'Cheddar cheese block.',
+        'oldPrice': 189.0,
+        'newPrice': 159.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.6,
+        'reviewsCount': 89,
       },
       {
-        'id': 'prod_038',
-        'name': 'Cheddar Cheese',
-        'description': 'Sharp cheddar cheese block, 200g',
-        'price': 140.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/cheese/400/400',
-        'stock': 45,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p34',
+        'name': 'Tomato Sauce',
+        'description': 'Italian tomato pasta sauce.',
+        'oldPrice': 49.0,
+        'newPrice': 39.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.4,
+        'reviewsCount': 52,
       },
       {
-        'id': 'prod_039',
-        'name': 'Fresh Apples',
-        'description': 'Crisp red apples, 1kg bag',
-        'price': 80.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/apples/400/400',
-        'stock': 70,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_040',
-        'name': 'Ground Coffee',
-        'description': 'Medium roast arabica ground coffee, 250g',
-        'price': 190.0,
-        'category': 'Supermarket',
-        'imageUrl': 'https://picsum.photos/seed/coffee/400/400',
-        'stock': 55,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Books (5 products)
-      {
-        'id': 'prod_041',
-        'name': 'The Great Gatsby',
-        'description': 'Classic novel by F. Scott Fitzgerald',
-        'price': 250.0,
-        'category': 'Books',
-        'imageUrl': 'https://picsum.photos/seed/gatsby/400/400',
-        'stock': 30,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_042',
-        'name': 'Atomic Habits',
-        'description': 'Self-help book by James Clear',
-        'price': 400.0,
-        'category': 'Books',
-        'imageUrl': 'https://picsum.photos/seed/atomichabits/400/400',
-        'stock': 100,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_043',
-        'name': 'Harry Potter & The Sorcerer\'s Stone',
-        'description': 'Fantasy novel by J.K. Rowling',
-        'price': 350.0,
-        'category': 'Books',
-        'imageUrl': 'https://picsum.photos/seed/harrypotter/400/400',
-        'stock': 50,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_044',
-        'name': 'Clean Code',
-        'description': 'A Handbook of Agile Software Craftsmanship',
-        'price': 850.0,
-        'category': 'Books',
-        'imageUrl': 'https://picsum.photos/seed/cleancode/400/400',
-        'stock': 20,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_045',
-        'name': 'The Alchemist',
-        'description': 'Novel by Paulo Coelho',
-        'price': 280.0,
-        'category': 'Books',
-        'imageUrl': 'https://picsum.photos/seed/alchemist/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Sports (5 products)
-      {
-        'id': 'prod_046',
-        'name': 'Yoga Mat',
-        'description': 'Non-slip exercise yoga mat with carrying strap',
-        'price': 450.0,
-        'category': 'Sports',
-        'imageUrl': 'https://picsum.photos/seed/yogamat/400/400',
-        'stock': 60,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_047',
-        'name': 'Dumbbell Set',
-        'description': 'Pair of 5kg neoprene coated dumbbells',
-        'price': 900.0,
-        'category': 'Sports',
-        'imageUrl': 'https://picsum.photos/seed/dumbbells/400/400',
-        'stock': 25,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_048',
-        'name': 'Football',
-        'description': 'Professional size 5 soccer ball',
-        'price': 650.0,
-        'category': 'Sports',
-        'imageUrl': 'https://picsum.photos/seed/football/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_049',
-        'name': 'Tennis Racket',
-        'description': 'Lightweight graphite tennis racket for beginners',
-        'price': 1200.0,
-        'category': 'Sports',
-        'imageUrl': 'https://picsum.photos/seed/tennis/400/400',
-        'stock': 15,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_050',
-        'name': 'Running Water Bottle',
-        'description': 'Insulated stainless steel water bottle, 750ml',
-        'price': 350.0,
-        'category': 'Sports',
-        'imageUrl': 'https://picsum.photos/seed/bottle/400/400',
-        'stock': 80,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-
-      // Toys (5 products)
-      {
-        'id': 'prod_051',
-        'name': 'Lego Classic Set',
-        'description': 'Creative brick box with 484 pieces',
-        'price': 1500.0,
-        'category': 'Toys',
-        'imageUrl': 'https://picsum.photos/seed/lego/400/400',
-        'stock': 35,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_052',
-        'name': 'Barbie Dreamhouse',
-        'description': '3-story dollhouse with pool and slide',
-        'price': 4500.0,
-        'category': 'Toys',
-        'imageUrl': 'https://picsum.photos/seed/barbie/400/400',
-        'stock': 10,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_053',
-        'name': 'Hot Wheels 10-Pack',
-        'description': 'Set of 10 1:64 scale die-cast cars',
-        'price': 600.0,
-        'category': 'Toys',
-        'imageUrl': 'https://picsum.photos/seed/hotwheels/400/400',
-        'stock': 50,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_054',
-        'name': 'Teddy Bear',
-        'description': 'Soft and cuddly plush teddy bear, 50cm',
-        'price': 350.0,
-        'category': 'Toys',
-        'imageUrl': 'https://picsum.photos/seed/teddy/400/400',
-        'stock': 40,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      },
-      {
-        'id': 'prod_055',
-        'name': 'Jigsaw Puzzle',
-        'description': '1000-piece landscape puzzle',
-        'price': 250.0,
-        'category': 'Toys',
-        'imageUrl': 'https://picsum.photos/seed/puzzle/400/400',
-        'stock': 60,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
+        'id': 'p35',
+        'name': 'Sugar 1kg',
+        'description': 'White granulated sugar.',
+        'newPrice': 45.0,
+        'category': 'Grocery',
+        'imageUrl':
+            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+        'rating': 4.1,
+        'reviewsCount': 28,
       },
     ];
 
-    // Add products to Firestore
+    final reviewerNames = [
+      'Sara M.',
+      'Ahmed K.',
+      'Fatima A.',
+      'Omar H.',
+      'Layla S.',
+      'Hassan M.',
+      'Nour E.',
+      'Karim F.',
+      'Yasmin R.',
+      'Ali T.',
+      'Mona S.',
+      'Youssef A.',
+      'Hana B.',
+      'Khaled M.',
+      'Rana F.',
+    ];
+
+    final reviewComments = [
+      // 5-star comments
+      'Excellent quality! Highly recommend to everyone.',
+      'Amazing product! Exceeded all my expectations.',
+      'Best purchase I\'ve made this year. Absolutely love it!',
+      'Outstanding quality and fast delivery. Will buy again!',
+      'Perfect! Exactly what I was looking for.',
+      'Superb quality! Worth every penny.',
+      'Incredible value for money. Highly satisfied!',
+      'Fantastic product! My family loves it too.',
+
+      // 4-star comments
+      'Great value for money. Very satisfied overall.',
+      'Good quality product. Delivery was quick.',
+      'Really nice! Just as described in the listing.',
+      'Very happy with this purchase. Recommended!',
+      'Good product, works perfectly. Happy customer!',
+      'Nice quality and good price. Would buy again.',
+      'Solid product. Does exactly what it should.',
+
+      // 3-4 star comments
+      'Good product but could be better in some aspects.',
+      'Decent quality. Price is fair for what you get.',
+      'It\'s okay. Does the job but nothing special.',
+      'Satisfactory purchase. Meets basic expectations.',
+      'Average quality but acceptable for the price.',
+
+      // Detailed positive comments
+      'The quality is amazing! Fast delivery and well packaged. Highly recommend this seller.',
+      'Love it! Exactly as described. The product quality exceeded my expectations.',
+      'Perfect for my needs. Great quality and the price is very reasonable.',
+      'Excellent purchase! The product arrived quickly and in perfect condition.',
+      'Very impressed with the quality! Will definitely order again.',
+      'Great product! My second time ordering and still very satisfied.',
+      'Wonderful quality! Better than I expected for this price.',
+      'Absolutely love this! Great value and excellent quality.',
+      'Perfect! Fast shipping and product is exactly as shown.',
+      'Highly recommend! Quality is top-notch and price is great.',
+    ];
+
     try {
-      for (final product in products) {
-        final productId = product['id'] as String;
-        await productsCollection.doc(productId).set(product);
-        print('✅ Added product: ${product['name']}');
+      for (var productData in products) {
+        final productId = productData['id'] as String;
+
+        // Calculate price from newPrice (or oldPrice if no newPrice)
+        final price = productData['newPrice'] ?? productData['oldPrice'];
+
+        // Add stock (some products already have stock set to 0)
+        if (!productData.containsKey('stock')) {
+          productData['stock'] = 50 + _random.nextInt(100);
+        }
+
+        // Ensure rating and reviewsCount exist
+        if (!productData.containsKey('rating')) {
+          productData['rating'] = 4.0 + (_random.nextDouble() * 0.9);
+        }
+        if (!productData.containsKey('reviewsCount')) {
+          productData['reviewsCount'] = 20 + _random.nextInt(150);
+        }
+
+        // Add price for compatibility
+        productData['price'] = price as double;
+
+        await _firestore.collection('products').doc(productId).set(productData);
+
+        // Generate 4-7 reviews for each product
+        final numReviews = 4 + _random.nextInt(4);
+        for (var i = 0; i < numReviews; i++) {
+          // Rating distribution: more 4-5 stars, fewer 3 stars
+          final ratingRoll = _random.nextInt(10);
+          final rating = ratingRoll < 6
+              ? 5.0 // 60% chance of 5 stars
+              : ratingRoll < 9
+              ? 4.0 // 30% chance of 4 stars
+              : 3.0; // 10% chance of 3 stars
+
+          final reviewerName =
+              reviewerNames[_random.nextInt(reviewerNames.length)];
+          final comment =
+              reviewComments[_random.nextInt(reviewComments.length)];
+
+          // Generate a fake userId
+          final userId = 'user_${_random.nextInt(1000)}';
+
+          // Random date within the last 60 days
+          final daysAgo = _random.nextInt(60);
+          final reviewDate = DateTime.now().subtract(Duration(days: daysAgo));
+
+          await _firestore
+              .collection('products')
+              .doc(productId)
+              .collection('reviews')
+              .add({
+                'userId': userId,
+                'userName': reviewerName,
+                'rating': rating,
+                'comment': comment,
+                'createdAt': Timestamp.fromDate(reviewDate),
+              });
+        }
       }
-      print('🎉 Successfully seeded ${products.length} products!');
+
+      print('✅ Successfully seeded ${products.length} products with reviews!');
     } catch (e) {
       print('❌ Error seeding products: $e');
       rethrow;
     }
-  }
-
-  /// Check if products collection is empty
-  static Future<bool> isProductsEmpty() async {
-    final snapshot = await _firestore.collection('products').limit(1).get();
-    return snapshot.docs.isEmpty;
-  }
-
-  /// Delete all products (for testing/reset)
-  static Future<void> clearProducts() async {
-    final snapshot = await _firestore.collection('products').get();
-    for (final doc in snapshot.docs) {
-      await doc.reference.delete();
-    }
-    print('🗑️ Cleared all products');
   }
 }

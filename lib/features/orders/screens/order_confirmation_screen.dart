@@ -8,8 +8,7 @@ import '../models/order_model.dart';
 class OrderConfirmationScreen extends StatelessWidget {
   final OrderModel order;
 
-  const OrderConfirmationScreen({Key? key, required this.order})
-    : super(key: key);
+  const OrderConfirmationScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +87,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    AppRoutes.home,
+                    AppRoutes.main,
                     (route) => false,
                   );
                 },

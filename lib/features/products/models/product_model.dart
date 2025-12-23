@@ -11,6 +11,10 @@ class ProductModel extends Equatable {
   final String imageUrl;
   final int stock;
   final List<ReviewModel> reviews;
+  final double rating;
+  final int reviewsCount;
+  final double? oldPrice;
+  final double? newPrice;
 
   const ProductModel({
     required this.id,
@@ -21,6 +25,10 @@ class ProductModel extends Equatable {
     required this.imageUrl,
     required this.stock,
     this.reviews = const [],
+    this.rating = 0.0,
+    this.reviewsCount = 0,
+    this.oldPrice,
+    this.newPrice,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -34,6 +42,12 @@ class ProductModel extends Equatable {
     reviews: (json['reviews'] as List<dynamic>? ?? [])
         .map((e) => ReviewModel.fromJson(e as Map<String, dynamic>))
         .toList(),
+    rating: (json['rating'] ?? 0.0) is int
+        ? (json['rating'] ?? 0).toDouble()
+        : (json['rating'] ?? 0.0) as double,
+    reviewsCount: (json['reviewsCount'] ?? 0) as int,
+    oldPrice: (json['oldPrice'] as num?)?.toDouble(),
+    newPrice: (json['newPrice'] as num?)?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -45,6 +59,10 @@ class ProductModel extends Equatable {
     'imageUrl': imageUrl,
     'stock': stock,
     'reviews': reviews.map((e) => e.toJson()).toList(),
+    'rating': rating,
+    'reviewsCount': reviewsCount,
+    if (oldPrice != null) 'oldPrice': oldPrice,
+    if (newPrice != null) 'newPrice': newPrice,
   };
 
   @override
@@ -57,5 +75,9 @@ class ProductModel extends Equatable {
     imageUrl,
     stock,
     reviews,
+    rating,
+    reviewsCount,
+    oldPrice,
+    newPrice,
   ];
 }

@@ -8,10 +8,11 @@ import '../../../core/utils/responsive_helper.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../auth/cubits/auth_cubit.dart';
 import '../../auth/cubits/auth_state.dart';
+import '../models/order_model.dart';
 import '../widgets/order_card.dart';
 
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
+  const OrdersScreen({super.key});
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -72,21 +73,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
               ResponsiveHelper.getHorizontalPadding(context),
             ),
             itemCount: orders.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final order = orders[index].data() as Map<String, dynamic>;
-              final orderId = order['orderId'] as String? ?? '';
-              final totalPrice =
-                  (order['totalPrice'] as num?)?.toDouble() ?? 0.0;
-              final status = order['status'] as String? ?? '';
-              final items = order['items'] as List<dynamic>? ?? [];
-              return OrderCard(
-                orderId: orderId,
-                totalPrice: totalPrice,
-                status: status,
-                itemCount: items.length,
-                statusColor: getStatusColor(status),
-              );
+              final orderData = orders[index].data() as Map<String, dynamic>;
+              final order = OrderModel.fromJson(orderData);
+              return OrderCard(order: order);
             },
           );
         },

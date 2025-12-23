@@ -2,6 +2,7 @@ class AppStrings {
   // Bottom Navigation
   static const String home = 'Home';
   static const String favorites = 'Favorites';
+  static const String favourites = 'Favourites';
   static const String orders = 'Orders';
   static const String account = 'Account';
   static const String myFavorites = 'My Favorites';
@@ -14,7 +15,7 @@ class AppStrings {
   static const String personalInfo = 'Personal Information';
   static const String logout = 'Logout';
   // Existing strings
-  static const String appName = 'E-Commerce App';
+  static const String appName = 'Vendora';
   static const String login = 'Login';
   static const String email = 'Email';
   static const String password = 'Password';
@@ -37,7 +38,7 @@ class AppStrings {
   static const String createAccount = 'Create Account';
   static const String fillDetails = 'Fill the details to get started';
   static const String products = 'Products';
-  static const String searchProducts = 'Search Products';
+  static const String searchProducts = 'Search Vendora';
   static const String cart = 'Cart';
   static const String profile = 'Profile';
   static const String address = 'Address (Optional)';

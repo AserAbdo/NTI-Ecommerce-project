@@ -1,100 +1,189 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
-import '../../../core/widgets/custom_button.dart';
+import '../../../core/utils/order_utils.dart';
 import '../../auth/cubits/auth_cubit.dart';
 import '../../auth/cubits/auth_state.dart';
 import '../../cart/cubits/cart_cubit.dart';
 import '../../cart/cubits/cart_state.dart';
-import '../../cart/models/cart_item_model.dart';
 import '../models/order_model.dart';
+import '../models/shipping_address_model.dart';
+import '../cubits/orders_cubit.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final CartLoaded cartState;
 
-  const CheckoutScreen({Key? key, required this.cartState}) : super(key: key);
+  const CheckoutScreen({super.key, required this.cartState});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final _addressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  // Shipping address controllers
+  final _fullNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _streetController = TextEditingController();
+  final _apartmentController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _postalCodeController = TextEditingController();
+  final _notesController = TextEditingController();
+
+  String _selectedPaymentMethod = 'cash_on_delivery';
   bool _isPlacingOrder = false;
+
+  final List<Map<String, dynamic>> _paymentMethods = [
+    {
+      'id': 'cash_on_delivery',
+      'name': 'Cash on Delivery',
+      'icon': Icons.money,
+      'color': Colors.green,
+    },
+    {
+      'id': 'credit_card',
+      'name': 'Credit Card',
+      'icon': Icons.credit_card,
+      'color': Colors.blue,
+    },
+    {
+      'id': 'paypal',
+      'name': 'PayPal',
+      'icon': Icons.paypal,
+      'color': Colors.indigo,
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
+    _loadUserInfo();
+  }
+
+  void _loadUserInfo() {
     final authState = context.read<AuthCubit>().state;
-    if (authState is AuthAuthenticated && authState.user.address != null) {
-      _addressController.text = authState.user.address!;
+    if (authState is AuthAuthenticated) {
+      _fullNameController.text = authState.user.name;
+      _phoneController.text = authState.user.phone;
+      if (authState.user.address != null) {
+        _streetController.text = authState.user.address!;
+      }
     }
   }
 
   @override
   void dispose() {
-    _addressController.dispose();
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _streetController.dispose();
+    _apartmentController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _postalCodeController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
   Future<void> _placeOrder() async {
-    final authState = context.read<AuthCubit>().state;
-    if (authState is! AuthAuthenticated) return;
-    if (_addressController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter shipping address')),
-      );
+    if (!_formKey.currentState!.validate()) {
       return;
     }
+
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! AuthAuthenticated) return;
+
     setState(() {
       _isPlacingOrder = true;
     });
+
     try {
       final userId = authState.user.id;
       final items = widget.cartState.items;
-      final totalPrice = widget.cartState.totalPrice;
-      final shippingAddress = _addressController.text.trim();
-      final firestore = FirebaseFirestore.instance;
-      final orderRef = firestore.collection('orders').doc();
-      await orderRef.set({
-        'orderId': orderRef.id,
-        'userId': userId,
-        'items': items.map((item) => item.toJson()).toList(),
-        'totalPrice': totalPrice,
-        'shippingAddress': shippingAddress,
-        'status': 'Pending',
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
 
-      // Clear Cart from Firestore after order creation
-      await context.read<CartCubit>().clearCart(userId);
-      // Reload Cart to show empty state
-      await context.read<CartCubit>().loadCart(userId);
-      final orderModel = OrderModel(
-        orderId: orderRef.id,
-        userId: userId,
-        items: items,
-        totalPrice: totalPrice,
-        shippingAddress: shippingAddress,
-        status: 'Pending',
+      // Calculate pricing
+      final subtotal = widget.cartState.totalPrice;
+      final tax = OrderUtils.calculateTax(subtotal);
+      final shippingFee = OrderUtils.calculateShippingFee(
+        city: _cityController.text,
       );
+      final totalPrice = subtotal + tax + shippingFee;
+
+      // Create shipping address
+      final shippingAddress = ShippingAddressModel(
+        fullName: _fullNameController.text.trim(),
+        phone: _phoneController.text.trim(),
+        street: _streetController.text.trim(),
+        apartment: _apartmentController.text.trim().isNotEmpty
+            ? _apartmentController.text.trim()
+            : null,
+        city: _cityController.text.trim(),
+        state: _stateController.text.trim(),
+        postalCode: _postalCodeController.text.trim(),
+        country: 'Egypt',
+        isDefault: false,
+      );
+
+      // Generate order details
+      final orderNumber = OrderUtils.generateOrderNumber();
+      final trackingNumber = OrderUtils.generateTrackingNumber();
+      final now = DateTime.now();
+      final estimatedDelivery = OrderUtils.getEstimatedDeliveryDate(now);
+
+      // Create order
+      final order = OrderModel(
+        orderId: DateTime.now().millisecondsSinceEpoch.toString(),
+        orderNumber: orderNumber,
+        userId: userId,
+        customerName: authState.user.name,
+        customerEmail: authState.user.email,
+        customerPhone: authState.user.phone,
+        status: 'pending',
+        paymentStatus: 'pending',
+        paymentMethod: _selectedPaymentMethod,
+        items: items,
+        subtotal: subtotal,
+        tax: tax,
+        shippingFee: shippingFee,
+        discount: 0.0,
+        totalPrice: totalPrice,
+        currency: 'EGP',
+        shippingAddress: shippingAddress,
+        estimatedDeliveryDate: estimatedDelivery,
+        trackingNumber: trackingNumber,
+        customerNotes: _notesController.text.trim().isNotEmpty
+            ? _notesController.text.trim()
+            : null,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      // Save order
+      await context.read<OrdersCubit>().createOrder(order);
+
+      // Clear cart
+      await context.read<CartCubit>().clearCart(userId);
+      await context.read<CartCubit>().loadCart(userId);
+
       if (mounted) {
+        // Navigate to payment screen
         Navigator.pushReplacementNamed(
           context,
-          AppRoutes.orderConfirmation,
-          arguments: orderModel,
+          AppRoutes.mockPayment,
+          arguments: order,
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to place order: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to place order: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -107,103 +196,400 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.cartState.items;
-    final totalPrice = widget.cartState.totalPrice;
+    final subtotal = widget.cartState.totalPrice;
+    final tax = OrderUtils.calculateTax(subtotal);
+    final shippingFee = OrderUtils.calculateShippingFee();
+    final total = subtotal + tax + shippingFee;
+
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text(
-          'Checkout',
-          style: TextStyle(
-            fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-          ),
-        ),
+        title: const Text('Checkout'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(ResponsiveHelper.getHorizontalPadding(context)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.all(
+            ResponsiveHelper.getHorizontalPadding(context),
+          ),
           children: [
-            // Order Summary
-            Text(
-              AppStrings.orderSummary,
-              style: TextStyle(
-                fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-                fontWeight: FontWeight.bold,
+            // Shipping Address Section
+            _buildSectionCard(
+              title: 'Shipping Address',
+              icon: Icons.location_on_outlined,
+              child: Column(
+                children: [
+                  _buildTextField(
+                    controller: _fullNameController,
+                    label: 'Full Name',
+                    icon: Icons.person_outline,
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: 'Phone Number',
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) return 'Required';
+                      if (!OrderUtils.isValidPhone(value!)) {
+                        return 'Invalid phone number';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    controller: _streetController,
+                    label: 'Street Address',
+                    icon: Icons.home_outlined,
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    controller: _apartmentController,
+                    label: 'Apartment / Unit (Optional)',
+                    icon: Icons.apartment_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _cityController,
+                          label: 'City',
+                          icon: Icons.location_city_outlined,
+                          validator: (value) =>
+                              value?.isEmpty ?? true ? 'Required' : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextField(
+                          controller: _stateController,
+                          label: 'State',
+                          icon: Icons.map_outlined,
+                          validator: (value) =>
+                              value?.isEmpty ?? true ? 'Required' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    controller: _postalCodeController,
+                    label: 'Postal Code',
+                    icon: Icons.markunread_mailbox_outlined,
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) return 'Required';
+                      if (!OrderUtils.isValidPostalCode(value!)) {
+                        return 'Invalid postal code';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                final itemTotal = item.price * item.quantity;
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${item.name} x${item.quantity}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+
+            const SizedBox(height: 20),
+
+            // Payment Method Section
+            _buildSectionCard(
+              title: 'Payment Method',
+              icon: Icons.payment_outlined,
+              child: Column(
+                children: _paymentMethods.map((method) {
+                  return _buildPaymentMethodTile(
+                    id: method['id'],
+                    name: method['name'],
+                    icon: method['icon'],
+                    color: method['color'],
+                  );
+                }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Order Summary Section
+            _buildSectionCard(
+              title: 'Order Summary',
+              icon: Icons.receipt_long_outlined,
+              child: Column(
+                children: [
+                  ...widget.cartState.items.map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              item.imageUrl,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.grey.shade200,
+                                child: const Icon(Icons.image),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  'Qty: ${item.quantity}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            'EGP ${(item.price * item.quantity).toStringAsFixed(0)}',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      '${itemTotal.toStringAsFixed(0)} ${AppStrings.egp}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                );
-              },
+                  ),
+                  const Divider(height: 24),
+                  _buildPriceRow('Subtotal', subtotal),
+                  const SizedBox(height: 8),
+                  _buildPriceRow('Tax (10%)', tax),
+                  const SizedBox(height: 8),
+                  _buildPriceRow('Shipping Fee', shippingFee),
+                  const Divider(height: 24),
+                  _buildPriceRow('Total', total, isTotal: true),
+                ],
+              ),
             ),
-            const Divider(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppStrings.total,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+
+            const SizedBox(height: 20),
+
+            // Notes Section
+            _buildSectionCard(
+              title: 'Order Notes (Optional)',
+              icon: Icons.note_outlined,
+              child: TextField(
+                controller: _notesController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  hintText: 'Add any special instructions...',
+                  border: OutlineInputBorder(),
                 ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Place Order Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isPlacingOrder ? null : _placeOrder,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                ),
+                child: _isPlacingOrder
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : const Text(
+                        'Place Order',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+              ),
+            ),
+
+            const SizedBox(height: 100),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 20),
+                ),
+                const SizedBox(width: 12),
                 Text(
-                  '${totalPrice.toStringAsFixed(0)} ${AppStrings.egp}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-                    color: AppColors.primary,
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
-            // Address
-            Text(
-              AppStrings.shippingAddress,
-              style: TextStyle(
-                fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-                fontWeight: FontWeight.bold,
+          ),
+          const Divider(height: 1),
+          Padding(padding: const EdgeInsets.all(16), child: child),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, size: 20),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: Colors.grey.shade50,
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodTile({
+    required String id,
+    required String name,
+    required IconData icon,
+    required Color color,
+  }) {
+    final isSelected = _selectedPaymentMethod == id;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPaymentMethod = id;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : Colors.grey.shade300,
+            width: 2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isSelected ? color : AppColors.textPrimary,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _addressController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Enter your full shipping address',
-              ),
-            ),
-            const SizedBox(height: 32),
-            CustomButton(
-              text: AppStrings.placeOrder,
-              onPressed: _isPlacingOrder ? () {} : _placeOrder,
-              isLoading: _isPlacingOrder,
-            ),
+            if (isSelected) Icon(Icons.check_circle, color: color, size: 24),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, double amount, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 18 : 14,
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
+          ),
+        ),
+        Text(
+          'EGP ${amount.toStringAsFixed(0)}',
+          style: TextStyle(
+            fontSize: isTotal ? 20 : 14,
+            fontWeight: FontWeight.w800,
+            color: isTotal ? AppColors.primary : AppColors.textPrimary,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -43,7 +43,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String name,
     required String email,
     required String phone,
-    String? address,
+    required String address,
     required String password,
   }) async {
     try {
