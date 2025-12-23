@@ -22,32 +22,11 @@ class PaymentCubit extends Cubit<PaymentState> {
       final transactionId = 'TXN${DateTime.now().millisecondsSinceEpoch}';
       final timestamp = DateTime.now();
 
-      // Update order with payment info
-      final updatedOrder = OrderModel(
-        orderId: order.orderId,
-        orderNumber: order.orderNumber,
-        userId: order.userId,
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        customerPhone: order.customerPhone,
+      // Update order with payment info using copyWith
+      final updatedOrder = order.copyWith(
         status: 'confirmed',
         paymentStatus: 'paid',
-        paymentMethod: order.paymentMethod,
-        items: order.items,
-        subtotal: order.subtotal,
-        tax: order.tax,
-        shippingFee: order.shippingFee,
-        discount: order.discount,
-        totalPrice: order.totalPrice,
-        currency: order.currency,
-        shippingAddress: order.shippingAddress,
-        billingAddress: order.billingAddress,
-        estimatedDeliveryDate: order.estimatedDeliveryDate,
-        trackingNumber: order.trackingNumber,
-        customerNotes: order.customerNotes,
-        transactionId: transactionId,
         paidAt: timestamp,
-        createdAt: order.createdAt,
         updatedAt: timestamp,
       );
 
@@ -64,17 +43,24 @@ class PaymentCubit extends Cubit<PaymentState> {
     double progress = 0.0;
 
     _progressTimer?.cancel();
+
+    // Create a completer to properly wait for timer completion
+    final completer = Completer<void>();
+
     _progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       progress += 0.05;
       if (progress >= 1.0) {
         timer.cancel();
         progress = 1.0;
+        emit(PaymentProcessing(progress));
+        completer.complete();
+      } else {
+        emit(PaymentProcessing(progress));
       }
-      emit(PaymentProcessing(progress));
     });
 
-    // Wait for completion
-    await Future.delayed(const Duration(seconds: 2));
+    // Wait for timer to complete
+    await completer.future;
     _progressTimer?.cancel();
   }
 
