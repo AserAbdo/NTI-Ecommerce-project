@@ -169,12 +169,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       await context.read<CartCubit>().loadCart(userId);
 
       if (mounted) {
-        // Navigate to payment screen
-        Navigator.pushReplacementNamed(
-          context,
-          AppRoutes.mockPayment,
-          arguments: order,
-        );
+        // Cash on Delivery: Go directly to confirmation
+        if (_selectedPaymentMethod == 'cash_on_delivery') {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.orderConfirmation,
+            arguments: order.copyWith(
+              paymentStatus: 'pending', // COD payment is pending until delivery
+            ),
+          );
+        } else {
+          // Visa/PayPal: Go to payment screen
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.mockPayment,
+            arguments: order,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
