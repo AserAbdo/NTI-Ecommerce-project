@@ -57,50 +57,64 @@ class _DealsCarouselState extends State<DealsCarousel>
   Widget build(BuildContext context) {
     final height = ResponsiveHelper.getScreenHeight(context) * 0.24;
 
-    return BlocBuilder<CarouselCubit, CarouselState>(
-      builder: (context, state) {
-        if (state is! CarouselLoaded) {
-          return SizedBox(height: height);
+    return BlocListener<CarouselCubit, CarouselState>(
+      listener: (context, state) {
+        // Animate to new page when Cubit changes index (auto-scroll)
+        if (state is CarouselLoaded && !state.isUserInteracting) {
+          if (_controller.hasClients) {
+            _controller.animateToPage(
+              state.currentIndex,
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeInOut,
+            );
+          }
         }
+      },
+      child: BlocBuilder<CarouselCubit, CarouselState>(
+        builder: (context, state) {
+          if (state is! CarouselLoaded) {
+            return SizedBox(height: height);
+          }
 
-        return FadeTransition(
-          opacity: _fadeController,
-          child: Column(
-            children: [
-              // Carousel
-              GestureDetector(
-                onPanStart: (_) => _onUserInteractionStart(),
-                onPanEnd: (_) => _onUserInteractionEnd(),
-                child: SizedBox(
-                  height: height,
-                  child: PageView.builder(
-                    controller: _controller,
-                    itemCount: state.deals.length,
-                    onPageChanged: (index) {
-                      context.read<CarouselCubit>().onPageChanged(index);
-                    },
-                    itemBuilder: (context, index) {
-                      return _buildCarouselItem(
-                        context,
-                        state.deals[index],
-                        index,
-                        state.currentIndex,
-                        state.isUserInteracting,
-                        height,
-                      );
-                    },
+          return FadeTransition(
+            opacity: _fadeController,
+            child: Column(
+              children: [
+                // Carousel
+                GestureDetector(
+                  onPanStart: (_) => _onUserInteractionStart(),
+                  onPanEnd: (_) => _onUserInteractionEnd(),
+                  child: SizedBox(
+                    height: height,
+                    child: PageView.builder(
+                      controller: _controller,
+                      itemCount: state.deals.length,
+                      onPageChanged: (index) {
+                        context.read<CarouselCubit>().onPageChanged(index);
+                      },
+                      itemBuilder: (context, index) {
+                        return _buildCarouselItem(
+                          context,
+                          state.deals[index],
+                          index,
+                          state.currentIndex,
+                          state.isUserInteracting,
+                          height,
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Horizontal Indicators
-              _buildHorizontalIndicators(state),
-            ],
-          ),
-        );
-      },
+                // Horizontal Indicators
+                _buildHorizontalIndicators(state),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
