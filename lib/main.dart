@@ -17,28 +17,28 @@ import 'features/cart/screens/cart_screen.dart';
 import 'features/favorites/cubits/favorites_cubit.dart';
 import 'features/orders/screens/checkout_screen.dart';
 import 'features/orders/screens/order_confirmation_screen.dart';
+import 'features/orders/screens/mock_payment_screen.dart';
 import 'features/orders/models/order_model.dart';
+import 'features/orders/cubits/orders_cubit.dart';
 import 'features/cart/cubits/cart_state.dart';
 import 'features/products/screens/product_details_screen.dart';
 import 'features/products/models/product_model.dart';
 import 'features/products/cubits/products_cubit.dart';
 import 'services/hive_service.dart';
-// Import your cache manager
 import 'features/cache/cache_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // Initialize Hive for search history
   await HiveService.initialize();
-  
-  // Pre-warm the cache manager (optional but recommended)
-  // This ensures it's ready before first use
+
+  // Pre-warm the cache manager
   CustomCacheManager();
-  
+
   runApp(const MyApp());
 }
 
@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => CartCubit()),
         BlocProvider(create: (context) => ProductsCubit()),
+        BlocProvider(create: (context) => OrdersCubit()),
         BlocProvider(
           create: (context) {
             final authState = context.read<AuthCubit>().state;
@@ -90,6 +91,11 @@ class MyApp extends StatelessWidget {
               final cartState = settings.arguments as CartLoaded;
               return MaterialPageRoute(
                 builder: (_) => CheckoutScreen(cartState: cartState),
+              );
+            case AppRoutes.mockPayment:
+              final order = settings.arguments as OrderModel;
+              return MaterialPageRoute(
+                builder: (_) => MockPaymentScreen(order: order),
               );
             case AppRoutes.orderConfirmation:
               final order = settings.arguments as OrderModel;
