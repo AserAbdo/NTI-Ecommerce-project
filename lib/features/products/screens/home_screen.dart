@@ -8,6 +8,7 @@ import '../../../core/widgets/empty_state_widget.dart';
 import '../../../services/seed_service.dart';
 import '../../auth/cubits/auth_cubit.dart';
 import '../../auth/cubits/auth_state.dart';
+import '../../home/cubits/carousel_cubit.dart';
 import '../../home/widgets/deals_carousel.dart';
 import '../../search/cubits/search_cubit.dart';
 import '../../search/screens/search_page.dart';
@@ -133,7 +134,10 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionHeader(context, title: 'Special Deals'),
-                  const DealsCarousel(),
+                  BlocProvider(
+                    create: (_) => CarouselCubit(),
+                    child: const DealsCarousel(),
+                  ),
                   const SizedBox(height: 8),
                 ],
               ),
