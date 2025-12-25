@@ -1,6 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:nti_project/features/chatbot/cubits/chat_cubit.dart';
+import 'package:nti_project/features/chatbot/models/chat_message.dart';
+import 'package:nti_project/features/chatbot/screens/chat_screen.dart';
+import 'package:nti_project/features/chatbot/screens/main_chat_screen.dart';
 import 'package:nti_project/firebase_options.dart';
 import 'core/constants/app_strings.dart';
 import 'core/constants/app_routes.dart';
@@ -35,8 +40,8 @@ void main() async {
 
   // Initialize Hive for search history
   await HiveService.initialize();
-
-  // Pre-warm the cache manager
+  await Hive.initFlutter();
+  Hive.registerAdapter(ChatMessageAdapter()); // Pre-warm the cache manager
   CustomCacheManager();
 
   runApp(const MyApp());
@@ -101,6 +106,20 @@ class MyApp extends StatelessWidget {
               final order = settings.arguments as OrderModel;
               return MaterialPageRoute(
                 builder: (_) => OrderConfirmationScreen(order: order),
+              );
+            case AppRoutes.mainChatBot:
+              return MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (context) => ChatCubit(),
+                  child: const MainChatbotScreen(),
+                ),
+              );
+            case AppRoutes.chatBot:
+              return MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (context) => ChatCubit(),
+                  child: const ChatScreen(),
+                ),
               );
             default:
               return MaterialPageRoute(builder: (_) => const SplashScreen());

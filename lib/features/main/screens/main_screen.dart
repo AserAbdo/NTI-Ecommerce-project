@@ -96,12 +96,60 @@ class _MainScreenState extends State<MainScreen>
     return 0;
   }
 
+  Widget _buildChatFloatingButton(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.elasticOut,
+      builder: (context, value, child) {
+        return Transform.scale(scale: value, child: child);
+      },
+      child: Material(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+          bottomRight: Radius.circular(4),
+          bottomLeft: Radius.circular(25),
+        ),
+        elevation: 8,
+        shadowColor: const Color(0xFF1E2746).withOpacity(0.4),
+        child: InkWell(
+          onTap: () {
+            Navigator.pushNamed(context, AppRoutes.mainChatBot);
+          },
+          borderRadius: BorderRadius.circular(25),
+          child: Container(
+            width: 55,
+            height: 55,
+            padding: const EdgeInsets.all(12),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(Icons.smart_toy_rounded, color: Colors.white, size: 28),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomNavIndex = _getBottomNavIndexFromScreen();
-
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: Stack(
+        children: [
+          IndexedStack(index: _currentIndex, children: _screens),
+
+          Positioned(
+            bottom: 110,
+            right: 20,
+            child: _buildChatFloatingButton(context),
+          ),
+        ],
+      ),
       extendBody: true,
 
       // Premium Floating Cart Button
