@@ -1,96 +1,164 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/constants/app_routes.dart';
-import '../../../core/utils/responsive_helper.dart';
-import '../../../core/widgets/empty_state_widget.dart';
-import '../../auth/cubits/auth_cubit.dart';
-import '../../auth/cubits/auth_state.dart';
-import '../../favorites/cubits/favorites_cubit.dart';
-import '../../products/widgets/product_card.dart';
-import '../../products/models/product_model.dart';
 
-class FavoritesScreen extends StatelessWidget {
-  const FavoritesScreen({Key? key}) : super(key: key);
+class FavoritesScreen extends StatefulWidget {
+
+  @override
+  _FavoritesScreenState createState() => _FavoritesScreenState();
+}
+
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  final List<Map<String, dynamic>> products = [
+    {'name': 'Nike Air Max Pegasus 39', 'price': 120.00, 'rating': 4.5, 'image': 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Shoe', 'liked': true},
+    {'name': 'Sony WH-1000XM4 Noise Canceling', 'price': 348.00, 'rating': 4.8, 'image': 'https://via.placeholder.com/150/000000/FFFFFF?text=Headphones', 'stock': true, 'liked': true},
+    {'name': 'Premium Cotton Classic T-Shirt', 'price': 25.00, 'oldPrice': 35.00, 'rating': 4.0, 'image': 'https://via.placeholder.com/150/FFFFFF/000000?text=Shirt', 'sale': true, 'liked': true},
+    {'name': 'Genuine Leather Bifold Wallet', 'price': 45.00, 'rating': 4.7, 'image': 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Wallet', 'liked': true},
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.watch<AuthCubit>().state;
-
-    if (authState is! AuthAuthenticated) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppStrings.myFavorites,
-            style: TextStyle(
-              fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-            ),
-          ),
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-        ),
-        body: const Center(child: Text('Please login to see favorites')),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          AppStrings.myFavorites,
-          style: TextStyle(
-            fontSize: ResponsiveHelper.getSubtitleFontSize(context),
-          ),
-        ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
+        title: Text('Favorites'),
+        actions: [
+          IconButton(icon: Icon(Icons.filter_list), onPressed: () {}),
+        ],
       ),
-      body: StreamBuilder<List<ProductModel>>(
-        stream: context.read<FavoritesCubit>().favoritesStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          final products = snapshot.data ?? [];
-          if (products.isEmpty) {
-            return const EmptyStateWidget(
-              message: AppStrings.noFavorites,
-              icon: Icons.favorite_border,
-              buttonText: 'Start Shopping',
-            );
-          }
-
-          return GridView.builder(
-            padding: EdgeInsets.all(
-              ResponsiveHelper.getHorizontalPadding(context) * 0.66,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${products.length} items saved', style: TextStyle(color: Colors.grey)),
+                TextButton(onPressed: () {}, child: Text('Select All')),
+              ],
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: ResponsiveHelper.getGridColumns(context),
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            height: 140,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: NetworkImage(product['image']),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  product['liked'] = !product['liked'];
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  product['liked'] ? Icons.favorite : Icons.favorite_border,
+                                  color: Colors.red,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (product['sale'] == true)
+                            Positioned(
+                              top: 8,
+                              left: 8,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text('SALE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          if (product['stock'] == true)
+                            Positioned(
+                              top: 8,
+                              left: 8,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text('LOW STOCK', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product['name'], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(Icons.star, color: Colors.orange, size: 14),
+                                Text(' ${product['rating']}', style: TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text('\$${product['price'].toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold)),
+                                if (product['oldPrice'] != null) ...[
+                                  SizedBox(width: 4),
+                                  Text('\$${product['oldPrice']}', style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey, fontSize: 12)),
+                                ],
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Text('ADD', style: TextStyle(fontSize: 12)),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              final product = products[index];
-              return ProductCard(
-                product: product,
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.productDetails,
-                    arguments: product,
-                  );
-                },
-              );
-            },
-          );
-        },
+          ),
+        ],
       ),
     );
   }

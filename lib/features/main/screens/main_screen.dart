@@ -23,10 +23,10 @@ class _MainScreenState extends State<MainScreen>
   int _currentIndex = 0;
   late AnimationController _fabAnimationController;
 
-  late final List<Widget> _screens = const [
-    HomeScreen(), // 0
-    OrdersScreen(), // 1
-    SizedBox(), // 2 (Cart handled by FAB)
+  late final List<Widget> _screens = [
+    const HomeScreen(), // 0
+    const OrdersScreen(), // 1
+    const SizedBox(), // 2 (Cart handled by FAB)
     FavoritesScreen(), // 3
     AccountScreen(), // 4
   ];
