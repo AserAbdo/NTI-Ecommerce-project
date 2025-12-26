@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/utils/responsive_helper.dart';
 import '../../cart/cubits/cart_cubit.dart';
 import '../../cart/cubits/cart_state.dart';
 import '../../products/screens/home_screen.dart';
@@ -120,13 +121,19 @@ class _MainScreenState extends State<MainScreen>
           },
           borderRadius: BorderRadius.circular(25),
           child: Container(
-            width: 55,
-            height: 55,
-            padding: const EdgeInsets.all(12),
+            width: ResponsiveHelper.isSmallMobile(context) ? 48 : 55,
+            height: ResponsiveHelper.isSmallMobile(context) ? 48 : 55,
+            padding: EdgeInsets.all(
+              ResponsiveHelper.isSmallMobile(context) ? 10 : 12,
+            ),
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(Icons.smart_toy_rounded, color: Colors.white, size: 28),
+                Icon(
+                  Icons.smart_toy_rounded,
+                  color: Colors.white,
+                  size: ResponsiveHelper.isSmallMobile(context) ? 24 : 28,
+                ),
               ],
             ),
           ),
@@ -144,8 +151,8 @@ class _MainScreenState extends State<MainScreen>
           IndexedStack(index: _currentIndex, children: _screens),
 
           Positioned(
-            bottom: 110,
-            right: 20,
+            bottom: ResponsiveHelper.isSmallMobile(context) ? 90 : 100,
+            right: ResponsiveHelper.isSmallMobile(context) ? 12 : 20,
             child: _buildChatFloatingButton(context),
           ),
         ],
@@ -182,8 +189,8 @@ class _MainScreenState extends State<MainScreen>
                 _fabAnimationController.forward();
               },
               child: Container(
-                height: 68,
-                width: 68,
+                height: ResponsiveHelper.isSmallMobile(context) ? 60 : 68,
+                width: ResponsiveHelper.isSmallMobile(context) ? 60 : 68,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
@@ -210,7 +217,7 @@ class _MainScreenState extends State<MainScreen>
                       child: Icon(
                         Icons.shopping_cart_rounded,
                         color: Colors.white,
-                        size: 30,
+                        size: ResponsiveHelper.isSmallMobile(context) ? 26 : 30,
                       ),
                     ),
                     if (count > 0)
@@ -286,8 +293,11 @@ class _MainScreenState extends State<MainScreen>
           elevation: 0,
           color: Theme.of(context).scaffoldBackgroundColor,
           child: Container(
-            height: 0,
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+            height: ResponsiveHelper.isSmallMobile(context) ? 60 : 70,
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.isSmallMobile(context) ? 4 : 8,
+              vertical: 0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -311,7 +321,9 @@ class _MainScreenState extends State<MainScreen>
                 ),
 
                 // Spacer for center FAB
-                const SizedBox(width: 80),
+                SizedBox(
+                  width: ResponsiveHelper.isSmallMobile(context) ? 100 : 80,
+                ),
 
                 // Right side
                 Expanded(
@@ -358,8 +370,10 @@ class _MainScreenState extends State<MainScreen>
             highlightColor: AppColors.primary.withOpacity(0.05),
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: 12 + (value * 4),
-                vertical: 8,
+                horizontal: ResponsiveHelper.isSmallMobile(context)
+                    ? 8 + (value * 2)
+                    : 12 + (value * 4),
+                vertical: ResponsiveHelper.isSmallMobile(context) ? 6 : 8,
               ),
               decoration: BoxDecoration(
                 color: Color.lerp(
@@ -379,8 +393,12 @@ class _MainScreenState extends State<MainScreen>
                       // Background circle for selected state
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        width: 40,
-                        height: 40,
+                        width: ResponsiveHelper.isSmallMobile(context)
+                            ? 36
+                            : 40,
+                        height: ResponsiveHelper.isSmallMobile(context)
+                            ? 36
+                            : 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isSelected
@@ -405,7 +423,9 @@ class _MainScreenState extends State<MainScreen>
                             AppColors.primary,
                             value,
                           ),
-                          size: 24 + (value * 2),
+                          size: ResponsiveHelper.isSmallMobile(context)
+                              ? 20 + (value * 2)
+                              : 24 + (value * 2),
                         ),
                       ),
                     ],
@@ -415,7 +435,9 @@ class _MainScreenState extends State<MainScreen>
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: ResponsiveHelper.isSmallMobile(context)
+                          ? 10
+                          : 11,
                       fontWeight: isSelected
                           ? FontWeight.w700
                           : FontWeight.w500,

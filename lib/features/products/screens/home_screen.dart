@@ -284,7 +284,11 @@ class _HomeScreenState extends State<HomeScreen>
                     );
                   }
                 }
-                return const SliverToBoxAdapter(child: SizedBox(height: 100));
+                return SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: ResponsiveHelper.isSmallMobile(context) ? 120 : 140,
+                  ),
+                );
               },
             ),
           ],
