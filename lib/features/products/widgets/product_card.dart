@@ -146,7 +146,7 @@ class _ProductCardState extends State<ProductCard>
                 Expanded(
                   flex: 2,
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                    padding: ResponsiveHelper.getProductCardPadding(context),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.white, Colors.grey.shade50],
@@ -167,7 +167,7 @@ class _ProductCardState extends State<ProductCard>
                             fontSize: ResponsiveHelper.getBodyFontSize(context),
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
-                            height: 0.5,
+                            height: 1.2,
                             letterSpacing: -0.2,
                           ),
                         ),
@@ -539,8 +539,8 @@ class _ProductCardState extends State<ProductCard>
               borderRadius: BorderRadius.circular(20),
               splashColor: AppColors.primary.withOpacity(0.3),
               child: Container(
-                width: 42,
-                height: 42,
+                width: ResponsiveHelper.getAddToCartButtonSize(context),
+                height: ResponsiveHelper.getAddToCartButtonSize(context),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -559,10 +559,10 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add_shopping_cart,
                   color: Colors.white,
-                  size: 20,
+                  size: ResponsiveHelper.getAddToCartIconSize(context),
                 ),
               ),
             ),

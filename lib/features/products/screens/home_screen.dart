@@ -199,6 +199,10 @@ class _HomeScreenState extends State<HomeScreen>
 
                   final displayed = allProducts.take(_visibleCount).toList();
 
+                  final gridSpacing = ResponsiveHelper.getGridSpacing(context);
+                  final aspectRatio =
+                      ResponsiveHelper.getProductCardAspectRatio(context);
+
                   return SliverPadding(
                     padding: EdgeInsets.symmetric(
                       horizontal: ResponsiveHelper.getHorizontalPadding(
@@ -211,9 +215,9 @@ class _HomeScreenState extends State<HomeScreen>
                         crossAxisCount: ResponsiveHelper.getGridColumns(
                           context,
                         ),
-                        childAspectRatio: 0.7,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
+                        childAspectRatio: aspectRatio,
+                        crossAxisSpacing: gridSpacing,
+                        mainAxisSpacing: gridSpacing,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
@@ -250,6 +254,12 @@ class _HomeScreenState extends State<HomeScreen>
                   final hasMore = _visibleCount < allProducts.length;
 
                   if (hasMore && _isLoadingMore) {
+                    final loadingGridSpacing = ResponsiveHelper.getGridSpacing(
+                      context,
+                    );
+                    final loadingAspectRatio =
+                        ResponsiveHelper.getProductCardAspectRatio(context);
+
                     return SliverPadding(
                       padding: EdgeInsets.symmetric(
                         horizontal: ResponsiveHelper.getHorizontalPadding(
@@ -262,9 +272,9 @@ class _HomeScreenState extends State<HomeScreen>
                           crossAxisCount: ResponsiveHelper.getGridColumns(
                             context,
                           ),
-                          childAspectRatio: 0.7,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                          childAspectRatio: loadingAspectRatio,
+                          crossAxisSpacing: loadingGridSpacing,
+                          mainAxisSpacing: loadingGridSpacing,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) => const ProductCardShimmer(),
@@ -289,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen>
       foregroundColor: AppColors.textPrimary,
       automaticallyImplyLeading: false,
       elevation: 0,
-      toolbarHeight: 70,
+      toolbarHeight: ResponsiveHelper.getAppBarHeight(context),
       surfaceTintColor: Colors.white,
       title: GestureDetector(
         onTap: () {
@@ -304,19 +314,21 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
         child: Container(
-          height: 48,
+          height: ResponsiveHelper.getSearchBarHeight(context),
           decoration: BoxDecoration(
             color: Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.grey.shade200, width: 1),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveHelper.isSmallMobile(context) ? 12 : 16,
+          ),
           child: Row(
             children: [
               Icon(
                 Icons.search_rounded,
                 color: AppColors.textSecondary,
-                size: 22,
+                size: ResponsiveHelper.isSmallMobile(context) ? 18 : 22,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -342,9 +354,9 @@ class _HomeScreenState extends State<HomeScreen>
       child: Container(
         margin: EdgeInsets.fromLTRB(
           ResponsiveHelper.getHorizontalPadding(context),
-          24,
+          ResponsiveHelper.getSpacing(context, 24),
           ResponsiveHelper.getHorizontalPadding(context),
-          32,
+          ResponsiveHelper.getSpacing(context, 32),
         ),
         child: Builder(
           builder: (context) {
@@ -359,17 +371,19 @@ class _HomeScreenState extends State<HomeScreen>
                 Text(
                   'Hello, $userName',
                   style: TextStyle(
-                    fontSize: ResponsiveHelper.getBodyFontSize(context) + 10,
+                    fontSize: ResponsiveHelper.getGreetingFontSize(context),
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(
+                  height: ResponsiveHelper.isSmallMobile(context) ? 2 : 4,
+                ),
                 Text(
                   'Discover amazing products',
                   style: TextStyle(
-                    fontSize: ResponsiveHelper.getBodyFontSize(context),
+                    fontSize: ResponsiveHelper.getSubtitleFontSize(context),
                     fontWeight: FontWeight.w400,
                     color: AppColors.textSecondary,
                   ),
@@ -390,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen>
       child: Text(
         title,
         style: TextStyle(
-          fontSize: ResponsiveHelper.getBodyFontSize(context) + 4,
+          fontSize: ResponsiveHelper.getSectionHeaderFontSize(context),
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
           letterSpacing: -0.3,
@@ -401,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildCategoriesSection(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: ResponsiveHelper.getCategoryChipHeight(context),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(
@@ -420,10 +434,7 @@ class _HomeScreenState extends State<HomeScreen>
                 borderRadius: BorderRadius.circular(20),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
+                  padding: ResponsiveHelper.getCategoryChipPadding(context),
                   decoration: BoxDecoration(
                     color: selected ? AppColors.primary : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(20),
@@ -446,6 +457,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildShimmerGrid(BuildContext context) {
+    final shimmerGridSpacing = ResponsiveHelper.getGridSpacing(context);
+    final shimmerAspectRatio = ResponsiveHelper.getProductCardAspectRatio(
+      context,
+    );
+
     return SliverPadding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
@@ -454,9 +470,9 @@ class _HomeScreenState extends State<HomeScreen>
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: ResponsiveHelper.getGridColumns(context),
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          childAspectRatio: shimmerAspectRatio,
+          crossAxisSpacing: shimmerGridSpacing,
+          mainAxisSpacing: shimmerGridSpacing,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => const ProductCardShimmer(),

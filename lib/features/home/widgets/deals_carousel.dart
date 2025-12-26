@@ -55,7 +55,7 @@ class _DealsCarouselState extends State<DealsCarousel>
 
   @override
   Widget build(BuildContext context) {
-    final height = ResponsiveHelper.getScreenHeight(context) * 0.24;
+    final height = ResponsiveHelper.getCarouselHeight(context);
 
     return BlocBuilder<CarouselCubit, CarouselState>(
       builder: (context, state) {
