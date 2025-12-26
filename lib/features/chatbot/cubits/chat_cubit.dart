@@ -10,8 +10,7 @@ class ChatCubit extends Cubit<ChatState> {
   final Dio _dio = Dio();
 
   final String _n8nUrl =
-      'https://vella-niftier-gertrude.ngrok-free.dev/webhook-test/3cfa783e-2d8d-45eb-a8b7-3da10eabd8be';
-
+      'https://zooz-n8n.duckdns.org/webhook/3cfa783e-2d8d-45eb-a8b7-3da10eabd8be';
   late Box<ChatMessage> _messagesBox;
   List<ChatMessage> _messages = [];
 
@@ -33,6 +32,7 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> _addLocalWelcomeMessage() async {
     // final user = UserStorage.getUserData();
+    // need to fetch userName here
     final welcomeText =
         "أهلاً بك يا ${'صديقي'}! 👋\nأنا المساعد الذكي الخاص بالمتجر، كيف يمكنني مساعدتك اليوم؟";
 
@@ -61,7 +61,7 @@ class ChatCubit extends Cubit<ChatState> {
 
     try {
       // final user = UserStorage.getUserData();
-
+      // need to fetch userId here
       final response = await _dio.post(
         _n8nUrl,
         options: Options(headers: {'Content-Type': 'application/json'}),
