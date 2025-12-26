@@ -12,5 +12,7 @@ class AppRoutes {
   static const String orderDetails = '/order-details'; // NEW
   static const String favorites = '/favorites'; // NEW
   static const String orders = '/orders'; // NEW
-  static const String account = '/account'; // NEW
+  static const String account = '/account';
+  static const String mainChatBot = '/main-chat-bot';
+  static const String chatBot = '/chat-bot';
 }
