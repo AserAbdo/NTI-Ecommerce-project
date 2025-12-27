@@ -12,7 +12,8 @@ class SeedService {
       {
         'id': 'p1',
         'name': 'iPhone 13',
-        'description': 'Apple smartphone with A15 Bionic chip and dual camera.',
+        'description':
+            'Experience the power of Apple\'s iPhone 13 featuring the lightning-fast A15 Bionic chip with 5-core GPU. Capture stunning photos with the advanced dual-camera system including Night mode, Photographic Styles, and Cinematic mode. Enjoy all-day battery life, 5G connectivity, and the beautiful 6.1-inch Super Retina XDR display with Ceramic Shield protection.',
         'oldPrice': 28999.0,
         'newPrice': 26000.0,
         'category': 'Electronics',
@@ -24,7 +25,8 @@ class SeedService {
       {
         'id': 'p2',
         'name': 'GTX 1650',
-        'description': 'NVIDIA GTX 1650 4GB GDDR6 graphics card.',
+        'description':
+            'Elevate your gaming experience with the NVIDIA GeForce GTX 1650 graphics card. Powered by NVIDIA Turing architecture with 4GB GDDR6 memory, this GPU delivers smooth gameplay at 1080p resolution. Features advanced shading technologies, DirectX 12 support, and efficient power consumption. Perfect for esports titles and modern AAA games at high settings.',
         'oldPrice': 9500.0,
         'newPrice': 8500.0,
         'category': 'Electronics',
@@ -36,7 +38,8 @@ class SeedService {
       {
         'id': 'p3',
         'name': 'RAM 16GB',
-        'description': '16GB DDR4 desktop memory module.',
+        'description':
+            'Boost your system performance with this high-speed 16GB DDR4 RAM module running at 3200MHz. Engineered for reliability and speed, this memory kit features low-latency CL16 timings and optimized heat spreader design. Perfect for gaming, content creation, and multitasking. Compatible with Intel and AMD platforms, ensuring seamless performance upgrades.',
         'oldPrice': 1999.0,
         'newPrice': 1700.0,
         'category': 'Electronics',
@@ -48,7 +51,8 @@ class SeedService {
       {
         'id': 'p4',
         'name': 'Intel Core i5',
-        'description': 'Intel Core i5 desktop processor (10th Gen).',
+        'description':
+            'Unleash powerful performance with the Intel Core i5 10th Generation processor. Featuring 6 cores and 12 threads with boost speeds up to 4.8GHz, this CPU delivers exceptional responsiveness for gaming, streaming, and productivity. Built on 14nm architecture with Intel Turbo Boost Technology 2.0, integrated UHD Graphics 630, and support for DDR4 memory up to 2666MHz.',
         'oldPrice': 5200.0,
         'newPrice': 4800.0,
         'category': 'Electronics',
@@ -60,7 +64,8 @@ class SeedService {
       {
         'id': 'p5',
         'name': 'Wireless Earbuds',
-        'description': 'Bluetooth earbuds with charging case.',
+        'description':
+            'Immerse yourself in premium sound with these truly wireless Bluetooth 5.0 earbuds. Featuring active noise cancellation, touch controls, and IPX5 water resistance for workouts. Enjoy up to 8 hours of playtime on a single charge, with an additional 24 hours from the compact charging case. Crystal-clear calls with built-in microphones and instant pairing technology.',
         'oldPrice': 1099.0,
         'newPrice': 899.0,
         'category': 'Electronics',
@@ -72,7 +77,8 @@ class SeedService {
       {
         'id': 'p6',
         'name': 'Smart TV 55"',
-        'description': '4K smart TV with HDR and apps.',
+        'description':
+            'Transform your living room with this stunning 55-inch 4K Ultra HD Smart TV. Experience breathtaking picture quality with HDR10+ support, vibrant colors, and deep blacks. Built-in WiFi provides access to popular streaming apps including Netflix, YouTube, and Prime Video. Features multiple HDMI ports, USB connectivity, and voice control compatibility for seamless entertainment.',
         'oldPrice': 9999.0,
         'newPrice': 8999.0,
         'category': 'Electronics',
@@ -84,7 +90,8 @@ class SeedService {
       {
         'id': 'p7',
         'name': 'Sneakers',
-        'description': 'Comfortable everyday sneakers with breathable mesh.',
+        'description':
+            'Step into comfort with these premium athletic sneakers featuring breathable mesh upper and cushioned insole. Designed for all-day wear with lightweight construction, flexible rubber outsole for superior traction, and stylish design that transitions seamlessly from gym to street. Available in versatile colors with reinforced toe cap and padded collar for ankle support.',
         'oldPrice': 699.0,
         'newPrice': 499.0,
         'category': 'Fashion',
@@ -96,7 +103,8 @@ class SeedService {
       {
         'id': 'p8',
         'name': 'Handbag',
-        'description': 'Medium-sized handbag with adjustable strap.',
+        'description':
+            'Elevate your style with this elegant medium-sized handbag crafted from premium vegan leather. Features multiple interior compartments including a zippered pocket for valuables, adjustable shoulder strap for versatile carrying options, and magnetic snap closure. The spacious main compartment holds all your essentials while maintaining a sleek silhouette. Perfect for work, shopping, or evening outings.',
         'oldPrice': 1799.0,
         'newPrice': 1299.0,
         'category': 'Fashion',
@@ -108,7 +116,8 @@ class SeedService {
       {
         'id': 'p9',
         'name': 'Cookware Set',
-        'description': '10-piece stainless steel cookware set.',
+        'description':
+            'Master your culinary skills with this professional-grade 10-piece stainless steel cookware set. Includes essential pots and pans with tri-ply construction for even heat distribution, stay-cool handles, and tempered glass lids. Dishwasher safe, oven safe up to 500°F, and compatible with all cooktops including induction. Non-reactive surface preserves food flavors and nutrients.',
         'oldPrice': 2499.0,
         'newPrice': 1999.0,
         'category': 'Home',
@@ -120,7 +129,8 @@ class SeedService {
       {
         'id': 'p10',
         'name': 'Memory Foam Pillow',
-        'description': 'Ergonomic pillow with memory foam for neck support.',
+        'description':
+            'Experience restful sleep with this ergonomically designed memory foam pillow that contours to your head and neck. Premium CertiPUR-US certified foam provides optimal support while reducing pressure points. Breathable bamboo cover is hypoallergenic, removable, and machine washable. Ideal for all sleeping positions - back, side, or stomach sleepers. Helps alleviate neck pain and improves sleep quality.',
         'newPrice': 299.0,
         'category': 'Home',
         'imageUrl':
@@ -131,7 +141,8 @@ class SeedService {
       {
         'id': 'p11',
         'name': 'Face Serum',
-        'description': 'Lightweight serum with hyaluronic acid.',
+        'description':
+            'Revitalize your skin with this advanced lightweight serum enriched with hyaluronic acid and vitamin C. Deeply hydrates, brightens complexion, and reduces the appearance of fine lines and wrinkles. Fast-absorbing formula penetrates deep into skin layers, suitable for all skin types. Dermatologist-tested, paraben-free, and cruelty-free. Apply morning and evening for radiant, youthful-looking skin.',
         'newPrice': 249.0,
         'category': 'Beauty',
         'imageUrl':
@@ -142,7 +153,8 @@ class SeedService {
       {
         'id': 'p12',
         'name': 'Lipstick Set',
-        'description': 'Set of 4 long-lasting matte lipsticks.',
+        'description':
+            'Complete your makeup collection with this stunning set of 4 long-lasting matte lipsticks in versatile shades. Rich, highly pigmented formula glides on smoothly for full coverage in one swipe. Enriched with vitamin E and natural oils to keep lips moisturized and comfortable all day. Transfer-resistant, smudge-proof, and fade-resistant formula. Includes classic reds, pinks, nudes, and berry tones.',
         'newPrice': 199.0,
         'category': 'Beauty',
         'imageUrl':
@@ -154,7 +166,7 @@ class SeedService {
         'id': 'p13',
         'name': 'Laptop Backpack',
         'description':
-            'Water-resistant backpack with padded laptop compartment.',
+            'Protect your tech in style with this water-resistant laptop backpack featuring a dedicated padded compartment for laptops up to 15.6 inches. Multiple organizational pockets keep accessories, documents, and personal items neatly arranged. Ergonomic padded shoulder straps and breathable back panel ensure all-day comfort. USB charging port, anti-theft hidden pocket, and durable YKK zippers. Perfect for students, professionals, and travelers.',
         'oldPrice': 799.0,
         'newPrice': 599.0,
         'category': 'Fashion',
@@ -166,7 +178,8 @@ class SeedService {
       {
         'id': 'p14',
         'name': 'Smart Watch',
-        'description': 'Fitness tracker with heart rate monitor.',
+        'description':
+            'Stay connected and track your fitness goals with this feature-packed smartwatch. Monitors heart rate, blood oxygen, sleep quality, and daily activity with precision sensors. Receive notifications for calls, messages, and apps directly on your wrist. Water-resistant design suitable for swimming, 7-day battery life, and customizable watch faces. Compatible with iOS and Android devices. Includes multiple sport modes and GPS tracking.',
         'oldPrice': 1999.0,
         'newPrice': 1499.0,
         'category': 'Electronics',
@@ -178,7 +191,8 @@ class SeedService {
       {
         'id': 'p15',
         'name': 'Coffee Maker',
-        'description': 'Programmable drip coffee maker, 12-cup capacity.',
+        'description':
+            'Brew the perfect cup every time with this programmable 12-cup drip coffee maker. Features 24-hour programmable timer, auto shut-off, and pause-and-serve function. Permanent gold-tone filter eliminates the need for paper filters, while the anti-drip system prevents messes. Large water reservoir with visible water level indicator, warming plate keeps coffee hot for hours. Sleek stainless steel design complements any kitchen.',
         'newPrice': 899.0,
         'category': 'Home',
         'imageUrl':
@@ -190,7 +204,8 @@ class SeedService {
       {
         'id': 'p16',
         'name': 'Winter Jacket',
-        'description': 'Warm padded jacket with hood for cold weather.',
+        'description':
+            'Brave the cold in style with this premium winter jacket featuring thick padding insulation and water-resistant outer shell. Detachable hood with faux fur trim, multiple zippered pockets for secure storage, and adjustable cuffs to seal out the cold. Ribbed hem provides extra warmth, while the modern fit flatters your silhouette. Perfect for temperatures down to -20°C. Available in classic colors.',
         'oldPrice': 2499.0,
         'newPrice': 1899.0,
         'category': 'Fashion',
@@ -202,7 +217,8 @@ class SeedService {
       {
         'id': 'p17',
         'name': 'Wool Sweater',
-        'description': 'Cozy wool blend sweater for winter.',
+        'description':
+            'Stay warm and sophisticated in this premium wool blend sweater crafted from 60% merino wool and 40% acrylic. Classic crew neck design with ribbed cuffs and hem for a perfect fit. Soft, breathable fabric regulates temperature while preventing itchiness. Machine washable for easy care. Timeless style works perfectly for casual outings or layering under jackets. Pill-resistant and maintains shape after washing.',
         'oldPrice': 999.0,
         'newPrice': 799.0,
         'category': 'Fashion',
@@ -214,7 +230,8 @@ class SeedService {
       {
         'id': 'p18',
         'name': 'Leather Boots',
-        'description': 'Waterproof leather boots with warm lining.',
+        'description':
+            'Conquer winter weather with these rugged waterproof leather boots featuring genuine full-grain leather upper and warm fleece lining. Durable rubber lug sole provides excellent traction on ice and snow. Cushioned insole offers all-day comfort, while the lace-up design ensures a secure fit. Reinforced toe and heel for added durability. Perfect for hiking, work, or everyday winter wear. Timeless style meets functionality.',
         'oldPrice': 1899.0,
         'newPrice': 1499.0,
         'category': 'Fashion',
@@ -226,7 +243,8 @@ class SeedService {
       {
         'id': 'p19',
         'name': 'Wool Scarf',
-        'description': 'Soft wool scarf for extra warmth.',
+        'description':
+            'Wrap yourself in luxury with this ultra-soft 100% merino wool scarf. Generously sized at 180cm x 30cm for versatile styling options - wear it draped, wrapped, or knotted. Natural wool fibers provide exceptional warmth without bulk, while the breathable material prevents overheating. Classic design complements any winter outfit. Dry clean only to maintain premium quality. Makes an excellent gift.',
         'oldPrice': 399.0,
         'newPrice': 299.0,
         'category': 'Fashion',
@@ -238,7 +256,8 @@ class SeedService {
       {
         'id': 'p20',
         'name': 'Thermal Shirt',
-        'description': 'Long sleeve thermal base layer shirt.',
+        'description':
+            'Experience superior warmth with this advanced thermal base layer shirt featuring moisture-wicking technology. Soft brushed interior traps heat while allowing skin to breathe, perfect for layering under sweaters or jackets. Flatlock seams prevent chafing during active wear. Stretchy fabric moves with you for unrestricted mobility. Odor-resistant treatment keeps you fresh. Ideal for outdoor activities, sports, or everyday winter wear.',
         'oldPrice': 549.0,
         'newPrice': 399.0,
         'category': 'Fashion',
@@ -250,7 +269,8 @@ class SeedService {
       {
         'id': 'p21',
         'name': 'Fleece Hoodie',
-        'description': 'Soft fleece hoodie with front pocket.',
+        'description':
+            'Embrace cozy comfort with this ultra-soft fleece hoodie made from premium anti-pill fleece fabric. Features a spacious kangaroo front pocket, adjustable drawstring hood, and ribbed cuffs for warmth retention. Relaxed fit allows easy layering over t-shirts. Durable construction withstands frequent washing while maintaining softness. Perfect for lounging, outdoor activities, or casual everyday wear. Machine washable.',
         'oldPrice': 899.0,
         'newPrice': 699.0,
         'category': 'Fashion',
@@ -262,7 +282,8 @@ class SeedService {
       {
         'id': 'p22',
         'name': 'Winter Gloves',
-        'description': 'Insulated gloves with touchscreen fingers.',
+        'description':
+            'Keep your hands warm and connected with these insulated winter gloves featuring Thinsulate technology and touchscreen-compatible fingertips. Water-resistant outer shell protects against snow and rain, while the soft fleece lining provides exceptional warmth. Elastic wrist with adjustable strap ensures a snug fit and prevents cold air entry. Non-slip palm grip for secure handling. Perfect for driving, texting, or outdoor activities.',
         'oldPrice': 349.0,
         'newPrice': 249.0,
         'category': 'Fashion',
@@ -274,20 +295,22 @@ class SeedService {
       {
         'id': 'p23',
         'name': 'Beanie Hat',
-        'description': 'Warm knit beanie for cold days.',
+        'description':
+            'Complete your winter look with this classic knit beanie hat crafted from soft acrylic yarn. Stretchy ribbed design fits most head sizes comfortably while providing excellent warmth coverage. Cuffed style can be worn folded or unfolded for different looks. Lightweight yet warm, perfect for daily commutes, outdoor sports, or casual outings. Machine washable and maintains shape. Available in versatile colors to match any outfit.',
         'oldPrice': 299.0,
         'newPrice': 199.0,
         'category': 'Fashion',
         'imageUrl':
             'https://evolutionknitwear.com/wp-content/uploads/2020/10/EK1605W_Black_01.jpg',
         'rating': 4.4,
-        'reviewsCount': 36,
+        'reviewsCount': 89,
       },
       // Supermarket Products
       {
         'id': 'p24',
         'name': 'Olive Oil 1L',
-        'description': 'Extra virgin olive oil, cold pressed.',
+        'description':
+            'Elevate your cooking with this premium extra virgin olive oil, cold-pressed from the finest Mediterranean olives. Rich in antioxidants and heart-healthy monounsaturated fats, this golden oil delivers authentic flavor and aroma. Perfect for salad dressings, marinades, sautéing, and dipping bread. First cold press ensures maximum nutritional value and superior taste. Packaged in dark glass bottle to preserve freshness and quality.',
         'oldPrice': 179.0,
         'newPrice': 149.0,
         'category': 'Grocery',
@@ -295,12 +318,13 @@ class SeedService {
             'https://www.gaston.cz/wcd/eshop/files/305/278/images/large/EVO%201l%20FJK.jpg',
         'rating': 4.7,
         'reviewsCount': 156,
-        'stock': 0, // Out of stock
+        'stock': 0,
       },
       {
         'id': 'p25',
         'name': 'Pasta 500g',
-        'description': 'Italian durum wheat pasta.',
+        'description':
+            'Bring authentic Italian cuisine to your table with this premium durum wheat pasta. Made from 100% semolina flour using traditional bronze die extrusion for perfect sauce adhesion. Cooks to al dente perfection in just 8-10 minutes. Versatile shape works beautifully with any sauce from simple marinara to rich carbonara. High protein content and low glycemic index. No artificial colors or preservatives.',
         'oldPrice': 55.0,
         'newPrice': 45.0,
         'category': 'Grocery',
@@ -312,7 +336,8 @@ class SeedService {
       {
         'id': 'p26',
         'name': 'Rice 5kg',
-        'description': 'Premium long grain white rice.',
+        'description':
+            'Enjoy perfectly fluffy rice every time with this premium long-grain white rice. Carefully selected grains are aged to perfection for optimal texture and flavor. Non-sticky consistency makes it ideal for biryani, pilaf, fried rice, or as a side dish. Rich in essential nutrients and easy to digest. Naturally gluten-free. Each grain cooks separately for restaurant-quality results. Resealable packaging maintains freshness.',
         'oldPrice': 229.0,
         'newPrice': 199.0,
         'category': 'Grocery',
@@ -324,7 +349,8 @@ class SeedService {
       {
         'id': 'p27',
         'name': 'Honey 500g',
-        'description': 'Pure natural honey.',
+        'description':
+            'Savor the natural sweetness of this 100% pure, raw honey harvested from wildflower meadows. Unfiltered and unpasteurized to preserve beneficial enzymes, antioxidants, and pollen. Rich, golden color with complex floral notes. Perfect for sweetening tea, spreading on toast, or using in baking and cooking. Natural antibacterial properties support immune health. No added sugars or artificial ingredients. Crystallization is natural and reversible.',
         'oldPrice': 159.0,
         'newPrice': 129.0,
         'category': 'Grocery',
@@ -336,7 +362,8 @@ class SeedService {
       {
         'id': 'p28',
         'name': 'Coffee 250g',
-        'description': 'Premium ground coffee beans.',
+        'description':
+            'Awaken your senses with this premium ground coffee crafted from 100% Arabica beans sourced from high-altitude plantations. Medium roast profile delivers balanced flavor with notes of chocolate, caramel, and subtle fruit undertones. Freshly ground for optimal aroma and taste. Perfect for drip coffee makers, French press, or pour-over brewing. Resealable bag with one-way valve preserves freshness. Fair trade certified.',
         'oldPrice': 219.0,
         'newPrice': 179.0,
         'category': 'Grocery',
@@ -348,7 +375,8 @@ class SeedService {
       {
         'id': 'p29',
         'name': 'Tea Box 100',
-        'description': 'Black tea bags, 100 count.',
+        'description':
+            'Experience the rich tradition of premium black tea with this convenient 100-count tea bag box. Carefully selected Ceylon tea leaves deliver robust flavor and invigorating aroma. Each individually wrapped tea bag ensures freshness and convenience. Perfect for morning wake-up or afternoon refreshment. Rich in antioxidants and natural caffeine. Brew for 3-5 minutes for optimal strength. No artificial flavors or additives.',
         'oldPrice': 109.0,
         'newPrice': 89.0,
         'category': 'Grocery',
@@ -356,24 +384,26 @@ class SeedService {
             'https://www.men-masr.com/cdn/shop/files/El_Arosa_Black_Tea.avif?v=1766325884&width=1445',
         'rating': 4.4,
         'reviewsCount': 76,
-        'stock': 0, // Out of stock
+        'stock': 0,
       },
       {
         'id': 'p30',
         'name': 'Milk 1.5L',
-        'description': 'Fresh whole milk.',
+        'description':
+            'Start your day right with this fresh, creamy whole milk packed with essential nutrients. Rich in calcium, protein, and vitamins A and D for strong bones and overall health. Pasteurized and homogenized for safety and smooth texture. Perfect for drinking, cereal, coffee, baking, or cooking. Sourced from local dairy farms committed to quality and animal welfare. No artificial hormones or antibiotics. Refrigerate after opening.',
         'newPrice': 35.0,
         'category': 'Grocery',
         'imageUrl':
             'https://cittamart.com/wp-content/uploads/2023/10/Juhayna-Milk-Long-Life-Full-Cream-1.5-L-1.webp',
         'rating': 4.3,
         'reviewsCount': 45,
-        'stock': 0, // Out of stock
+        'stock': 0,
       },
       {
         'id': 'p31',
         'name': 'Eggs 12pcs',
-        'description': 'Fresh farm eggs, 12 pieces.',
+        'description':
+            'Enjoy farm-fresh eggs from free-range hens raised on natural feed. Each carton contains 12 large, Grade A eggs with rich, golden yolks and firm whites. Excellent source of high-quality protein, vitamins, and minerals. Perfect for breakfast, baking, or cooking. Versatile ingredient for omelets, scrambled eggs, cakes, and more. Carefully inspected for quality and freshness. Store refrigerated for best results.',
         'newPrice': 49.0,
         'category': 'Grocery',
         'imageUrl':
@@ -384,7 +414,8 @@ class SeedService {
       {
         'id': 'p32',
         'name': 'Bread Loaf',
-        'description': 'Fresh whole wheat bread.',
+        'description':
+            'Savor the wholesome goodness of this freshly baked whole wheat bread made from 100% whole grain flour. Soft, fluffy texture with a golden crust and nutty flavor. Rich in dietary fiber, vitamins, and minerals for sustained energy. No artificial preservatives, colors, or flavors. Perfect for sandwiches, toast, or enjoying with your favorite spreads. Baked daily for maximum freshness. Contains essential nutrients for a healthy diet.',
         'newPrice': 25.0,
         'category': 'Grocery',
         'imageUrl':
@@ -395,7 +426,8 @@ class SeedService {
       {
         'id': 'p33',
         'name': 'Cheese 500g',
-        'description': 'Cheddar cheese block.',
+        'description':
+            'Indulge in the rich, creamy flavor of this premium cheddar cheese block aged to perfection. Made from 100% real milk with no artificial ingredients. Sharp, tangy taste with smooth, firm texture ideal for slicing, grating, or melting. Perfect for sandwiches, burgers, mac and cheese, or cheese boards. Excellent source of calcium and protein. Vacuum-sealed packaging maintains freshness. Refrigerate after opening.',
         'oldPrice': 189.0,
         'newPrice': 159.0,
         'category': 'Grocery',
@@ -407,7 +439,8 @@ class SeedService {
       {
         'id': 'p34',
         'name': 'Tomato Sauce',
-        'description': 'Italian tomato pasta sauce.',
+        'description':
+            'Transform your pasta dishes with this authentic Italian tomato sauce made from sun-ripened tomatoes, fresh herbs, and extra virgin olive oil. Slow-cooked to develop rich, complex flavors with perfect balance of sweetness and acidity. No added sugar, artificial colors, or preservatives. Ready to heat and serve or use as a base for your own culinary creations. Versatile sauce perfect for pasta, pizza, or meat dishes.',
         'oldPrice': 49.0,
         'newPrice': 39.0,
         'category': 'Grocery',
