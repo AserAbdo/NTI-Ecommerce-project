@@ -12,6 +12,7 @@ import '../widgets/profile_section_card.dart';
 import '../widgets/profile_info_tile.dart';
 import '../widgets/profile_menu_item.dart';
 import '../widgets/profile_logout_button.dart';
+import '../widgets/theme_toggle_item.dart';
 import '../models/menu_item_data.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -333,34 +334,6 @@ class _AccountScreenState extends State<AccountScreen>
   }
 
   Widget _buildAppSettingsSection(BuildContext context) {
-    final items = [
-      MenuItemData(
-        icon: Icons.notifications_outlined,
-        title: 'Notifications',
-        subtitle: 'Manage notifications',
-        color: Colors.red,
-      ),
-      MenuItemData(
-        icon: Icons.language_outlined,
-        title: 'Language',
-        subtitle: 'English (US)',
-        color: Colors.blue,
-      ),
-      MenuItemData(
-        icon: Icons.dark_mode_outlined,
-        title: 'Appearance',
-        subtitle: 'Light mode',
-        color: Colors.indigo,
-      ),
-      MenuItemData(
-        icon: Icons.privacy_tip_outlined,
-        title: 'Privacy & Security',
-        subtitle: 'Control your privacy',
-        color: Colors.teal,
-        isLast: true,
-      ),
-    ];
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
@@ -368,18 +341,31 @@ class _AccountScreenState extends State<AccountScreen>
       child: ProfileSectionCard(
         title: 'Preferences',
         icon: Icons.tune_outlined,
-        children: items
-            .map(
-              (item) => ProfileMenuItem(
-                icon: item.icon,
-                title: item.title,
-                subtitle: item.subtitle,
-                color: item.color,
-                isLast: item.isLast,
-                onTap: () => _showComingSoonSnackBar(context, item.title),
-              ),
-            )
-            .toList(),
+        children: [
+          ProfileMenuItem(
+            icon: Icons.notifications_outlined,
+            title: 'Notifications',
+            subtitle: 'Manage notifications',
+            color: Colors.red,
+            onTap: () => _showComingSoonSnackBar(context, 'Notifications'),
+          ),
+          ProfileMenuItem(
+            icon: Icons.language_outlined,
+            title: 'Language',
+            subtitle: 'English (US)',
+            color: Colors.blue,
+            onTap: () => _showComingSoonSnackBar(context, 'Language'),
+          ),
+          const ThemeToggleItem(),
+          ProfileMenuItem(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Privacy & Security',
+            subtitle: 'Control your privacy',
+            color: Colors.teal,
+            isLast: true,
+            onTap: () => _showComingSoonSnackBar(context, 'Privacy & Security'),
+          ),
+        ],
       ),
     );
   }

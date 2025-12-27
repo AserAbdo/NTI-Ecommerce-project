@@ -10,6 +10,8 @@ import 'package:nti_project/firebase_options.dart';
 import 'core/constants/app_strings.dart';
 import 'core/constants/app_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_cubit.dart';
+import 'core/theme/theme_state.dart';
 import 'features/auth/cubits/auth_cubit.dart';
 import 'features/auth/cubits/auth_state.dart';
 import 'features/auth/screens/splash_screen.dart';
@@ -54,6 +56,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => CartCubit()),
         BlocProvider(create: (context) => ProductsCubit()),
@@ -68,62 +71,74 @@ class MyApp extends StatelessWidget {
           },
         ),
       ],
-      child: MaterialApp(
-        title: AppStrings.appName,
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes.splash,
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case AppRoutes.splash:
-              return MaterialPageRoute(builder: (_) => const SplashScreen());
-            case AppRoutes.login:
-              return MaterialPageRoute(builder: (_) => const LoginScreen());
-            case AppRoutes.signup:
-              return MaterialPageRoute(builder: (_) => const SignupScreen());
-            case AppRoutes.main:
-              return MaterialPageRoute(builder: (_) => const MainScreen());
-            case AppRoutes.home:
-              return MaterialPageRoute(builder: (_) => const HomeScreen());
-            case AppRoutes.productDetails:
-              final product = settings.arguments as ProductModel;
-              return MaterialPageRoute(
-                builder: (_) => ProductDetailsScreen(product: product),
-              );
-            case AppRoutes.cart:
-              return MaterialPageRoute(builder: (_) => const CartScreen());
-            case AppRoutes.checkout:
-              final cartState = settings.arguments as CartLoaded;
-              return MaterialPageRoute(
-                builder: (_) => CheckoutScreen(cartState: cartState),
-              );
-            case AppRoutes.mockPayment:
-              final order = settings.arguments as OrderModel;
-              return MaterialPageRoute(
-                builder: (_) => MockPaymentScreen(order: order),
-              );
-            case AppRoutes.orderConfirmation:
-              final order = settings.arguments as OrderModel;
-              return MaterialPageRoute(
-                builder: (_) => OrderConfirmationScreen(order: order),
-              );
-            case AppRoutes.mainChatBot:
-              return MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (context) => ChatCubit(),
-                  child: const MainChatbotScreen(),
-                ),
-              );
-            case AppRoutes.chatBot:
-              return MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (context) => ChatCubit(),
-                  child: const ChatScreen(),
-                ),
-              );
-            default:
-              return MaterialPageRoute(builder: (_) => const SplashScreen());
-          }
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          return MaterialApp(
+            title: AppStrings.appName,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeState.themeMode,
+            debugShowCheckedModeBanner: false,
+            initialRoute: AppRoutes.splash,
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case AppRoutes.splash:
+                  return MaterialPageRoute(
+                    builder: (_) => const SplashScreen(),
+                  );
+                case AppRoutes.login:
+                  return MaterialPageRoute(builder: (_) => const LoginScreen());
+                case AppRoutes.signup:
+                  return MaterialPageRoute(
+                    builder: (_) => const SignupScreen(),
+                  );
+                case AppRoutes.main:
+                  return MaterialPageRoute(builder: (_) => const MainScreen());
+                case AppRoutes.home:
+                  return MaterialPageRoute(builder: (_) => const HomeScreen());
+                case AppRoutes.productDetails:
+                  final product = settings.arguments as ProductModel;
+                  return MaterialPageRoute(
+                    builder: (_) => ProductDetailsScreen(product: product),
+                  );
+                case AppRoutes.cart:
+                  return MaterialPageRoute(builder: (_) => const CartScreen());
+                case AppRoutes.checkout:
+                  final cartState = settings.arguments as CartLoaded;
+                  return MaterialPageRoute(
+                    builder: (_) => CheckoutScreen(cartState: cartState),
+                  );
+                case AppRoutes.mockPayment:
+                  final order = settings.arguments as OrderModel;
+                  return MaterialPageRoute(
+                    builder: (_) => MockPaymentScreen(order: order),
+                  );
+                case AppRoutes.orderConfirmation:
+                  final order = settings.arguments as OrderModel;
+                  return MaterialPageRoute(
+                    builder: (_) => OrderConfirmationScreen(order: order),
+                  );
+                case AppRoutes.mainChatBot:
+                  return MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (context) => ChatCubit(),
+                      child: const MainChatbotScreen(),
+                    ),
+                  );
+                case AppRoutes.chatBot:
+                  return MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (context) => ChatCubit(),
+                      child: const ChatScreen(),
+                    ),
+                  );
+                default:
+                  return MaterialPageRoute(
+                    builder: (_) => const SplashScreen(),
+                  );
+              }
+            },
+          );
         },
       ),
     );
