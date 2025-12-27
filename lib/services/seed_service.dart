@@ -17,7 +17,7 @@ class SeedService {
         'newPrice': 26000.0,
         'category': 'Electronics',
         'imageUrl':
-            'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg',
+            'https://api-rayashop.freetls.fastly.net/media/catalog/product/cache/4e49ac3a70c0b98a165f3fa6633ffee1/m/l/mlpf3aaa_fsxr05slkflufdmm.jpg?format=webp&width=700',
         'rating': 4.8,
         'reviewsCount': 156,
       },
@@ -416,7 +416,6 @@ class SeedService {
         'rating': 4.4,
         'reviewsCount': 52,
       },
-      
     ];
 
     final reviewerNames = [
@@ -500,10 +499,10 @@ class SeedService {
         // Add price for compatibility
         productData['price'] = price as double;
 
-        await _firestore.collection('products').doc(productId).set(productData);
-
-        // Generate 4-7 reviews for each product
+        // Generate 4-7 reviews for each product and store as array
         final numReviews = 4 + _random.nextInt(4);
+        final reviews = <Map<String, dynamic>>[];
+
         for (var i = 0; i < numReviews; i++) {
           // Rating distribution: more 4-5 stars, fewer 3 stars
           final ratingRoll = _random.nextInt(10);
@@ -525,18 +524,20 @@ class SeedService {
           final daysAgo = _random.nextInt(60);
           final reviewDate = DateTime.now().subtract(Duration(days: daysAgo));
 
-          await _firestore
-              .collection('products')
-              .doc(productId)
-              .collection('reviews')
-              .add({
-                'userId': userId,
-                'userName': reviewerName,
-                'rating': rating,
-                'comment': comment,
-                'createdAt': Timestamp.fromDate(reviewDate),
-              });
+          reviews.add({
+            'userId': userId,
+            'userName': reviewerName,
+            'rating': rating,
+            'comment': comment,
+            'createdAt': Timestamp.fromDate(reviewDate),
+          });
         }
+
+        // Add reviews array to product data
+        productData['reviews'] = reviews;
+
+        // Save product with reviews as an array field
+        await _firestore.collection('products').doc(productId).set(productData);
       }
 
       print('✅ Successfully seeded ${products.length} products with reviews!');
