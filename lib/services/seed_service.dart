@@ -207,7 +207,7 @@ class SeedService {
         'newPrice': 799.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://www.themerchantfox.co.uk/cdn/shop/files/fox_21_nov22193458-Main.jpg?v=1742208389&width=2048',
         'rating': 4.6,
         'reviewsCount': 87,
       },
@@ -219,7 +219,7 @@ class SeedService {
         'newPrice': 1499.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg',
+            'https://jakameneg.b-cdn.net/wp-content/uploads/2025/04/SK38CS14M003-Black-001-1-scaled.jpg',
         'rating': 4.8,
         'reviewsCount': 123,
       },
@@ -231,7 +231,7 @@ class SeedService {
         'newPrice': 299.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://us.dentsgloves.com/cdn/shop/files/mens-heritage-tartan-check-cashmere-scarf-tassels-royal-stewart-loop.jpg?v=1765185448',
         'rating': 4.5,
         'reviewsCount': 54,
       },
@@ -243,7 +243,7 @@ class SeedService {
         'newPrice': 399.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://www.harveysupplies.co.uk/images/resizedImages/1_a3674868bbef1f0ac4bf899251d312f8_1000_1000.jpg',
         'rating': 4.4,
         'reviewsCount': 68,
       },
@@ -255,7 +255,7 @@ class SeedService {
         'newPrice': 699.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://huntingkitshop.co.uk/images/detailed/13/JHOODFLSRGEN2CAM-001.jpg',
         'rating': 4.6,
         'reviewsCount': 91,
       },
@@ -267,7 +267,7 @@ class SeedService {
         'newPrice': 249.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://i5.walmartimages.com/seo/Men-s-Thinsulate-Thick-Water-Resistant-Fully-Fleeced-Lined-Adult-Winter-Snow-Ski-Black-Men-Glove-Male_71f91c52-4d0b-44a4-ac76-c4fe6001a658_1.842641624183fecd7bbdcc631ddcc5d4.jpeg',
         'rating': 4.3,
         'reviewsCount': 42,
       },
@@ -279,7 +279,7 @@ class SeedService {
         'newPrice': 199.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://evolutionknitwear.com/wp-content/uploads/2020/10/EK1605W_Black_01.jpg',
         'rating': 4.4,
         'reviewsCount': 36,
       },
@@ -292,7 +292,7 @@ class SeedService {
         'newPrice': 149.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://www.gaston.cz/wcd/eshop/files/305/278/images/large/EVO%201l%20FJK.jpg',
         'rating': 4.7,
         'reviewsCount': 156,
         'stock': 0, // Out of stock
@@ -305,7 +305,7 @@ class SeedService {
         'newPrice': 45.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg',
+            'https://pastaregina.com/wp-content/uploads/2023/02/02-Rice.jpg',
         'rating': 4.5,
         'reviewsCount': 98,
       },
@@ -317,7 +317,7 @@ class SeedService {
         'newPrice': 199.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/1393382/pexels-photo-1393382.jpeg',
+            'https://f.nooncdn.com/p/pnsku/N28716824A/45/_/1764242500/dcf54894-a3d7-4c0e-b616-bd40d7616374.jpg?width=800',
         'rating': 4.6,
         'reviewsCount': 187,
       },
@@ -329,7 +329,7 @@ class SeedService {
         'newPrice': 129.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://herostore.com.eg/wp-content/uploads/2022/01/6221024992575_H1C1_Hero_Cirtus_365g-600x600.png',
         'rating': 4.8,
         'reviewsCount': 142,
       },
@@ -341,7 +341,7 @@ class SeedService {
         'newPrice': 179.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg',
+            'https://backend.abuauf.com/wp-content/uploads/2024/08/2000505000000.webp',
         'rating': 4.7,
         'reviewsCount': 234,
       },
@@ -353,19 +353,19 @@ class SeedService {
         'newPrice': 89.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://www.men-masr.com/cdn/shop/files/El_Arosa_Black_Tea.avif?v=1766325884&width=1445',
         'rating': 4.4,
         'reviewsCount': 76,
         'stock': 0, // Out of stock
       },
       {
         'id': 'p30',
-        'name': 'Milk 1L',
+        'name': 'Milk 1.5L',
         'description': 'Fresh whole milk.',
         'newPrice': 35.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://cittamart.com/wp-content/uploads/2023/10/Juhayna-Milk-Long-Life-Full-Cream-1.5-L-1.webp',
         'rating': 4.3,
         'reviewsCount': 45,
         'stock': 0, // Out of stock
@@ -377,7 +377,7 @@ class SeedService {
         'newPrice': 49.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://cdn.salla.sa/vwaxy/Um32tKe2OdYfursReYPQP6tt7cYHDHyl0PdB92Dt.png',
         'rating': 4.5,
         'reviewsCount': 67,
       },
@@ -388,7 +388,7 @@ class SeedService {
         'newPrice': 25.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg',
+            'https://cittamart.com/wp-content/uploads/2023/12/Rich-Bake-Normal-Petit-Pain-6-pcs-4.webp',
         'rating': 4.2,
         'reviewsCount': 34,
       },
@@ -400,7 +400,7 @@ class SeedService {
         'newPrice': 159.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://cdn.mafrservices.com/sys-master-root/hce/h3e/12784615358494/51792_main.jpg',
         'rating': 4.6,
         'reviewsCount': 89,
       },
@@ -412,21 +412,11 @@ class SeedService {
         'newPrice': 39.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
+            'https://gourmetegypt.com/media/catalog/product/6/2/6221033101289.jpg?optimize=high&bg-color=255,255,255&fit=bounds&height=&width=',
         'rating': 4.4,
         'reviewsCount': 52,
       },
-      {
-        'id': 'p35',
-        'name': 'Sugar 1kg',
-        'description': 'White granulated sugar.',
-        'newPrice': 45.0,
-        'category': 'Grocery',
-        'imageUrl':
-            'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg',
-        'rating': 4.1,
-        'reviewsCount': 28,
-      },
+      
     ];
 
     final reviewerNames = [
