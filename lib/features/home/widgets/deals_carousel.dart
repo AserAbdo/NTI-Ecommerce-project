@@ -128,7 +128,7 @@ class _DealsCarouselState extends State<DealsCarousel>
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -304,7 +304,11 @@ class _DealsCarouselState extends State<DealsCarousel>
               height: 8,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
-                color: selected ? AppColors.primary : Colors.grey.shade300,
+                color: selected
+                    ? AppColors.primary
+                    : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300),
               ),
               child: selected
                   ? ClipRRect(

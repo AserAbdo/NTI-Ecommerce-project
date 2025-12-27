@@ -68,7 +68,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
     final itemCount = widget.order.itemCount;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Order Confirmed'),
         backgroundColor: Colors.white,

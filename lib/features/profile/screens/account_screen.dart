@@ -65,7 +65,7 @@ class _AccountScreenState extends State<AccountScreen>
     final user = authState.user;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // Custom App Bar with Profile Header

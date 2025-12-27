@@ -148,11 +148,7 @@ class _ProductCardState extends State<ProductCard>
                   child: Container(
                     padding: ResponsiveHelper.getProductCardPadding(context),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.white, Colors.grey.shade50],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                      color: Theme.of(context).cardColor,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +162,9 @@ class _ProductCardState extends State<ProductCard>
                           style: TextStyle(
                             fontSize: ResponsiveHelper.getBodyFontSize(context),
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color:
+                                Theme.of(context).textTheme.bodyLarge?.color ??
+                                AppColors.textPrimary,
                             height: 1.2,
                             letterSpacing: -0.2,
                           ),
@@ -418,7 +416,9 @@ class _ProductCardState extends State<ProductCard>
           style: TextStyle(
             fontSize: ResponsiveHelper.getBodyFontSize(context) - 2,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color:
+                Theme.of(context).textTheme.bodyLarge?.color ??
+                AppColors.textPrimary,
           ),
         ),
         const SizedBox(width: 4),
@@ -454,7 +454,9 @@ class _ProductCardState extends State<ProductCard>
                   '${widget.product.oldPrice!.toStringAsFixed(0)} ${AppStrings.egp}',
                   style: TextStyle(
                     fontSize: currencyFont - 1,
-                    color: AppColors.textSecondary.withOpacity(0.6),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade500
+                        : AppColors.textSecondary.withOpacity(0.6),
                     decoration: TextDecoration.lineThrough,
                     decorationThickness: 2,
                   ),

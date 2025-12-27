@@ -54,7 +54,9 @@ class ProfileMenuItem extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),

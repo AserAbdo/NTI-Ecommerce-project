@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: _buildAppBar(context),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
@@ -299,12 +299,13 @@ class _HomeScreenState extends State<HomeScreen>
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
-      foregroundColor: AppColors.textPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      foregroundColor:
+          Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
       automaticallyImplyLeading: false,
       elevation: 0,
       toolbarHeight: ResponsiveHelper.getAppBarHeight(context),
-      surfaceTintColor: Colors.white,
+      surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
       title: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -320,9 +321,9 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           height: ResponsiveHelper.getSearchBarHeight(context),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200, width: 1),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           ),
           padding: EdgeInsets.symmetric(
             horizontal: ResponsiveHelper.isSmallMobile(context) ? 12 : 16,
@@ -377,7 +378,9 @@ class _HomeScreenState extends State<HomeScreen>
                   style: TextStyle(
                     fontSize: ResponsiveHelper.getGreetingFontSize(context),
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color:
+                        Theme.of(context).textTheme.bodyLarge?.color ??
+                        AppColors.textPrimary,
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -410,7 +413,9 @@ class _HomeScreenState extends State<HomeScreen>
         style: TextStyle(
           fontSize: ResponsiveHelper.getSectionHeaderFontSize(context),
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
+          color:
+              Theme.of(context).textTheme.bodyLarge?.color ??
+              AppColors.textPrimary,
           letterSpacing: -0.3,
         ),
       ),
@@ -440,13 +445,18 @@ class _HomeScreenState extends State<HomeScreen>
                   duration: const Duration(milliseconds: 200),
                   padding: ResponsiveHelper.getCategoryChipPadding(context),
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.primary : Colors.grey.shade100,
+                    color: selected
+                        ? AppColors.primary
+                        : Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     cat,
                     style: TextStyle(
-                      color: selected ? Colors.white : AppColors.textPrimary,
+                      color: selected
+                          ? Colors.white
+                          : Theme.of(context).textTheme.bodyLarge?.color ??
+                                AppColors.textPrimary,
                       fontWeight: FontWeight.w500,
                       fontSize: ResponsiveHelper.getBodyFontSize(context) - 1,
                     ),

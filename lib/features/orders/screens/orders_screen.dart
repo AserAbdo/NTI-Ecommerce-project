@@ -71,7 +71,7 @@ class _OrdersScreenState extends State<OrdersScreen>
     final userId = authState.user.id;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.myOrders,

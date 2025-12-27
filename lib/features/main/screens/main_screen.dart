@@ -419,7 +419,9 @@ class _MainScreenState extends State<MainScreen>
                           isSelected ? itemData.activeIcon : itemData.icon,
                           key: ValueKey(isSelected),
                           color: Color.lerp(
-                            AppColors.textSecondary,
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.7)
+                                : AppColors.textSecondary,
                             AppColors.primary,
                             value,
                           ),
@@ -442,7 +444,9 @@ class _MainScreenState extends State<MainScreen>
                           ? FontWeight.w700
                           : FontWeight.w500,
                       color: Color.lerp(
-                        AppColors.textSecondary,
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white.withOpacity(0.7)
+                            : AppColors.textSecondary,
                         AppColors.primary,
                         value,
                       ),

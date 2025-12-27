@@ -124,7 +124,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           AppStrings.cart,
@@ -166,7 +166,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
         return Container(
           height: 120,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -282,12 +282,14 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Your cart is empty',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color:
+                    Theme.of(context).textTheme.bodyLarge?.color ??
+                    AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -396,7 +398,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -419,11 +421,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
               const SizedBox(width: 8),
               const Text(
                 'Promo Code',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -438,7 +436,9 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                       hintText: 'Enter code',
                       hintStyle: TextStyle(color: Colors.grey[400]),
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Theme.of(context).brightness == Brightness.dark
+                          ? Theme.of(context).cardColor.withOpacity(0.5)
+                          : Colors.grey[100],
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -523,7 +523,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
@@ -631,7 +631,10 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
             color:
                 color ??
-                (isTotal ? AppColors.textPrimary : AppColors.textSecondary),
+                (isTotal
+                    ? (Theme.of(context).textTheme.bodyLarge?.color ??
+                          AppColors.textPrimary)
+                    : AppColors.textSecondary),
           ),
         ),
         Text(
@@ -640,7 +643,11 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             fontSize: isTotal ? 20 : 15,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
             color:
-                color ?? (isTotal ? AppColors.primary : AppColors.textPrimary),
+                color ??
+                (isTotal
+                    ? AppColors.primary
+                    : (Theme.of(context).textTheme.bodyLarge?.color ??
+                          AppColors.textPrimary)),
           ),
         ),
       ],
@@ -720,7 +727,7 @@ class _CartItemTile extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -799,10 +806,12 @@ class _CartItemTile extends StatelessWidget {
                         item.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: AppColors.textPrimary,
+                          color:
+                              Theme.of(context).textTheme.bodyLarge?.color ??
+                              AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),

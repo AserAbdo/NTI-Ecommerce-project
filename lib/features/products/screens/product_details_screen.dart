@@ -39,7 +39,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
         slivers: [
           // Minimalistic App Bar
@@ -70,7 +70,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     style: TextStyle(
                       fontSize: ResponsiveHelper.getBodyFontSize(context) + 8,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color:
+                          Theme.of(context).textTheme.bodyLarge?.color ??
+                          AppColors.textPrimary,
                       letterSpacing: -0.5,
                       height: 1.3,
                     ),
@@ -111,15 +113,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      backgroundColor: Colors.white,
-      foregroundColor: AppColors.textPrimary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      foregroundColor:
+          Theme.of(context).textTheme.bodyLarge?.color ?? AppColors.textPrimary,
       elevation: 0,
       pinned: true,
       leading: IconButton(
         icon: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: Theme.of(context).cardColor,
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.arrow_back, size: 20),
@@ -131,7 +134,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).cardColor,
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.shopping_cart_outlined, size: 20),
@@ -151,7 +154,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       child: Container(
         width: double.infinity,
         height: ResponsiveHelper.getScreenHeight(context) * 0.4,
-        color: Colors.grey.shade50,
+        color: Theme.of(context).cardColor,
         child: CachedNetworkImage(
           imageUrl: widget.product.imageUrl,
           fit: BoxFit.cover,
@@ -193,14 +196,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
             widget.product.category,
             style: TextStyle(
               fontSize: ResponsiveHelper.getBodyFontSize(context) - 1,
-              color: AppColors.textPrimary,
+              color:
+                  Theme.of(context).textTheme.bodyLarge?.color ??
+                  AppColors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -255,7 +260,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isFav ? Colors.red.shade50 : Colors.grey.shade100,
+                    color: isFav
+                        ? Colors.red.shade50
+                        : Theme.of(context).cardColor,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -286,7 +293,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           style: TextStyle(
             fontSize: ResponsiveHelper.getBodyFontSize(context) + 2,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color:
+                Theme.of(context).textTheme.bodyLarge?.color ??
+                AppColors.textPrimary,
           ),
         ),
         const SizedBox(width: 8),
@@ -430,7 +439,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           style: TextStyle(
             fontSize: ResponsiveHelper.getBodyFontSize(context) + 4,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color:
+                Theme.of(context).textTheme.bodyLarge?.color ??
+                AppColors.textPrimary,
             letterSpacing: -0.3,
           ),
         ),
@@ -459,7 +470,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               style: TextStyle(
                 fontSize: ResponsiveHelper.getBodyFontSize(context) + 4,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color:
+                    Theme.of(context).textTheme.bodyLarge?.color ??
+                    AppColors.textPrimary,
                 letterSpacing: -0.3,
               ),
             ),
@@ -480,7 +493,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
@@ -516,7 +529,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -556,7 +569,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       style: TextStyle(
                         fontSize: ResponsiveHelper.getBodyFontSize(context),
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -591,7 +606,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       style: TextStyle(
                         fontSize: ResponsiveHelper.getBodyFontSize(context) - 1,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -625,7 +642,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     return Container(
       padding: EdgeInsets.all(ResponsiveHelper.getHorizontalPadding(context)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),

@@ -50,12 +50,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       'icon': Icons.credit_card,
       'color': Colors.blue,
     },
-    {
-      'id': 'paypal',
-      'name': 'PayPal',
-      'icon': Icons.paypal,
-      'color': Colors.indigo,
-    },
   ];
 
   @override
@@ -213,7 +207,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final total = subtotal + tax + shippingFee;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Checkout'),
         backgroundColor: AppColors.primary,
@@ -293,17 +287,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    controller: _postalCodeController,
-                    label: 'Postal Code',
-                    icon: Icons.markunread_mailbox_outlined,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) return 'Required';
-                      if (!OrderUtils.isValidPostalCode(value!)) {
-                        return 'Invalid postal code';
-                      }
-                      return null;
-                    },
+                    controller: _stateController,
+                    label: 'State',
+                    icon: Icons.map_outlined,
+                    validator: (value) =>
+                        value?.isEmpty ?? true ? 'Required' : null,
                   ),
                 ],
               ),
@@ -362,8 +350,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               children: [
                                 Text(
                                   item.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w600,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge?.color ??
+                                        AppColors.textPrimary,
                                   ),
                                 ),
                                 Text(
@@ -378,7 +371,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           Text(
                             'EGP ${(item.price * item.quantity).toStringAsFixed(0)}',
-                            style: const TextStyle(fontWeight: FontWeight.w700),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge?.color ??
+                                  AppColors.textPrimary,
+                            ),
                           ),
                         ],
                       ),
@@ -463,7 +463,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -491,9 +491,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 const SizedBox(width: 12),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
+                    color:
+                        Theme.of(context).textTheme.bodyLarge?.color ??
+                        AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -522,7 +525,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         prefixIcon: Icon(icon, size: 20),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).cardColor.withOpacity(0.5)
+            : Colors.grey.shade50,
       ),
     );
   }
@@ -545,7 +550,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey.shade50,
+          color: isSelected
+              ? color.withOpacity(0.1)
+              : (Theme.of(context).brightness == Brightness.dark
+                    ? Theme.of(context).cardColor.withOpacity(0.5)
+                    : Colors.grey.shade50),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade300,
@@ -569,7 +578,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? color : AppColors.textPrimary,
+                  color: isSelected
+                      ? color
+                      : (Theme.of(context).textTheme.bodyLarge?.color ??
+                            AppColors.textPrimary),
                 ),
               ),
             ),
@@ -589,7 +601,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           style: TextStyle(
             fontSize: isTotal ? 18 : 14,
             fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-            color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
+            color: isTotal
+                ? (Theme.of(context).textTheme.bodyLarge?.color ??
+                      AppColors.textPrimary)
+                : AppColors.textSecondary,
           ),
         ),
         Text(
@@ -597,7 +612,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           style: TextStyle(
             fontSize: isTotal ? 20 : 14,
             fontWeight: FontWeight.w800,
-            color: isTotal ? AppColors.primary : AppColors.textPrimary,
+            color: isTotal
+                ? AppColors.primary
+                : (Theme.of(context).textTheme.bodyLarge?.color ??
+                      AppColors.textPrimary),
           ),
         ),
       ],

@@ -110,7 +110,7 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(_getPaymentMethodName()),
         backgroundColor: _getPaymentColor(),
