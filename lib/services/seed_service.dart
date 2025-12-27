@@ -29,7 +29,7 @@ class SeedService {
         'newPrice': 8500.0,
         'category': 'Electronics',
         'imageUrl':
-            'https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg',
+            'https://m.media-amazon.com/images/I/611VmwpD8SL._AC_UF894,1000_QL80_.jpg',
         'rating': 4.6,
         'reviewsCount': 89,
       },
@@ -41,7 +41,7 @@ class SeedService {
         'newPrice': 1700.0,
         'category': 'Electronics',
         'imageUrl':
-            'https://images.pexels.com/photos/2582928/pexels-photo-2582928.jpeg',
+            'https://kolshzin.com/wp-content/uploads/2024/12/Kingston-16GB-2x8-DDR4-3200MTs-CL16-FURY-Beast.webp',
         'rating': 4.7,
         'reviewsCount': 124,
       },
@@ -53,7 +53,7 @@ class SeedService {
         'newPrice': 4800.0,
         'category': 'Electronics',
         'imageUrl':
-            'https://images.pexels.com/photos/2582930/pexels-photo-2582930.jpeg',
+            'https://egyptlaptop.com/images/detailed/85/Intel_Core_i5.webp',
         'rating': 4.9,
         'reviewsCount': 203,
       },
@@ -65,7 +65,7 @@ class SeedService {
         'newPrice': 899.0,
         'category': 'Electronics',
         'imageUrl':
-            'https://images.pexels.com/photos/3825517/pexels-photo-3825517.jpeg',
+            'https://r2media.horizondm.com/catalog/product/cache/eb4305db09fb6492bb059b8131f647e3/_/-/_-_2024-12-10t113723.171.jpg',
         'rating': 4.5,
         'reviewsCount': 178,
       },
@@ -89,7 +89,7 @@ class SeedService {
         'newPrice': 499.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg',
+            'https://i5.walmartimages.com/seo/Htcenly-Running-Shoes-Men-Fashion-Sneakers-Casual-Walking-Shoes-Sport-Athletic-Shoes-Lightweight-Breathable-Comfortable_4114141f-7d26-4dd7-933d-babc24080395.516ad145e1a1d8d82a801ac48231950d.jpeg',
         'rating': 4.4,
         'reviewsCount': 95,
       },
@@ -101,7 +101,7 @@ class SeedService {
         'newPrice': 1299.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg',
+            'https://www.lavieworld.com/cdn/shop/articles/c39b09efe9334781f0a52b1832bf5836_1080x.jpg?v=1693886031',
         'rating': 4.6,
         'reviewsCount': 67,
       },
@@ -113,7 +113,7 @@ class SeedService {
         'newPrice': 1999.0,
         'category': 'Home',
         'imageUrl':
-            'https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg',
+            'https://sheffieldegypt.com/cdn/shop/files/1315089_01_2400x2400_f1be18e6-b9fe-4ab1-8e2e-5e5f638cdc77.webp?v=1763559429&width=533',
         'rating': 4.8,
         'reviewsCount': 112,
       },
@@ -124,7 +124,7 @@ class SeedService {
         'newPrice': 299.0,
         'category': 'Home',
         'imageUrl':
-            'https://images.pexels.com/photos/1034584/pexels-photo-1034584.jpeg',
+            'https://media.homecentre.com/i/homecentre/161294207-161294207-HC110219_01-2100.jpg?v=2',
         'rating': 4.3,
         'reviewsCount': 58,
       },
@@ -135,7 +135,7 @@ class SeedService {
         'newPrice': 249.0,
         'category': 'Beauty',
         'imageUrl':
-            'https://images.pexels.com/photos/3735612/pexels-photo-3735612.jpeg',
+            'https://www.garnier.ca/-/media/project/loreal/brand-sites/garnier/usa/ca/about-our-brands/skin-care/2023/vit-c-day-cream/en/3600542444149-1.jpg?w=500&rev=7897717a298547d5be46b83f33f565f7&hash=23EE5F72FBE562E4EA0CFD530F35E0BA',
         'rating': 4.5,
         'reviewsCount': 134,
       },
@@ -146,7 +146,7 @@ class SeedService {
         'newPrice': 199.0,
         'category': 'Beauty',
         'imageUrl':
-            'https://images.pexels.com/photos/2113855/pexels-photo-2113855.jpeg',
+            'https://milabeaute.com/cdn/shop/files/SET_C.jpg?v=1754394048&width=2048',
         'rating': 4.6,
         'reviewsCount': 89,
       },
@@ -159,7 +159,7 @@ class SeedService {
         'newPrice': 599.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/2905238/pexels-photo-2905238.jpeg',
+            'https://www.matein.com/cdn/shop/files/gray_8947aa57-8302-4a8c-a725-0aca30f68b4e.jpg?v=1745403853',
         'rating': 4.7,
         'reviewsCount': 76,
       },
@@ -182,7 +182,7 @@ class SeedService {
         'newPrice': 899.0,
         'category': 'Home',
         'imageUrl':
-            'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg',
+            'https://smartkoshk.com/cdn/shop/files/1_8aee8fe7-7293-47cb-b6df-4217a82e127e.png?v=1755009087',
         'rating': 4.4,
         'reviewsCount': 102,
       },
@@ -195,7 +195,7 @@ class SeedService {
         'newPrice': 1899.0,
         'category': 'Fashion',
         'imageUrl':
-            'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg',
+            'https://img.bstn.com/eyJidWNrZXQiOiJic3RuLWltYWdlLXNlcnZlciIsImtleSI6ImNhdGFsb2cvcHJvZHVjdC8yMjI3TS02MS8yMjI3TS02MS0wMS5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsiZml0IjoiY29udGFpbiIsIndpZHRoIjo1ODAsImhlaWdodCI6NzI1LCJiYWNrZ3JvdW5kIjp7InIiOjI1NSwiZyI6MjU1LCJiIjoyNTUsImFscGhhIjoxfX19fQ==',
         'rating': 4.7,
         'reviewsCount': 145,
       },

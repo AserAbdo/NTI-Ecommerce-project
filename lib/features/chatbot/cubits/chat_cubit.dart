@@ -29,7 +29,7 @@ class ChatCubit extends Cubit<ChatState> {
       emit(ChatError("Failed to load local messages: $e"));
     }
   }
-
+// need to pass username
   Future<void> _addLocalWelcomeMessage() async {
     // final user = UserStorage.getUserData();
     // need to fetch userName here
@@ -45,7 +45,7 @@ class ChatCubit extends Cubit<ChatState> {
     await _addMessageToBox(welcomeMsg);
     emit(ChatSuccess(messages: List.from(_messages)));
   }
-
+// making user id passing in this function
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
