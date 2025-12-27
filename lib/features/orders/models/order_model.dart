@@ -125,6 +125,59 @@ class OrderModel extends Equatable {
     };
   }
 
+  static List<CartItemModel> _parseItems(dynamic itemsData) {
+    if (itemsData == null) return [];
+
+    if (itemsData is List) {
+      return itemsData
+          .map((item) {
+            if (item is Map<String, dynamic>) {
+              return CartItemModel.fromJson(item);
+            } else if (item is Map) {
+              // Convert Map to Map<String, dynamic>
+              return CartItemModel.fromJson(Map<String, dynamic>.from(item));
+            }
+            return null;
+          })
+          .whereType<CartItemModel>()
+          .toList();
+    }
+
+    return [];
+  }
+
+  static ShippingAddressModel _parseShippingAddress(dynamic addressData) {
+    if (addressData == null) {
+      return ShippingAddressModel(
+        fullName: '',
+        phone: '',
+        street: '',
+        city: '',
+        state: '',
+        postalCode: '',
+      );
+    }
+
+    if (addressData is Map<String, dynamic>) {
+      return ShippingAddressModel.fromJson(addressData);
+    } else if (addressData is Map) {
+      // Convert Map to Map<String, dynamic>
+      return ShippingAddressModel.fromJson(
+        Map<String, dynamic>.from(addressData),
+      );
+    }
+
+    // If it's a string or other type, return default
+    return ShippingAddressModel(
+      fullName: '',
+      phone: '',
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+    );
+  }
+
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       orderId: json['orderId'] as String? ?? '',
@@ -136,31 +189,14 @@ class OrderModel extends Equatable {
       status: json['status'] as String? ?? 'pending',
       paymentStatus: json['paymentStatus'] as String? ?? 'pending',
       paymentMethod: json['paymentMethod'] as String? ?? 'cash_on_delivery',
-      items:
-          (json['items'] as List<dynamic>?)
-              ?.map(
-                (item) => CartItemModel.fromJson(item as Map<String, dynamic>),
-              )
-              .toList() ??
-          [],
+      items: _parseItems(json['items']),
       subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
       tax: (json['tax'] as num?)?.toDouble() ?? 0.0,
       shippingFee: (json['shippingFee'] as num?)?.toDouble() ?? 0.0,
       discount: (json['discount'] as num?)?.toDouble() ?? 0.0,
       totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0,
       currency: json['currency'] as String? ?? 'EGP',
-      shippingAddress: json['shippingAddress'] != null
-          ? ShippingAddressModel.fromJson(
-              json['shippingAddress'] as Map<String, dynamic>,
-            )
-          : ShippingAddressModel(
-              fullName: '',
-              phone: '',
-              street: '',
-              city: '',
-              state: '',
-              postalCode: '',
-            ),
+      shippingAddress: _parseShippingAddress(json['shippingAddress']),
       estimatedDeliveryDate: json['estimatedDeliveryDate'] != null
           ? (json['estimatedDeliveryDate'] as Timestamp).toDate()
           : null,

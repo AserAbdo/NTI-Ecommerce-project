@@ -21,11 +21,11 @@ class CartItemModel extends Equatable {
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
-      productId: json['productId'] as String,
-      name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
-      imageUrl: json['imageUrl'] as String,
-      quantity: json['quantity'] as int,
+      productId: json['productId'] as String? ?? '',
+      name: json['name'] as String? ?? 'Unknown Product',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      imageUrl: json['imageUrl'] as String? ?? '',
+      quantity: json['quantity'] as int? ?? 1,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       reviewsCount: json['reviewsCount'] as int? ?? 0,
     );

@@ -235,7 +235,7 @@ class _OrdersScreenState extends State<OrdersScreen>
 
     for (var doc in orders) {
       final data = doc.data() as Map<String, dynamic>;
-      totalSpent += (data['totalPrice'] ?? 0.0) as double;
+      totalSpent += (data['totalPrice'] ?? 0).toDouble();
       totalItems += (data['items'] as List?)?.length ?? 0;
     }
 

@@ -1,164 +1,242 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FavoritesScreen extends StatefulWidget {
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/responsive_helper.dart';
+import '../../../widgets/empty_state_widget.dart';
+import '../../auth/cubits/auth_cubit.dart';
+import '../../auth/cubits/auth_state.dart';
+import '../../products/models/product_model.dart';
+import '../../products/widgets/product_card.dart';
+import '../../products/screens/product_details_screen.dart';
 
-  @override
-  _FavoritesScreenState createState() => _FavoritesScreenState();
-}
-
-class _FavoritesScreenState extends State<FavoritesScreen> {
-  final List<Map<String, dynamic>> products = [
-    {'name': 'Nike Air Max Pegasus 39', 'price': 120.00, 'rating': 4.5, 'image': 'https://via.placeholder.com/150/FF0000/FFFFFF?text=Shoe', 'liked': true},
-    {'name': 'Sony WH-1000XM4 Noise Canceling', 'price': 348.00, 'rating': 4.8, 'image': 'https://via.placeholder.com/150/000000/FFFFFF?text=Headphones', 'stock': true, 'liked': true},
-    {'name': 'Premium Cotton Classic T-Shirt', 'price': 25.00, 'oldPrice': 35.00, 'rating': 4.0, 'image': 'https://via.placeholder.com/150/FFFFFF/000000?text=Shirt', 'sale': true, 'liked': true},
-    {'name': 'Genuine Leather Bifold Wallet', 'price': 45.00, 'rating': 4.7, 'image': 'https://via.placeholder.com/150/8B4513/FFFFFF?text=Wallet', 'liked': true},
-  ];
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
+
+    if (authState is! AuthAuthenticated) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(AppStrings.favorites),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+        ),
+        body: const Center(child: Text('Please login to view favorites')),
+      );
+    }
+
+    final userId = authState.user.id;
+
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: Text('Favorites'),
-        actions: [
-          IconButton(icon: Icon(Icons.filter_list), onPressed: () {}),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${products.length} items saved', style: TextStyle(color: Colors.grey)),
-                TextButton(onPressed: () {}, child: Text('Select All')),
-              ],
-            ),
+        title: Text(
+          AppStrings.favorites,
+          style: TextStyle(
+            fontSize: ResponsiveHelper.getSubtitleFontSize(context),
+            fontWeight: FontWeight.w700,
           ),
-          Expanded(
-            child: GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.75,
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('favorites')
+            .where('userId', isEqualTo: userId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Stack(
-                        children: [
-                          Container(
-                            height: 140,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(product['image']),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  product['liked'] = !product['liked'];
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  product['liked'] ? Icons.favorite : Icons.favorite_border,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (product['sale'] == true)
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text('SALE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                          if (product['stock'] == true)
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text('LOW STOCK', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                        ],
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading favorites',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      '${snapshot.error}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(product['name'], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12)),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.star, color: Colors.orange, size: 14),
-                                Text(' ${product['rating']}', style: TextStyle(fontSize: 12)),
-                              ],
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Text('\$${product['price'].toStringAsFixed(2)}', style: TextStyle(fontWeight: FontWeight.bold)),
-                                if (product['oldPrice'] != null) ...[
-                                  SizedBox(width: 4),
-                                  Text('\$${product['oldPrice']}', style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey, fontSize: 12)),
-                                ],
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: Text('ADD', style: TextStyle(fontSize: 12)),
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return EmptyStateWidget(
+              title: 'No Favorites Yet',
+              message: 'Start adding products to your favorites',
+              icon: Icons.favorite_border,
+              action: null,
+            );
+          }
+
+          final favoriteProductIds = snapshot.data!.docs
+              .map(
+                (doc) =>
+                    (doc.data() as Map<String, dynamic>)['productId']
+                        as String?,
+              )
+              .whereType<String>()
+              .toList();
+
+          if (favoriteProductIds.isEmpty) {
+            return EmptyStateWidget(
+              title: 'No Favorites Yet',
+              message: 'Start adding products to your favorites',
+              icon: Icons.favorite_border,
+              action: null,
+            );
+          }
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('products')
+                .where(FieldPath.documentId, whereIn: favoriteProductIds)
+                .snapshots(),
+            builder: (context, productSnapshot) {
+              if (productSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
                   ),
                 );
-              },
-            ),
-          ),
-        ],
+              }
+
+              if (productSnapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error loading products: ${productSnapshot.error}',
+                  ),
+                );
+              }
+
+              if (!productSnapshot.hasData ||
+                  productSnapshot.data!.docs.isEmpty) {
+                return EmptyStateWidget(
+                  title: 'No Products Found',
+                  message: 'The favorited products are no longer available',
+                  icon: Icons.inventory_2_outlined,
+                  action: null,
+                );
+              }
+
+              final products = productSnapshot.data!.docs
+                  .map((doc) {
+                    try {
+                      final data = doc.data() as Map<String, dynamic>;
+                      data['id'] = doc.id;
+                      return ProductModel.fromJson(data);
+                    } catch (e) {
+                      return null;
+                    }
+                  })
+                  .whereType<ProductModel>()
+                  .toList();
+
+              return Column(
+                children: [
+                  // Header with count
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${products.length} ${products.length == 1 ? 'item' : 'items'} saved',
+                          style: TextStyle(
+                            fontSize: ResponsiveHelper.getBodyFontSize(context),
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Icon(
+                          Icons.favorite,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Products Grid
+                  Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveHelper.getHorizontalPadding(
+                          context,
+                        ),
+                      ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: ResponsiveHelper.getGridColumns(
+                          context,
+                        ),
+                        crossAxisSpacing: ResponsiveHelper.getGridSpacing(
+                          context,
+                        ),
+                        mainAxisSpacing: ResponsiveHelper.getGridSpacing(
+                          context,
+                        ),
+                        childAspectRatio:
+                            ResponsiveHelper.getProductCardAspectRatio(context),
+                      ),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return ProductCard(
+                          product: product,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProductDetailsScreen(product: product),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
   }
