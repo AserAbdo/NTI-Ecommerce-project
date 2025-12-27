@@ -88,7 +88,7 @@ class _SignupScreenState extends State<SignupScreen>
         return;
       }
 
-      context.read<AuthCubit>().signup(
+      context.read<AuthCubit>().signUp(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
@@ -308,40 +308,6 @@ class _SignupScreenState extends State<SignupScreen>
                           text: 'Sign Up',
                           onPressed: _signup,
                           isLoading: isLoading,
-                        ),
-
-                        SizedBox(
-                          height: ResponsiveHelper.isSmallMobile(context)
-                              ? 24
-                              : 32,
-                        ),
-
-                        // Divider
-                        const AuthDivider(text: 'Or continue with'),
-
-                        SizedBox(
-                          height: ResponsiveHelper.isSmallMobile(context)
-                              ? 24
-                              : 32,
-                        ),
-
-                        // Social Login Buttons
-                        SocialLoginButton(
-                          text: 'Continue with Google',
-                          iconPath: 'assets/icons/google.png',
-                          onPressed: () {
-                            // TODO: Implement Google signup
-                          },
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        SocialLoginButton(
-                          text: 'Continue with Facebook',
-                          iconPath: 'assets/icons/facebook.png',
-                          onPressed: () {
-                            // TODO: Implement Facebook signup
-                          },
                         ),
 
                         SizedBox(
