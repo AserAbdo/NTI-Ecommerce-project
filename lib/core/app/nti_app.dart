@@ -15,6 +15,7 @@ import '../../features/favorites/cubits/favorites_cubit.dart';
 import '../../features/home/cubits/carousel_cubit.dart';
 import '../../features/orders/cubits/orders_cubit.dart';
 import '../../features/products/cubits/products_cubit.dart';
+import '../../features/profile/cubits/profile_stats_cubit.dart';
 
 /// Root widget of the NTI E-Commerce application
 class NTIApp extends StatelessWidget {
@@ -32,6 +33,9 @@ class NTIApp extends StatelessWidget {
         BlocProvider<CarouselCubit>(create: (context) => CarouselCubit()),
         BlocProvider<FavoritesCubit>(
           create: (context) => FavoritesCubit(userId: 'guest'),
+        ),
+        BlocProvider<ProfileStatsCubit>(
+          create: (context) => ProfileStatsCubit(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
@@ -74,10 +78,14 @@ class NTIApp extends StatelessWidget {
 
       // Load user's orders
       context.read<OrdersCubit>().fetchUserOrders(userId);
+
+      // Load profile stats
+      context.read<ProfileStatsCubit>().loadStats(userId);
     } else if (authState is AuthUnauthenticated) {
       // Clear user-specific data
       context.read<FavoritesCubit>().updateUserId('guest');
       context.read<FavoritesCubit>().clear();
+      context.read<ProfileStatsCubit>().clearStats();
     }
   }
 }

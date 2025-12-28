@@ -1,46 +1,41 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import 'auth_state.dart';
-import '../../coupons/services/coupon_service.dart';
+import '../../../data/repositories/auth_repository.dart';
+import '../../../data/di/service_locator.dart';
 import '../../../services/local_notification_service.dart';
 
+/// AuthCubit using Repository Pattern with Dependency Injection
+/// All Firebase operations are delegated to AuthRepository
 class AuthCubit extends Cubit<AuthState> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthRepository _authRepository;
 
-  AuthCubit() : super(AuthInitial());
+  AuthCubit({AuthRepository? authRepository})
+    : _authRepository =
+          authRepository ?? ServiceLocator.instance.authRepository,
+      super(AuthInitial());
 
+  /// Check if user is already authenticated
   Future<void> checkAuthStatus() async {
     try {
-      final currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        print('🔍 Checking auth status for user: ${currentUser.uid}');
+      final user = await _authRepository.getCurrentUser();
 
-        final userDoc = await _firestore
-            .collection('users')
-            .doc(currentUser.uid)
-            .get();
-
-        if (userDoc.exists && userDoc.data() != null) {
-          final user = UserModel.fromJson(userDoc.data()!);
-          print('✅ User authenticated: ${user.email}');
-          emit(AuthAuthenticated(user));
-        } else {
-          print('⚠️ User exists in Auth but not in Firestore');
-          emit(AuthUnauthenticated());
-        }
+      if (user != null) {
+        if (kDebugMode) debugPrint('✅ User authenticated: ${user.email}');
+        emit(AuthAuthenticated(user));
       } else {
-        print('ℹ️ No authenticated user found');
+        if (kDebugMode) debugPrint('ℹ️ No authenticated user found');
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      print('❌ Error checking auth status: $e');
+      if (kDebugMode) debugPrint('❌ Error checking auth status: $e');
       emit(AuthUnauthenticated());
     }
   }
 
+  /// Register a new user
   Future<void> signUp({
     required String name,
     required String email,
@@ -50,138 +45,80 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     try {
       emit(AuthLoading());
-      print('📝 Starting signup process for: $email');
+      if (kDebugMode) debugPrint('📝 Starting signup process for: $email');
 
-      // Step 1: Create user in Firebase Authentication
-      print('🔐 Creating user in Firebase Auth...');
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (userCredential.user == null) {
-        throw Exception('Failed to create user in Firebase Auth');
-      }
-
-      print('✅ User created in Firebase Auth: ${userCredential.user!.uid}');
-
-      // Step 2: Create user model
-      final user = UserModel(
-        id: userCredential.user!.uid,
+      // Repository handles validation, Firebase Auth, Firestore, and coupon
+      final user = await _authRepository.signUp(
         name: name,
         email: email,
         phone: phone,
         address: address,
+        password: password,
       );
 
-      print('📄 User model created: ${user.toJson()}');
-
-      // Step 3: Save user to Firestore
-      print('💾 Saving user to Firestore...');
-
-      await _firestore
-          .collection('users')
-          .doc(user.id)
-          .set(user.toJson(), SetOptions(merge: false));
-
-      print('✅ User saved to Firestore successfully');
-
-      // Step 4: Add welcome coupon for new user
-      print('🎟️ Adding welcome coupon for new user...');
-      await CouponService.addWelcomeCoupon(user.id);
-      print('✅ Welcome coupon added successfully');
-
-      // Step 5: Show welcome notification about coupon
+      // Show welcome notification about coupon
       await LocalNotificationService.showWelcomeCouponNotification();
-      print('🔔 Welcome notification sent');
+      if (kDebugMode) debugPrint('🔔 Welcome notification sent');
 
       emit(AuthAuthenticated(user));
-      print('🎉 Signup completed successfully for: $email');
+      if (kDebugMode)
+        debugPrint('🎉 Signup completed successfully for: $email');
+    } on ValidationException catch (e) {
+      // Validation errors from repository
+      if (kDebugMode) debugPrint('⚠️ Validation error: ${e.message}');
+      emit(AuthError(e.message));
     } on FirebaseAuthException catch (e) {
-      print('❌ Firebase Auth error during signup: ${e.code} - ${e.message}');
-
-      // If auth succeeded but Firestore failed, delete the auth user
-      if (_auth.currentUser != null) {
-        print('🧹 Cleaning up auth user due to Firestore error...');
-        try {
-          await _auth.currentUser!.delete();
-        } catch (deleteError) {
-          print('⚠️ Failed to delete auth user: $deleteError');
-        }
-      }
-
+      if (kDebugMode) debugPrint('❌ Firebase Auth error: ${e.code}');
       emit(AuthError(_getAuthErrorMessage(e.code)));
     } on FirebaseException catch (e) {
-      print('❌ Firestore error during signup: ${e.code} - ${e.message}');
-      print('📋 Full error: $e');
-
-      // Clean up auth user since Firestore failed
-      if (_auth.currentUser != null) {
-        print('🧹 Cleaning up auth user due to Firestore error...');
-        try {
-          await _auth.currentUser!.delete();
-        } catch (deleteError) {
-          print('⚠️ Failed to delete auth user: $deleteError');
-        }
-      }
-
+      if (kDebugMode) debugPrint('❌ Firebase error: ${e.code}');
       emit(AuthError(_getFirestoreErrorMessage(e.code)));
     } catch (e) {
-      print('❌ Unexpected error during signup: $e');
-      print('📋 Error type: ${e.runtimeType}');
-
-      // If auth succeeded but Firestore failed, delete the auth user
-      if (_auth.currentUser != null) {
-        print('🧹 Cleaning up auth user due to unexpected error...');
-        try {
-          await _auth.currentUser!.delete();
-        } catch (deleteError) {
-          print('⚠️ Failed to delete auth user: $deleteError');
-        }
-      }
-
-      emit(AuthError('Failed to save user data. Please try again.'));
+      if (kDebugMode) debugPrint('❌ Unexpected error during signup: $e');
+      emit(AuthError('Failed to create account. Please try again.'));
     }
   }
 
+  /// Login with email and password
   Future<void> login({required String email, required String password}) async {
     try {
       emit(AuthLoading());
-      print('🔑 Starting login process for: $email');
+      if (kDebugMode) debugPrint('🔑 Starting login process for: $email');
 
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final user = await _authRepository.signIn(
         email: email,
         password: password,
       );
 
-      print('✅ User authenticated: ${userCredential.user!.uid}');
-
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-
-      if (userDoc.exists && userDoc.data() != null) {
-        final user = UserModel.fromJson(userDoc.data()!);
-        print('✅ User data retrieved from Firestore');
-        emit(AuthAuthenticated(user));
-      } else {
-        print('❌ User data not found in Firestore');
-        emit(AuthError('User data not found. Please contact support.'));
-      }
+      if (kDebugMode) debugPrint('✅ Login successful for: ${user.email}');
+      emit(AuthAuthenticated(user));
+    } on ValidationException catch (e) {
+      if (kDebugMode) debugPrint('⚠️ Validation error: ${e.message}');
+      emit(AuthError(e.message));
     } on FirebaseAuthException catch (e) {
-      print('❌ Firebase Auth error during login: ${e.code} - ${e.message}');
+      if (kDebugMode) debugPrint('❌ Firebase Auth error: ${e.code}');
       emit(AuthError(_getAuthErrorMessage(e.code)));
     } catch (e) {
-      print('❌ Unexpected error during login: $e');
+      if (kDebugMode) debugPrint('❌ Unexpected error during login: $e');
       emit(AuthError('An error occurred. Please try again.'));
     }
   }
 
+  /// Logout current user
   Future<void> logout() async {
-    print('👋 Logging out user');
-    await _auth.signOut();
-    emit(AuthUnauthenticated());
+    try {
+      if (kDebugMode) debugPrint('👋 Logging out user');
+      await _authRepository.signOut();
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      if (kDebugMode) debugPrint('❌ Error during logout: $e');
+      emit(AuthUnauthenticated());
+    }
+  }
+
+  /// Get cached user for offline mode
+  Future<UserModel?> getCachedUser() async {
+    return await _authRepository.getCachedUser();
   }
 
   String _getAuthErrorMessage(String code) {
@@ -196,6 +133,8 @@ class AuthCubit extends Cubit<AuthState> {
         return 'Email already registered.';
       case 'weak-password':
         return 'Password is too weak.';
+      case 'invalid-credential':
+        return 'Invalid email or password.';
       default:
         return 'Authentication failed. Please try again.';
     }
@@ -204,15 +143,15 @@ class AuthCubit extends Cubit<AuthState> {
   String _getFirestoreErrorMessage(String code) {
     switch (code) {
       case 'permission-denied':
-        return 'Permission denied. Please check Firestore security rules.';
+        return 'Permission denied. Please try again later.';
       case 'unavailable':
-        return 'Firestore service is currently unavailable. Please try again.';
+        return 'Service temporarily unavailable. Please try again.';
       case 'not-found':
-        return 'Database not found.';
+        return 'User data not found.';
       case 'already-exists':
         return 'User already exists.';
       default:
-        return 'Database error: $code. Please try again.';
+        return 'An error occurred. Please try again.';
     }
   }
 }

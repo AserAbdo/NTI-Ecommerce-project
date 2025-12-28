@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -26,6 +25,7 @@ import 'addresses_screen.dart';
 import 'payment_methods_screen.dart';
 import 'change_password_screen.dart';
 import '../../notifications/screens/notifications_screen.dart';
+import '../cubits/profile_stats_cubit.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -241,85 +241,46 @@ class _AccountScreenState extends State<AccountScreen>
       return const SizedBox.shrink();
     }
 
-    final userId = authState.user.id;
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
       ),
-      child: Row(
-        children: [
-          // Orders Count
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('orders')
-                  .where('userId', isEqualTo: userId)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                final count = snapshot.data?.docs.length ?? 0;
-                return ProfileStatCard(
+      child: BlocBuilder<ProfileStatsCubit, ProfileStatsState>(
+        builder: (context, statsState) {
+          return Row(
+            children: [
+              // Orders Count
+              Expanded(
+                child: ProfileStatCard(
                   icon: Icons.shopping_bag_outlined,
                   label: 'Orders',
-                  value: count.toString(),
+                  value: statsState.ordersCount.toString(),
                   color: Colors.blue,
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Favorites Count
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(userId)
-                  .collection('favorites')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                final count = snapshot.data?.docs.length ?? 0;
-                return ProfileStatCard(
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Favorites Count
+              Expanded(
+                child: ProfileStatCard(
                   icon: Icons.favorite_outline,
                   label: 'Favorites',
-                  value: count.toString(),
+                  value: statsState.favoritesCount.toString(),
                   color: Colors.red,
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Coupons Count
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(userId)
-                  .collection('coupons')
-                  .where('isUsed', isEqualTo: false)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                int count = 0;
-                if (snapshot.hasData) {
-                  // Filter for valid coupons (not expired)
-                  final now = DateTime.now();
-                  count = snapshot.data!.docs.where((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    final expiresAt = data['expiresAt'] != null
-                        ? DateTime.tryParse(data['expiresAt'].toString())
-                        : null;
-                    return expiresAt == null || expiresAt.isAfter(now);
-                  }).length;
-                }
-                return ProfileStatCard(
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Coupons Count
+              Expanded(
+                child: ProfileStatCard(
                   icon: Icons.local_offer_outlined,
                   label: 'Coupons',
-                  value: count.toString(),
+                  value: statsState.couponsCount.toString(),
                   color: Colors.orange,
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
