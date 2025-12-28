@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../../onboarding/services/onboarding_service.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/auth_state.dart';
 
@@ -161,11 +162,20 @@ class _SplashScreenState extends State<SplashScreen>
     final size = MediaQuery.of(context).size;
 
     return BlocListener<AuthCubit, AuthState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is AuthAuthenticated) {
           Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else if (state is AuthUnauthenticated) {
-          Navigator.pushReplacementNamed(context, AppRoutes.login);
+          // Check if onboarding should be shown
+          final shouldShowOnboarding =
+              await OnboardingService.shouldShowOnboarding();
+          if (context.mounted) {
+            if (shouldShowOnboarding) {
+              Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+            } else {
+              Navigator.pushReplacementNamed(context, AppRoutes.login);
+            }
+          }
         }
       },
       child: Scaffold(

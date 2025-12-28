@@ -5,7 +5,7 @@ import '../../../core/constants/app_colors.dart';
 class AuthLogo extends StatelessWidget {
   final double size;
 
-  const AuthLogo({super.key, this.size = 100});
+  const AuthLogo({super.key, this.size = 120});
 
   @override
   Widget build(BuildContext context) {
@@ -13,25 +13,23 @@ class AuthLogo extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, Color(0xFF9C27B0)],
-        ),
-        borderRadius: BorderRadius.circular(size * 0.28),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(size * 0.2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.4),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 30,
             offset: const Offset(0, 15),
           ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.8),
+            blurRadius: 20,
+            spreadRadius: 5,
+          ),
         ],
       ),
-      child: Icon(
-        Icons.shopping_bag_rounded,
-        color: Colors.white,
-        size: size * 0.5,
-      ),
+      padding: EdgeInsets.all(size * 0.15),
+      child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
     );
   }
 }

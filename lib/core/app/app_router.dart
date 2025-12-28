@@ -5,6 +5,7 @@ import '../../core/constants/app_routes.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/signup_screen.dart';
 import '../../features/auth/screens/splash_screen.dart';
+import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/cart/cubits/cart_state.dart';
 import '../../features/cart/screens/cart_screen.dart';
 import '../../features/chatbot/cubits/chat_cubit.dart';
@@ -29,6 +30,9 @@ class AppRouter {
       // ==================== Auth Routes ====================
       case AppRoutes.splash:
         return _buildRoute(const SplashScreen());
+
+      case AppRoutes.onboarding:
+        return _buildRoute(const OnboardingScreen());
 
       case AppRoutes.login:
         return _buildRoute(const LoginScreen());
