@@ -14,21 +14,23 @@ class CartCubit extends Cubit<CartState> {
   List<CartItemModel> _cachedItems = [];
   double _cachedTotal = 0.0;
 
-  /// Load cart from Firestore
+  /// Load cart from Firestore - items stored directly in document
   Future<void> loadCart(String userId) async {
     try {
       emit(CartLoading());
 
-      final snapshot = await _firestore
-          .collection('carts')
-          .doc(userId)
-          .collection('items')
-          .orderBy('addedAt', descending: true)
-          .get();
+      final doc = await _firestore.collection('carts').doc(userId).get();
 
-      final items = snapshot.docs
-          .map((doc) => CartItemModel.fromJson(doc.data()))
-          .toList();
+      List<CartItemModel> items = [];
+
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data()!;
+        final productsArray = data['products'] as List<dynamic>? ?? [];
+
+        items = productsArray
+            .map((item) => CartItemModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
 
       final totalPrice = _calculateTotal(items);
 
@@ -48,14 +50,13 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  /// Add product to cart
+  /// Add product to cart - stored in products array
   Future<void> addToCart(
     String userId,
     ProductModel product, {
     int quantity = 1,
   }) async {
     try {
-      // Show operation in progress
       emit(
         CartOperationInProgress(
           items: _cachedItems,
@@ -65,24 +66,32 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
 
-      final docRef = _firestore
-          .collection('carts')
-          .doc(userId)
-          .collection('items')
-          .doc(product.id);
-
+      final docRef = _firestore.collection('carts').doc(userId);
       final doc = await docRef.get();
+
+      List<Map<String, dynamic>> products = [];
+
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data()!;
+        products = List<Map<String, dynamic>>.from(
+          (data['products'] as List<dynamic>? ?? []).map(
+            (e) => Map<String, dynamic>.from(e),
+          ),
+        );
+      }
+
+      // Check if product already exists
+      final existingIndex = products.indexWhere(
+        (item) => item['productId'] == product.id,
+      );
 
       CartItemModel newItem;
 
-      if (doc.exists) {
-        // Update existing item
-        final existing = CartItemModel.fromJson(doc.data()!);
-        newItem = existing.copyWith(quantity: existing.quantity + quantity);
-        await docRef.update({
-          'quantity': newItem.quantity,
-          'addedAt': FieldValue.serverTimestamp(),
-        });
+      if (existingIndex >= 0) {
+        // Update quantity
+        final currentQty = products[existingIndex]['quantity'] as int? ?? 0;
+        products[existingIndex]['quantity'] = currentQty + quantity;
+        newItem = CartItemModel.fromJson(products[existingIndex]);
       } else {
         // Add new item
         newItem = CartItemModel(
@@ -91,19 +100,21 @@ class CartCubit extends Cubit<CartState> {
           price: product.price,
           imageUrl: product.imageUrl,
           quantity: quantity,
-          rating: product.rating,
-          reviewsCount: product.reviewsCount,
+          description: product.description,
         );
-        await docRef.set({
-          ...newItem.toJson(),
-          'addedAt': FieldValue.serverTimestamp(),
-        });
+        products.add(newItem.toJson());
       }
 
-      // Reload to get fresh data
+      // Save to Firestore
+      await docRef.set({
+        'products': products,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      // Reload cart
       await loadCart(userId);
 
-      // Emit success state briefly
+      // Emit success
       final currentState = state;
       if (currentState is CartLoaded) {
         emit(
@@ -113,7 +124,6 @@ class CartCubit extends Cubit<CartState> {
             totalPrice: currentState.totalPrice,
           ),
         );
-        // Return to loaded state
         await Future.delayed(const Duration(milliseconds: 100));
         emit(currentState);
       }
@@ -125,7 +135,6 @@ class CartCubit extends Cubit<CartState> {
           previousTotal: _cachedTotal,
         ),
       );
-      // Restore previous state
       if (_cachedItems.isNotEmpty) {
         emit(CartLoaded(items: _cachedItems, totalPrice: _cachedTotal));
       }
@@ -139,7 +148,6 @@ class CartCubit extends Cubit<CartState> {
     int quantity,
   ) async {
     try {
-      // Show operation in progress
       emit(
         CartOperationInProgress(
           items: _cachedItems,
@@ -149,23 +157,38 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
 
-      final docRef = _firestore
-          .collection('carts')
-          .doc(userId)
-          .collection('items')
-          .doc(productId);
+      final docRef = _firestore.collection('carts').doc(userId);
+      final doc = await docRef.get();
 
-      if (quantity <= 0) {
-        // Remove item if quantity is 0 or negative
-        await docRef.delete();
-      } else {
-        await docRef.update({
-          'quantity': quantity,
-          'addedAt': FieldValue.serverTimestamp(),
-        });
+      if (!doc.exists || doc.data() == null) {
+        throw Exception('Cart not found');
       }
 
-      // Reload cart
+      final data = doc.data()!;
+      List<Map<String, dynamic>> products = List<Map<String, dynamic>>.from(
+        (data['products'] as List<dynamic>? ?? []).map(
+          (e) => Map<String, dynamic>.from(e),
+        ),
+      );
+
+      if (quantity <= 0) {
+        // Remove item
+        products.removeWhere((item) => item['productId'] == productId);
+      } else {
+        // Update quantity
+        final index = products.indexWhere(
+          (item) => item['productId'] == productId,
+        );
+        if (index >= 0) {
+          products[index]['quantity'] = quantity;
+        }
+      }
+
+      await docRef.update({
+        'products': products,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
       await loadCart(userId);
     } catch (e) {
       emit(
@@ -175,7 +198,6 @@ class CartCubit extends Cubit<CartState> {
           previousTotal: _cachedTotal,
         ),
       );
-      // Restore previous state
       if (_cachedItems.isNotEmpty) {
         emit(CartLoaded(items: _cachedItems, totalPrice: _cachedTotal));
       }
@@ -203,7 +225,6 @@ class CartCubit extends Cubit<CartState> {
   /// Remove item from cart
   Future<void> removeFromCart(String userId, String productId) async {
     try {
-      // Show operation in progress
       emit(
         CartOperationInProgress(
           items: _cachedItems,
@@ -213,18 +234,29 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
 
-      final docRef = _firestore
-          .collection('carts')
-          .doc(userId)
-          .collection('items')
-          .doc(productId);
+      final docRef = _firestore.collection('carts').doc(userId);
+      final doc = await docRef.get();
 
-      await docRef.delete();
+      if (!doc.exists || doc.data() == null) {
+        throw Exception('Cart not found');
+      }
 
-      // Reload cart
+      final data = doc.data()!;
+      List<Map<String, dynamic>> products = List<Map<String, dynamic>>.from(
+        (data['products'] as List<dynamic>? ?? []).map(
+          (e) => Map<String, dynamic>.from(e),
+        ),
+      );
+
+      products.removeWhere((item) => item['productId'] == productId);
+
+      await docRef.update({
+        'products': products,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
       await loadCart(userId);
 
-      // Emit success state briefly
       final currentState = state;
       if (currentState is CartLoaded) {
         emit(
@@ -234,7 +266,6 @@ class CartCubit extends Cubit<CartState> {
             totalPrice: currentState.totalPrice,
           ),
         );
-        // Return to loaded state
         await Future.delayed(const Duration(milliseconds: 100));
         emit(currentState);
       }
@@ -246,7 +277,6 @@ class CartCubit extends Cubit<CartState> {
           previousTotal: _cachedTotal,
         ),
       );
-      // Restore previous state
       if (_cachedItems.isNotEmpty) {
         emit(CartLoaded(items: _cachedItems, totalPrice: _cachedTotal));
       }
@@ -256,7 +286,6 @@ class CartCubit extends Cubit<CartState> {
   /// Clear entire cart
   Future<void> clearCart(String userId) async {
     try {
-      // Show operation in progress
       emit(
         CartOperationInProgress(
           items: _cachedItems,
@@ -265,26 +294,16 @@ class CartCubit extends Cubit<CartState> {
         ),
       );
 
-      final snapshot = await _firestore
-          .collection('carts')
-          .doc(userId)
-          .collection('items')
-          .get();
+      await _firestore.collection('carts').doc(userId).set({
+        'products': [],
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
 
-      // Delete all items in batch
-      final batch = _firestore.batch();
-      for (final doc in snapshot.docs) {
-        batch.delete(doc.reference);
-      }
-      await batch.commit();
-
-      // Clear cache
       _cachedItems = [];
       _cachedTotal = 0.0;
 
       emit(CartCleared());
 
-      // Return to empty loaded state
       await Future.delayed(const Duration(milliseconds: 100));
       emit(CartLoaded(items: [], totalPrice: 0.0));
     } catch (e) {
@@ -295,7 +314,6 @@ class CartCubit extends Cubit<CartState> {
           previousTotal: _cachedTotal,
         ),
       );
-      // Restore previous state
       if (_cachedItems.isNotEmpty) {
         emit(CartLoaded(items: _cachedItems, totalPrice: _cachedTotal));
       }
@@ -325,10 +343,11 @@ class CartCubit extends Cubit<CartState> {
 
   /// Get specific item from cart
   CartItemModel? getItem(String productId) {
-    return _cachedItems.firstWhere(
-      (item) => item.productId == productId,
-      orElse: () => throw Exception('Item not found'),
-    );
+    try {
+      return _cachedItems.firstWhere((item) => item.productId == productId);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Check if product is in cart

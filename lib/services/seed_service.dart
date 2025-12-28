@@ -308,7 +308,7 @@ class SeedService {
       // Supermarket Products
       {
         'id': 'p24',
-        'name': 'Olive Oil 1L',
+        'name': 'Olive Oil',
         'description':
             'Elevate your cooking with this premium extra virgin olive oil, cold-pressed from the finest Mediterranean olives. Rich in antioxidants and heart-healthy monounsaturated fats, this golden oil delivers authentic flavor and aroma. Perfect for salad dressings, marinades, sautéing, and dipping bread. First cold press ensures maximum nutritional value and superior taste. Packaged in dark glass bottle to preserve freshness and quality.',
         'oldPrice': 179.0,
@@ -322,27 +322,27 @@ class SeedService {
       },
       {
         'id': 'p25',
-        'name': 'Pasta 500g',
+        'name': 'Pasta',
         'description':
             'Bring authentic Italian cuisine to your table with this premium durum wheat pasta. Made from 100% semolina flour using traditional bronze die extrusion for perfect sauce adhesion. Cooks to al dente perfection in just 8-10 minutes. Versatile shape works beautifully with any sauce from simple marinara to rich carbonara. High protein content and low glycemic index. No artificial colors or preservatives.',
         'oldPrice': 55.0,
         'newPrice': 45.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://pastaregina.com/wp-content/uploads/2023/02/02-Rice.jpg',
+            'https://www.osmanmarket.com/us/136/pidwebp600/8645/f132996023956271589130-1.png',
         'rating': 4.5,
         'reviewsCount': 98,
       },
       {
         'id': 'p26',
-        'name': 'Rice 5kg',
+        'name': 'Rice',
         'description':
             'Enjoy perfectly fluffy rice every time with this premium long-grain white rice. Carefully selected grains are aged to perfection for optimal texture and flavor. Non-sticky consistency makes it ideal for biryani, pilaf, fried rice, or as a side dish. Rich in essential nutrients and easy to digest. Naturally gluten-free. Each grain cooks separately for restaurant-quality results. Resealable packaging maintains freshness.',
         'oldPrice': 229.0,
         'newPrice': 199.0,
         'category': 'Grocery',
         'imageUrl':
-            'https://f.nooncdn.com/p/pnsku/N28716824A/45/_/1764242500/dcf54894-a3d7-4c0e-b616-bd40d7616374.jpg?width=800',
+            'https://cdn.mafrservices.com/sys-master-root/h3d/h24/61655063461918/334177_main.jpg',
         'rating': 4.6,
         'reviewsCount': 187,
       },
@@ -401,7 +401,7 @@ class SeedService {
       },
       {
         'id': 'p31',
-        'name': 'Eggs 12pcs',
+        'name': 'Eggs',
         'description':
             'Enjoy farm-fresh eggs from free-range hens raised on natural feed. Each carton contains 12 large, Grade A eggs with rich, golden yolks and firm whites. Excellent source of high-quality protein, vitamins, and minerals. Perfect for breakfast, baking, or cooking. Versatile ingredient for omelets, scrambled eggs, cakes, and more. Carefully inspected for quality and freshness. Store refrigerated for best results.',
         'newPrice': 49.0,
@@ -425,7 +425,7 @@ class SeedService {
       },
       {
         'id': 'p33',
-        'name': 'Cheese 500g',
+        'name': 'Cheese',
         'description':
             'Indulge in the rich, creamy flavor of this premium cheddar cheese block aged to perfection. Made from 100% real milk with no artificial ingredients. Sharp, tangy taste with smooth, firm texture ideal for slicing, grating, or melting. Perfect for sandwiches, burgers, mac and cheese, or cheese boards. Excellent source of calcium and protein. Vacuum-sealed packaging maintains freshness. Refrigerate after opening.',
         'oldPrice': 189.0,

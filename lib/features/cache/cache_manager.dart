@@ -48,7 +48,7 @@ class CustomCacheManager extends CacheManager {
     final files = await getFileFromCache(key);
     return {
       'exists': files != null,
-      'validTill': files?.validTill?.toIso8601String(),
+      'validTill': files?.validTill.toIso8601String(),
     };
   }
 }

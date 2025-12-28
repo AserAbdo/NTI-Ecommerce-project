@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../../../services/seed_service.dart';
 import '../../auth/cubits/auth_cubit.dart';
 import '../../auth/cubits/auth_state.dart';
 import '../widgets/profile_header.dart';
@@ -27,6 +29,7 @@ class _AccountScreenState extends State<AccountScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _isSeeding = false;
 
   @override
   void initState() {
@@ -70,12 +73,21 @@ class _AccountScreenState extends State<AccountScreen>
         slivers: [
           // Custom App Bar with Profile Header
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 240,
             floating: false,
             pinned: true,
             backgroundColor: AppColors.primary,
             automaticallyImplyLeading: false,
+            title: const Text(
+              'Profile',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            centerTitle: true,
             flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.pin,
               background: ProfileHeader(
                 userName: user.name,
                 userEmail: user.email,
@@ -111,6 +123,11 @@ class _AccountScreenState extends State<AccountScreen>
 
                     // App Settings Section
                     _buildAppSettingsSection(context),
+
+                    const SizedBox(height: 24),
+
+                    // Developer Tools Section (for seeding)
+                    _buildDevToolsSection(context),
 
                     const SizedBox(height: 24),
 
@@ -237,7 +254,7 @@ class _AccountScreenState extends State<AccountScreen>
             child: ProfileStatCard(
               icon: Icons.local_offer_outlined,
               label: 'Coupons',
-              value: '3',
+              value: '1',
               color: Colors.orange,
             ),
           ),
@@ -436,5 +453,177 @@ class _AccountScreenState extends State<AccountScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
+  }
+
+  Widget _buildDevToolsSection(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.getHorizontalPadding(context),
+      ),
+      child: ProfileSectionCard(
+        title: 'Developer Tools',
+        icon: Icons.developer_mode,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _isSeeding ? null : () => _seedDatabase(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
+                child: _isSeeding
+                    ? _buildSeedingShimmer(isDark)
+                    : Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.cloud_upload_rounded,
+                              color: Colors.green,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Seed Database',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Upload sample products to Firestore',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right_rounded,
+                            size: 24,
+                            color: AppColors.textSecondary,
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSeedingShimmer(bool isDark) {
+    return Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade600 : Colors.grey.shade100,
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 14,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  height: 12,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _seedDatabase(BuildContext context) async {
+    setState(() => _isSeeding = true);
+
+    try {
+      await SeedService.seedProducts();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Database seeded successfully!'),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Error: $e')),
+              ],
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSeeding = false);
+    }
   }
 }

@@ -32,6 +32,12 @@ class HiveService {
     await box.clear();
   }
 
+  static Future<void> saveSearchHistory(List<String> history) async {
+    final box = await Hive.openBox<String>(_searchHistoryBox);
+    await box.clear();
+    await box.addAll(history);
+  }
+
   // Recent Products Methods
   static Future<void> saveRecentProduct(String productId) async {
     final box = await Hive.openBox<String>(_recentProductsBox);

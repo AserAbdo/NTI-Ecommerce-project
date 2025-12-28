@@ -6,8 +6,7 @@ class CartItemModel extends Equatable {
   final double price;
   final String imageUrl;
   final int quantity;
-  final double rating;
-  final int reviewsCount;
+  final String description;
 
   const CartItemModel({
     required this.productId,
@@ -15,8 +14,7 @@ class CartItemModel extends Equatable {
     required this.price,
     required this.imageUrl,
     required this.quantity,
-    this.rating = 0.0,
-    this.reviewsCount = 0,
+    this.description = '',
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
@@ -24,10 +22,9 @@ class CartItemModel extends Equatable {
       productId: json['productId'] as String? ?? '',
       name: json['name'] as String? ?? 'Unknown Product',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: json['imageUrl'] as String? ?? '',
+      imageUrl: json['imageUrl'] ?? json['image'] as String? ?? '',
       quantity: json['quantity'] as int? ?? 1,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      reviewsCount: json['reviewsCount'] as int? ?? 0,
+      description: json['description'] as String? ?? '',
     );
   }
 
@@ -35,10 +32,9 @@ class CartItemModel extends Equatable {
     'productId': productId,
     'name': name,
     'price': price,
-    'imageUrl': imageUrl,
+    'image': imageUrl,
     'quantity': quantity,
-    'rating': rating,
-    'reviewsCount': reviewsCount,
+    'description': description,
   };
 
   CartItemModel copyWith({
@@ -47,8 +43,7 @@ class CartItemModel extends Equatable {
     double? price,
     String? imageUrl,
     int? quantity,
-    double? rating,
-    int? reviewsCount,
+    String? description,
   }) {
     return CartItemModel(
       productId: productId ?? this.productId,
@@ -56,8 +51,7 @@ class CartItemModel extends Equatable {
       price: price ?? this.price,
       imageUrl: imageUrl ?? this.imageUrl,
       quantity: quantity ?? this.quantity,
-      rating: rating ?? this.rating,
-      reviewsCount: reviewsCount ?? this.reviewsCount,
+      description: description ?? this.description,
     );
   }
 
@@ -68,7 +62,6 @@ class CartItemModel extends Equatable {
     price,
     imageUrl,
     quantity,
-    rating,
-    reviewsCount,
+    description,
   ];
 }

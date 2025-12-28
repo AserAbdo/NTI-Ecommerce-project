@@ -11,21 +11,6 @@ class OrderDetailsScreen extends StatelessWidget {
 
   const OrderDetailsScreen({super.key, required this.order});
 
-  Widget _buildStarRating(double rating) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (index) {
-        if (index < rating.floor()) {
-          return const Icon(Icons.star, size: 14, color: Colors.amber);
-        } else if (index < rating) {
-          return const Icon(Icons.star_half, size: 14, color: Colors.amber);
-        } else {
-          return Icon(Icons.star_border, size: 14, color: Colors.grey.shade400);
-        }
-      }),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,32 +141,6 @@ class OrderDetailsScreen extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 6),
-                                  // Rating
-                                  if (item.rating > 0) ...[
-                                    Row(
-                                      children: [
-                                        _buildStarRating(item.rating),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          '${item.rating.toStringAsFixed(1)}',
-                                          style: TextStyle(
-                                            color: AppColors.textSecondary,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '(${item.reviewsCount} reviews)',
-                                          style: TextStyle(
-                                            color: AppColors.textSecondary,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 6),
-                                  ],
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,

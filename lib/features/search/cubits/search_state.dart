@@ -33,9 +33,25 @@ class SearchError extends SearchState {
 
 class RecentProductsLoaded extends SearchState {
   final List<ProductModel> recentProducts;
+  final List<String> searchHistory;
+  final List<String> popularSearches;
 
-  const RecentProductsLoaded(this.recentProducts);
+  const RecentProductsLoaded({
+    required this.recentProducts,
+    this.searchHistory = const [],
+    this.popularSearches = const [],
+  });
 
   @override
-  List<Object?> get props => [recentProducts];
+  List<Object?> get props => [recentProducts, searchHistory, popularSearches];
+}
+
+class SearchSuggestions extends SearchState {
+  final List<String> suggestions;
+  final String query;
+
+  const SearchSuggestions({required this.suggestions, required this.query});
+
+  @override
+  List<Object?> get props => [suggestions, query];
 }
