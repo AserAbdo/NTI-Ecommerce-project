@@ -16,4 +16,5 @@ class AppRoutes {
   static const String account = '/account';
   static const String mainChatBot = '/main-chat-bot';
   static const String chatBot = '/chat-bot';
+  static const String admin = '/admin'; // Admin dashboard
 }

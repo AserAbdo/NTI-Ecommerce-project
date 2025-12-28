@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../../auth/cubits/auth_cubit.dart';
+import '../../auth/cubits/auth_state.dart';
+import '../../cart/cubits/cart_cubit.dart';
 import '../../products/screens/home_screen.dart';
 import '../../orders/screens/orders_screen.dart';
 import '../../favorites/screens/favorites_screen.dart';
@@ -44,6 +48,18 @@ class _MainScreenState extends State<MainScreen>
 
     // Listen to scroll visibility changes
     _scrollController.addListener(_onScrollVisibilityChanged);
+
+    // Load cart and favorites on init
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is AuthAuthenticated) {
+      // Load cart from Firebase
+      context.read<CartCubit>().loadCart(authState.user.id);
+      // Favorites are already loaded in FavoritesCubit constructor
+    }
   }
 
   void _onScrollVisibilityChanged() {
@@ -120,12 +136,20 @@ class _MainScreenState extends State<MainScreen>
       ),
       extendBody: true,
 
-      // Floating Cart Button
+      // Floating Cart Button - hide with navbar when scrolling
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: CartFloatingButton(
-        animationController: _fabAnimationController,
-        isNavbarHidden: isNavbarHidden,
-        navbarHeight: navbarHeight,
+      floatingActionButton: AnimatedSlide(
+        duration: const Duration(milliseconds: 200),
+        offset: isNavbarHidden ? const Offset(0, 2) : Offset.zero,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: isNavbarHidden ? 0.0 : 1.0,
+          child: CartFloatingButton(
+            animationController: _fabAnimationController,
+            isNavbarHidden: isNavbarHidden,
+            navbarHeight: navbarHeight,
+          ),
+        ),
       ),
 
       // Bottom Navigation Bar

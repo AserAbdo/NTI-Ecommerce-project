@@ -19,6 +19,7 @@ import '../../features/orders/screens/order_confirmation_screen.dart';
 import '../../features/products/models/product_model.dart';
 import '../../features/products/screens/home_screen.dart';
 import '../../features/products/screens/product_details_screen.dart';
+import '../../features/admin/screens/admin_dashboard_screen.dart';
 
 /// Handles all app routing and navigation
 class AppRouter {
@@ -71,6 +72,10 @@ class AppRouter {
 
       case AppRoutes.chatBot:
         return _buildChatBotRoute();
+
+      // ==================== Admin Routes ====================
+      case AppRoutes.admin:
+        return _buildAdminRoute();
 
       // ==================== Default Route ====================
       default:
@@ -126,5 +131,10 @@ class AppRouter {
     return _buildRoute(
       BlocProvider(create: (context) => ChatCubit(), child: const ChatScreen()),
     );
+  }
+
+  /// Build admin dashboard route
+  static MaterialPageRoute _buildAdminRoute() {
+    return _buildRoute(const AdminDashboardScreen());
   }
 }

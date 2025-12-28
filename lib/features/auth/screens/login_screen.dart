@@ -132,7 +132,12 @@ class _LoginScreenState extends State<LoginScreen>
 
   void _handleAuthState(BuildContext context, AuthState state) {
     if (state is AuthAuthenticated) {
-      Navigator.pushReplacementNamed(context, AppRoutes.main);
+      // Check if user is admin
+      if (state.user.email.toLowerCase() == 'admin@admin.com') {
+        Navigator.pushReplacementNamed(context, AppRoutes.admin);
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.main);
+      }
     } else if (state is AuthError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
