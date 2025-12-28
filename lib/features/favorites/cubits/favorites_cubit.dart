@@ -69,7 +69,8 @@ class FavoritesCubit extends Cubit<Set<String>> {
         });
   }
 
-  Future<void> toggleFavorite(ProductModel product) async {
+  /// Toggle favorite status. Returns true if added, false if removed.
+  Future<bool> toggleFavorite(ProductModel product) async {
     try {
       final docRef = _firestore
           .collection('favorites')
@@ -82,6 +83,7 @@ class FavoritesCubit extends Cubit<Set<String>> {
         await docRef.delete();
         final newState = Set<String>.from(state)..remove(product.id);
         emit(newState);
+        return false; // Removed from favorites
       } else {
         // Add favorite - save ALL product fields
         await docRef.set({
@@ -100,9 +102,11 @@ class FavoritesCubit extends Cubit<Set<String>> {
         });
         final newState = Set<String>.from(state)..add(product.id);
         emit(newState);
+        return true; // Added to favorites
       }
     } catch (e) {
-      // Handle error silently or show snackbar
+      // Handle error - rethrow to let UI know
+      rethrow;
     }
   }
 }

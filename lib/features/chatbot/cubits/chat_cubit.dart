@@ -5,7 +5,10 @@ import '../models/chat_message.dart';
 import 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  ChatCubit() : super(ChatInitial());
+  final String? userId;
+  final String? userName;
+
+  ChatCubit({this.userId, this.userName}) : super(ChatInitial());
 
   final Dio _dio = Dio();
 
@@ -29,12 +32,12 @@ class ChatCubit extends Cubit<ChatState> {
       emit(ChatError("Failed to load local messages: $e"));
     }
   }
-// need to pass username
+
   Future<void> _addLocalWelcomeMessage() async {
-    // final user = UserStorage.getUserData();
-    // need to fetch userName here
+    // Use the passed userName or default to "صديقي"
+    final displayName = userName?.isNotEmpty == true ? userName! : 'صديقي';
     final welcomeText =
-        "أهلاً بك يا ${'صديقي'}! 👋\nأنا المساعد الذكي الخاص بالمتجر، كيف يمكنني مساعدتك اليوم؟";
+        "أهلاً بك يا $displayName! 👋\nأنا المساعد الذكي الخاص بالمتجر، كيف يمكنني مساعدتك اليوم؟";
 
     final welcomeMsg = ChatMessage(
       text: welcomeText,
@@ -45,7 +48,7 @@ class ChatCubit extends Cubit<ChatState> {
     await _addMessageToBox(welcomeMsg);
     emit(ChatSuccess(messages: List.from(_messages)));
   }
-// making user id passing in this function
+
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
@@ -60,12 +63,13 @@ class ChatCubit extends Cubit<ChatState> {
     emit(ChatSuccess(messages: List.from(_messages), isTyping: true));
 
     try {
-      // final user = UserStorage.getUserData();
-      // need to fetch userId here
+      // Use the passed userId or default
+      final effectiveUserId = userId ?? "guest_user";
+
       final response = await _dio.post(
         _n8nUrl,
         options: Options(headers: {'Content-Type': 'application/json'}),
-        data: {"userId": "zWJ1oaWdmEVeFncV5kMmupLaqkL2", "message": text},
+        data: {"userId": effectiveUserId, "message": text},
       );
 
       final botReplyText =
@@ -85,7 +89,7 @@ class ChatCubit extends Cubit<ChatState> {
         isUser: false,
         time: _getCurrentTime(),
       );
-      print("API Error: $e");
+      await _addMessageToBox(errorMsg);
       emit(ChatSuccess(messages: List.from(_messages), isTyping: false));
     }
   }
