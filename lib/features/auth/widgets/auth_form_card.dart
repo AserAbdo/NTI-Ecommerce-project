@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 
 /// Form container card with glassmorphism effect
 class AuthFormCard extends StatelessWidget {

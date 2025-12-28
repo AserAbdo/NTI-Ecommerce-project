@@ -63,8 +63,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (authState is AuthAuthenticated) {
       _fullNameController.text = authState.user.name;
       _phoneController.text = authState.user.phone;
-      if (authState.user.address != null) {
-        _streetController.text = authState.user.address!;
+      if (authState.user.address.isNotEmpty) {
+        _streetController.text = authState.user.address;
       }
     }
   }

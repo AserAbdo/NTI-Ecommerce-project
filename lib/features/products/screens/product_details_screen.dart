@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ import '../../cart/cubits/cart_cubit.dart';
 import '../../favorites/cubits/favorites_cubit.dart';
 import '../../../services/hive_service.dart';
 import '../models/product_model.dart';
+import '../models/review_model.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductModel product;
@@ -27,10 +29,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   int _quantity = 1;
+  late ProductModel _product;
 
   @override
   void initState() {
     super.initState();
+    _product = widget.product;
     HiveService.saveRecentProduct(widget.product.id);
 
     _animationController = AnimationController(
@@ -56,39 +60,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final authState = context.watch<AuthCubit>().state;
     String? userId;
+    String? userName;
     if (authState is AuthAuthenticated) {
       userId = authState.user.id;
+      userName = authState.user.name;
     }
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          // App Bar
-          _buildAppBar(context, isDark),
+      appBar: _buildAppBar(context, isDark),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Product Image
+            _buildProductImage(isDark),
 
-          // Product Image
-          SliverToBoxAdapter(child: _buildProductImage(isDark)),
-
-          // Product Details
-          SliverToBoxAdapter(
-            child: FadeTransition(
+            // Product Details
+            FadeTransition(
               opacity: _fadeAnimation,
-              child: _buildProductDetails(isDark),
+              child: _buildProductDetails(isDark, userId, userName),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: _buildBottomBar(userId, isDark),
     );
   }
 
-  Widget _buildAppBar(BuildContext context, bool isDark) {
-    return SliverAppBar(
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool isDark) {
+    return AppBar(
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
       elevation: 0,
-      pinned: true,
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: _buildIconButton(
@@ -137,7 +140,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
       tag: 'product-${widget.product.id}',
       child: Container(
         width: double.infinity,
-        height: ResponsiveHelper.getScreenHeight(context) * 0.38,
+        height: ResponsiveHelper.getScreenHeight(context) * 0.35,
         color: isDark ? Colors.black : Colors.white,
         child: Stack(
           children: [
@@ -185,7 +188,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               ),
             ),
 
-            // Discount Badge
+            // Discount Badge - Primary Color
             if (widget.product.oldPrice != null &&
                 widget.product.oldPrice! > widget.product.price)
               Positioned(
@@ -198,12 +201,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.red.shade400, Colors.red.shade600],
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withValues(alpha: 0.8),
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withValues(alpha: 0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -225,7 +231,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
-  Widget _buildProductDetails(bool isDark) {
+  Widget _buildProductDetails(bool isDark, String? userId, String? userName) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -266,7 +272,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
             // Product Name
             Text(
-              widget.product.name,
+              _product.name,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
@@ -279,7 +285,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             const SizedBox(height: 12),
 
             // Rating
-            if (widget.product.reviewsCount > 0) _buildRatingSection(isDark),
+            if (_product.reviewsCount > 0) _buildRatingSection(isDark),
 
             const SizedBox(height: 20),
 
@@ -304,7 +310,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             const SizedBox(height: 28),
 
             // Reviews
-            _buildReviewsSection(isDark),
+            _buildReviewsSection(isDark, userId, userName),
 
             const SizedBox(height: 100),
           ],
@@ -317,7 +323,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Category
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
@@ -330,7 +335,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               Icon(Icons.category_rounded, size: 14, color: AppColors.primary),
               const SizedBox(width: 6),
               Text(
-                widget.product.category,
+                _product.category,
                 style: TextStyle(
                   fontSize: 13,
                   color: AppColors.primary,
@@ -341,10 +346,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           ),
         ),
 
-        // Favorite Button
         BlocBuilder<FavoritesCubit, Set<String>>(
           builder: (context, favs) {
-            final isFav = favs.contains(widget.product.id);
+            final isFav = favs.contains(_product.id);
             return GestureDetector(
               onTap: () async {
                 final authState = context.read<AuthCubit>().state;
@@ -352,45 +356,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   _showLoginSnackBar();
                   return;
                 }
-                await context.read<FavoritesCubit>().toggleFavorite(
-                  widget.product,
-                );
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        isFav ? 'Removed from favorites' : 'Added to favorites',
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                }
+                await context.read<FavoritesCubit>().toggleFavorite(_product);
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isFav
-                      ? Colors.red.shade50
+                      ? AppColors.primary.withValues(alpha: 0.1)
                       : (isDark ? Colors.grey.shade800 : Colors.grey.shade100),
                   shape: BoxShape.circle,
-                  boxShadow: isFav
-                      ? [
-                          BoxShadow(
-                            color: Colors.red.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Icon(
                   isFav ? Icons.favorite : Icons.favorite_border,
                   color: isFav
-                      ? Colors.red
+                      ? AppColors.primary
                       : (isDark
                             ? Colors.grey.shade400
                             : AppColors.textSecondary),
@@ -415,7 +395,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           ...List.generate(5, (index) {
-            final rating = widget.product.rating;
+            final rating = _product.rating;
             if (index < rating.floor()) {
               return const Icon(
                 Icons.star_rounded,
@@ -437,7 +417,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           }),
           const SizedBox(width: 8),
           Text(
-            widget.product.rating.toStringAsFixed(1),
+            _product.rating.toStringAsFixed(1),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -446,7 +426,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           ),
           const SizedBox(width: 6),
           Text(
-            '(${widget.product.reviewsCount})',
+            '(${_product.reviewsCount})',
             style: TextStyle(
               fontSize: 13,
               color: isDark ? Colors.grey.shade400 : AppColors.textSecondary,
@@ -459,8 +439,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   Widget _buildPriceSection(bool isDark) {
     final hasDiscount =
-        widget.product.oldPrice != null &&
-        widget.product.oldPrice! > widget.product.price;
+        _product.oldPrice != null && _product.oldPrice! > _product.price;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -480,7 +459,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             children: [
               if (hasDiscount)
                 Text(
-                  '${widget.product.oldPrice!.toStringAsFixed(0)} ${AppStrings.egp}',
+                  '${_product.oldPrice!.toStringAsFixed(0)} ${AppStrings.egp}',
                   style: TextStyle(
                     fontSize: 14,
                     color: isDark
@@ -493,7 +472,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    widget.product.price.toStringAsFixed(0),
+                    _product.price.toStringAsFixed(0),
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
@@ -516,11 +495,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               ),
             ],
           ),
-          // Stock Badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: widget.product.stock > 0
+              color: _product.stock > 0
                   ? AppColors.success.withValues(alpha: 0.15)
                   : AppColors.error.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),
@@ -528,19 +506,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             child: Row(
               children: [
                 Icon(
-                  widget.product.stock > 0 ? Icons.check_circle : Icons.cancel,
+                  _product.stock > 0 ? Icons.check_circle : Icons.cancel,
                   size: 16,
-                  color: widget.product.stock > 0
+                  color: _product.stock > 0
                       ? AppColors.success
                       : AppColors.error,
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  widget.product.stock > 0 ? 'In Stock' : 'Out of Stock',
+                  _product.stock > 0 ? 'In Stock' : 'Out of Stock',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: widget.product.stock > 0
+                    color: _product.stock > 0
                         ? AppColors.success
                         : AppColors.error,
                   ),
@@ -601,8 +579,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   ),
                 ),
                 _buildQuantityButton(Icons.add, () {
-                  if (_quantity < widget.product.stock)
-                    setState(() => _quantity++);
+                  if (_quantity < _product.stock) setState(() => _quantity++);
                 }, isDark),
               ],
             ),
@@ -633,7 +610,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         _buildSectionTitle('Description', Icons.description_outlined, isDark),
         const SizedBox(height: 12),
         Text(
-          widget.product.description,
+          _product.description,
           style: TextStyle(
             fontSize: 15,
             color: isDark ? Colors.grey.shade400 : AppColors.textSecondary,
@@ -727,7 +704,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
-  Widget _buildReviewsSection(bool isDark) {
+  Widget _buildReviewsSection(bool isDark, String? userId, String? userName) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -735,9 +712,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle('Reviews', Icons.rate_review_outlined, isDark),
-            if (widget.product.reviewsCount > 0)
+            if (_product.reviewsCount > 0)
               Text(
-                '${widget.product.reviewsCount} reviews',
+                '${_product.reviewsCount} reviews',
                 style: TextStyle(
                   fontSize: 13,
                   color: isDark
@@ -749,7 +726,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         ),
         const SizedBox(height: 16),
 
-        if (widget.product.reviews.isEmpty)
+        // Add Review Button
+        if (userId != null)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            child: OutlinedButton.icon(
+              onPressed: () =>
+                  _showAddReviewDialog(isDark, userId, userName ?? 'User'),
+              icon: Icon(Icons.add, color: AppColors.primary),
+              label: Text(
+                'Write a Review',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
+                side: BorderSide(color: AppColors.primary),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+
+        if (_product.reviews.isEmpty)
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
@@ -790,14 +795,270 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             ),
           )
         else
-          ...widget.product.reviews.map(
-            (review) => _buildReviewCard(review, isDark),
-          ),
+          ..._product.reviews.map((review) => _buildReviewCard(review, isDark)),
       ],
     );
   }
 
-  Widget _buildReviewCard(review, bool isDark) {
+  void _showAddReviewDialog(bool isDark, String userId, String userName) {
+    double selectedRating = 5.0;
+    final commentController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Handle
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Title
+                Text(
+                  'Write a Review',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Share your experience with this product',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark
+                        ? Colors.grey.shade400
+                        : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Rating Stars
+                Text(
+                  'Your Rating',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setModalState(() => selectedRating = index + 1.0);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(
+                          index < selectedRating
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          size: 40,
+                          color: Colors.amber,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 24),
+
+                // Comment
+                Text(
+                  'Your Review',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: commentController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText:
+                        'Tell others what you think about this product...',
+                    hintStyle: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade500
+                          : Colors.grey.shade400,
+                    ),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: isDark ? Colors.white : AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Submit Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (commentController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please write a review'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      await _submitReview(
+                        userId,
+                        userName,
+                        selectedRating,
+                        commentController.text.trim(),
+                      );
+                      if (mounted) Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Submit Review',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submitReview(
+    String userId,
+    String userName,
+    double rating,
+    String comment,
+  ) async {
+    try {
+      final newReview = {
+        'userId': userId,
+        'userName': userName,
+        'rating': rating,
+        'comment': comment,
+        'createdAt': Timestamp.now(),
+      };
+
+      // Add review to product document
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(_product.id)
+          .update({
+            'reviews': FieldValue.arrayUnion([newReview]),
+            'reviewsCount': FieldValue.increment(1),
+          });
+
+      // Calculate new average rating
+      final allRatings = _product.reviews.map((r) => r.rating).toList();
+      allRatings.add(rating);
+      final newAvgRating =
+          allRatings.reduce((a, b) => a + b) / allRatings.length;
+
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(_product.id)
+          .update({'rating': newAvgRating});
+
+      // Update local state
+      if (mounted) {
+        setState(() {
+          _product = _product.copyWith(
+            reviews: [
+              ..._product.reviews,
+              ReviewModel(
+                userId: userId,
+                userName: userName,
+                rating: rating,
+                comment: comment,
+                createdAt: DateTime.now(),
+              ),
+            ],
+            reviewsCount: _product.reviewsCount + 1,
+            rating: newAvgRating,
+          );
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Review submitted successfully!'),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to submit review: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildReviewCard(ReviewModel review, bool isDark) {
     final dateFormat = DateFormat('MMM dd, yyyy');
 
     return Container(
@@ -906,7 +1167,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
-  Widget? _buildBottomBar(String? userId, bool isDark) {
+  Widget _buildBottomBar(String? userId, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -922,7 +1183,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
       child: SafeArea(
         child: Row(
           children: [
-            // Total Price
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -939,7 +1199,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${(widget.product.price * _quantity).toStringAsFixed(0)} ${AppStrings.egp}',
+                    '${(_product.price * _quantity).toStringAsFixed(0)} ${AppStrings.egp}',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -949,16 +1209,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 ],
               ),
             ),
-
-            // Add to Cart Button
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: widget.product.stock == 0 || userId == null
+                onPressed: _product.stock == 0 || userId == null
                     ? (userId == null ? () => _showLoginSnackBar() : null)
                     : () => _addToCart(userId),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.product.stock == 0
+                  backgroundColor: _product.stock == 0
                       ? Colors.grey
                       : AppColors.primary,
                   foregroundColor: Colors.white,
@@ -972,14 +1230,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      widget.product.stock == 0
+                      _product.stock == 0
                           ? Icons.remove_shopping_cart
                           : Icons.shopping_cart_outlined,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      widget.product.stock == 0
+                      _product.stock == 0
                           ? 'Out of Stock'
                           : (userId == null ? 'Login to Buy' : 'Add to Cart'),
                       style: const TextStyle(
@@ -1016,7 +1274,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   Future<void> _addToCart(String userId) async {
     await context.read<CartCubit>().addToCart(
       userId,
-      widget.product,
+      _product,
       quantity: _quantity,
     );
 
@@ -1030,7 +1288,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '$_quantity x ${widget.product.name} added',
+                  '$_quantity x ${_product.name} added',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

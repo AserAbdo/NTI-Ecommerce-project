@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/responsive_helper.dart';
 import '../../../core/widgets/snow_effect.dart';
 import '../../search/cubits/search_cubit.dart';
 import '../../search/screens/search_page.dart';

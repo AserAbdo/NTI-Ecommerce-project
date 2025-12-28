@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../../../core/utils/order_utils.dart';

@@ -65,6 +65,36 @@ class ProductModel extends Equatable {
     if (newPrice != null) 'newPrice': newPrice,
   };
 
+  ProductModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    double? price,
+    String? category,
+    String? imageUrl,
+    int? stock,
+    List<ReviewModel>? reviews,
+    double? rating,
+    int? reviewsCount,
+    double? oldPrice,
+    double? newPrice,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      category: category ?? this.category,
+      imageUrl: imageUrl ?? this.imageUrl,
+      stock: stock ?? this.stock,
+      reviews: reviews ?? this.reviews,
+      rating: rating ?? this.rating,
+      reviewsCount: reviewsCount ?? this.reviewsCount,
+      oldPrice: oldPrice ?? this.oldPrice,
+      newPrice: newPrice ?? this.newPrice,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

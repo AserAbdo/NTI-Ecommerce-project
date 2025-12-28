@@ -6,7 +6,6 @@ import '../../../core/utils/responsive_helper.dart';
 import '../../home/widgets/deals_carousel.dart';
 import '../cubits/products_cubit.dart';
 import '../widgets/categories_section.dart';
-import '../widgets/greeting_section.dart';
 import '../widgets/home_app_bar.dart';
 import '../widgets/product_card.dart';
 import '../widgets/products_loading_grid.dart';
@@ -146,14 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
-        // Greeting Section
-        const SliverToBoxAdapter(child: GreetingSection()),
-
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: ResponsiveHelper.isSmallMobile(context) ? 16 : 24,
-          ),
-        ),
+        // Top spacing
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
         // Special Deals Section
         SliverToBoxAdapter(

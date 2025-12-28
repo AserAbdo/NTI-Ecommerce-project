@@ -62,9 +62,11 @@ class _ProductCardState extends State<ProductCard>
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
 
-    final authState = context.watch<AuthCubit>().state;
-    String? userId;
-    if (authState is AuthAuthenticated) userId = authState.user.id;
+    // Only rebuild when userId changes, not entire auth state
+    final userId = context.select<AuthCubit, String?>((cubit) {
+      final state = cubit.state;
+      return state is AuthAuthenticated ? state.user.id : null;
+    });
 
     final discount = _discountPercent();
     final priceFont = ResponsiveHelper.getBodyFontSize(context) + 2;
@@ -93,8 +95,8 @@ class _ProductCardState extends State<ProductCard>
             boxShadow: [
               BoxShadow(
                 color: _isPressed
-                    ? AppColors.primary.withOpacity(0.15)
-                    : Colors.black.withOpacity(0.08),
+                    ? AppColors.primary.withValues(alpha: 0.15)
+                    : Colors.black.withValues(alpha: 0.08),
                 blurRadius: _isPressed ? 12 : 8,
                 offset: Offset(0, _isPressed ? 4 : 6),
                 spreadRadius: _isPressed ? 0 : 1,
@@ -209,8 +211,8 @@ class _ProductCardState extends State<ProductCard>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.05),
-                      AppColors.primary.withOpacity(0.12),
+                      AppColors.primary.withValues(alpha: 0.05),
+                      AppColors.primary.withValues(alpha: 0.12),
                     ],
                   ),
                 ),
@@ -234,8 +236,8 @@ class _ProductCardState extends State<ProductCard>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.08),
-                      AppColors.primary.withOpacity(0.15),
+                      AppColors.primary.withValues(alpha: 0.08),
+                      AppColors.primary.withValues(alpha: 0.15),
                     ],
                   ),
                 ),
@@ -245,14 +247,14 @@ class _ProductCardState extends State<ProductCard>
                     Icon(
                       Icons.image_not_supported_outlined,
                       size: 40,
-                      color: AppColors.textSecondary.withOpacity(0.5),
+                      color: AppColors.textSecondary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Image not available',
                       style: TextStyle(
                         fontSize: 10,
-                        color: AppColors.textSecondary.withOpacity(0.5),
+                        color: AppColors.textSecondary.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -267,9 +269,9 @@ class _ProductCardState extends State<ProductCard>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.05),
-                  AppColors.primary.withOpacity(0.12),
-                  AppColors.primary.withOpacity(0.05),
+                  AppColors.primary.withValues(alpha: 0.05),
+                  AppColors.primary.withValues(alpha: 0.12),
+                  AppColors.primary.withValues(alpha: 0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -309,12 +311,15 @@ class _ProductCardState extends State<ProductCard>
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+            colors: [
+              AppColors.primary,
+              AppColors.primary.withValues(alpha: 0.8),
+            ],
           ),
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
+              color: AppColors.primary.withValues(alpha: 0.4),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
