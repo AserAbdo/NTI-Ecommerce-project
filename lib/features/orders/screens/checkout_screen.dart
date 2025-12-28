@@ -17,8 +17,13 @@ import '../cubits/orders_cubit.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final CartLoaded cartState;
+  final CouponModel? appliedCoupon;
 
-  const CheckoutScreen({super.key, required this.cartState});
+  const CheckoutScreen({
+    super.key,
+    required this.cartState,
+    this.appliedCoupon,
+  });
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -36,12 +41,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _stateController = TextEditingController();
   final _postalCodeController = TextEditingController();
   final _notesController = TextEditingController();
-  final _couponController = TextEditingController();
 
   String _selectedPaymentMethod = 'cash_on_delivery';
   bool _isPlacingOrder = false;
-  bool _isApplyingCoupon = false;
-  CouponModel? _appliedCoupon;
+  late CouponModel? _appliedCoupon;
 
   final List<Map<String, dynamic>> _paymentMethods = [
     {
@@ -61,6 +64,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   void initState() {
     super.initState();
+    _appliedCoupon = widget.appliedCoupon;
     _loadUserInfo();
   }
 
@@ -85,67 +89,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _stateController.dispose();
     _postalCodeController.dispose();
     _notesController.dispose();
-    _couponController.dispose();
     super.dispose();
-  }
-
-  Future<void> _applyCoupon() async {
-    final code = _couponController.text.trim().toLowerCase();
-    if (code.isEmpty) {
-      _showSnackBar('Please enter a coupon code', isError: true);
-      return;
-    }
-
-    final authState = context.read<AuthCubit>().state;
-    if (authState is! AuthAuthenticated) return;
-
-    setState(() {
-      _isApplyingCoupon = true;
-    });
-
-    try {
-      final coupon = await CouponService.validateCoupon(
-        authState.user.id,
-        code,
-      );
-
-      if (coupon != null) {
-        setState(() {
-          _appliedCoupon = coupon;
-        });
-        _showSnackBar(
-          '🎉 Coupon applied! ${coupon.discountPercentage.toInt()}% discount',
-        );
-      } else {
-        _showSnackBar('Invalid or expired coupon code', isError: true);
-      }
-    } catch (e) {
-      _showSnackBar('Error applying coupon: $e', isError: true);
-    } finally {
-      setState(() {
-        _isApplyingCoupon = false;
-      });
-    }
-  }
-
-  void _removeCoupon() {
-    setState(() {
-      _appliedCoupon = null;
-      _couponController.clear();
-    });
-    _showSnackBar('Coupon removed');
-  }
-
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
   }
 
   double get _discountAmount {
@@ -377,13 +321,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            // Coupon Code Section
-            _buildCouponSection(),
-
-            const SizedBox(height: 20),
-
             // Payment Method Section
             _buildSectionCard(
               title: 'Payment Method',
@@ -545,179 +482,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 100),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildCouponSection() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return _buildSectionCard(
-      title: 'Coupon Code',
-      icon: Icons.local_offer_outlined,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (_appliedCoupon == null) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _couponController,
-                    decoration: InputDecoration(
-                      hintText: 'Enter coupon code',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      prefixIcon: Icon(
-                        Icons.confirmation_number_outlined,
-                        color: AppColors.primary,
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? Theme.of(context).cardColor.withOpacity(0.5)
-                          : Colors.grey[100],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                SizedBox(
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isApplyingCoupon ? null : _applyCoupon,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: _isApplyingCoupon
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : const Text(
-                            'Apply',
-                            style: TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Try: elzoz2026 for 50% off!',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.primary,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ] else ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.success.withOpacity(0.15),
-                    AppColors.success.withOpacity(0.05),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: AppColors.success.withOpacity(0.3),
-                  width: 2,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.check_circle_rounded,
-                      color: AppColors.success,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              _appliedCoupon!.code.toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.success,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                '${_appliedCoupon!.discountPercentage.toInt()}% OFF',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'You save EGP ${_discountAmount.toStringAsFixed(0)}!',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.success,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: _removeCoupon,
-                    icon: Icon(Icons.close_rounded, color: Colors.grey[600]),
-                    padding: EdgeInsets.zero,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
       ),
     );
   }

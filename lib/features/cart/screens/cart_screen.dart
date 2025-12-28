@@ -11,6 +11,7 @@ import '../../coupons/services/coupon_service.dart';
 import '../cubits/cart_cubit.dart';
 import '../cubits/cart_state.dart';
 import '../models/cart_item_model.dart';
+import '../../orders/models/checkout_arguments.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -653,7 +654,10 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                       Navigator.pushNamed(
                         context,
                         AppRoutes.checkout,
-                        arguments: state,
+                        arguments: CheckoutArguments(
+                          cartState: state,
+                          appliedCoupon: _appliedCoupon,
+                        ),
                       );
                     },
                     borderRadius: BorderRadius.circular(16),

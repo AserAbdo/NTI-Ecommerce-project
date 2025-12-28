@@ -6,7 +6,7 @@ import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/signup_screen.dart';
 import '../../features/auth/screens/splash_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
-import '../../features/cart/cubits/cart_state.dart';
+import '../../features/orders/models/checkout_arguments.dart';
 import '../../features/cart/screens/cart_screen.dart';
 import '../../features/chatbot/cubits/chat_cubit.dart';
 import '../../features/chatbot/screens/chat_screen.dart';
@@ -96,10 +96,15 @@ class AppRouter {
     return _buildRoute(ProductDetailsScreen(product: product));
   }
 
-  /// Build checkout route with cart state argument
+  /// Build checkout route with cart state and optional coupon argument
   static MaterialPageRoute _buildCheckoutRoute(RouteSettings settings) {
-    final cartState = settings.arguments as CartLoaded;
-    return _buildRoute(CheckoutScreen(cartState: cartState));
+    final args = settings.arguments as CheckoutArguments;
+    return _buildRoute(
+      CheckoutScreen(
+        cartState: args.cartState,
+        appliedCoupon: args.appliedCoupon,
+      ),
+    );
   }
 
   /// Build mock payment route with order argument

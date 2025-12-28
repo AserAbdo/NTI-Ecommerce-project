@@ -292,9 +292,6 @@ class _ProductCardState extends State<ProductCard>
         // Faster fade animation for smoother experience
         fadeInDuration: const Duration(milliseconds: 150),
         fadeOutDuration: const Duration(milliseconds: 150),
-        // Memory cache configuration for better performance
-        memCacheWidth: 400, // Resize for memory efficiency
-        memCacheHeight: 400,
       ),
     );
   }
