@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../services/firebase_service.dart';
+import '../controllers/admin_controller.dart';
+import '../widgets/admin_widgets.dart';
 
 class AdminProductsScreen extends StatefulWidget {
   const AdminProductsScreen({super.key});
@@ -12,8 +13,6 @@ class AdminProductsScreen extends StatefulWidget {
 }
 
 class _AdminProductsScreenState extends State<AdminProductsScreen> {
-  final FirebaseFirestore _firestore = FirebaseService.firestore;
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -22,10 +21,13 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
       children: [
         // Products List
         StreamBuilder<QuerySnapshot>(
-          stream: _firestore.collection('products').orderBy('name').snapshots(),
+          stream: AdminController.getProductsStream(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return _buildErrorState(snapshot.error.toString(), isDark);
+              return AdminErrorState(
+                error: snapshot.error.toString(),
+                isDark: isDark,
+              );
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -35,7 +37,12 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
             final products = snapshot.data?.docs ?? [];
 
             if (products.isEmpty) {
-              return _buildEmptyState(isDark);
+              return AdminEmptyState(
+                icon: Icons.inventory_2_rounded,
+                title: 'No products yet',
+                subtitle: 'Tap the button below to add your first product',
+                isDark: isDark,
+              );
             }
 
             return ListView.builder(
@@ -113,78 +120,6 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.grey[100],
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.inventory_2_rounded,
-              size: 56,
-              color: isDark ? Colors.grey[600] : Colors.grey[400],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'No products yet',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.grey[300] : Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap the button below to add your first product',
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.grey[500] : Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String error, bool isDark) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.error_outline_rounded,
-              size: 48,
-              color: Colors.red,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Error loading products',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.grey[400] : Colors.grey[700],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _deleteProduct(String productId) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -218,7 +153,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     );
 
     if (confirm == true) {
-      await _firestore.collection('products').doc(productId).delete();
+      await AdminController.deleteProduct(productId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -543,16 +478,12 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           };
 
                           if (isEdit) {
-                            await _firestore
-                                .collection('products')
-                                .doc(docId)
-                                .update(productData);
+                            await AdminController.updateProduct(
+                              docId!,
+                              productData,
+                            );
                           } else {
-                            productData['createdAt'] =
-                                FieldValue.serverTimestamp();
-                            await _firestore
-                                .collection('products')
-                                .add(productData);
+                            await AdminController.createProduct(productData);
                           }
 
                           if (mounted) {

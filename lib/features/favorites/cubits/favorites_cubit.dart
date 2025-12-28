@@ -4,18 +4,47 @@ import '../../../services/firebase_service.dart';
 import '../../products/models/product_model.dart';
 
 class FavoritesCubit extends Cubit<Set<String>> {
-  final FirebaseFirestore _firestore = FirebaseService.firestore;
-  final String userId;
+  final FirebaseFirestore _firestore;
+  String _userId;
 
-  FavoritesCubit({required this.userId}) : super(<String>{}) {
-    _loadFavorites();
+  FavoritesCubit({required String userId, FirebaseFirestore? firestore})
+    : _userId = userId,
+      _firestore = firestore ?? FirebaseService.firestore,
+      super(<String>{}) {
+    if (_userId != 'guest') {
+      _loadFavorites();
+    }
+  }
+
+  String get userId => _userId;
+
+  /// Update user ID when auth state changes
+  /// Call this when user logs in or out
+  void updateUserId(String newUserId) {
+    if (_userId == newUserId) return;
+    _userId = newUserId;
+    if (_userId == 'guest') {
+      emit(<String>{}); // Clear favorites for guest
+    } else {
+      _loadFavorites(); // Load favorites for logged-in user
+    }
+  }
+
+  /// Clear favorites (call on logout)
+  void clear() {
+    emit(<String>{});
   }
 
   Future<void> _loadFavorites() async {
+    if (_userId == 'guest') {
+      emit(<String>{});
+      return;
+    }
+
     try {
       final snapshot = await _firestore
           .collection('favorites')
-          .doc(userId)
+          .doc(_userId)
           .collection('items')
           .get();
       final ids = snapshot.docs.map((d) => d.id).toSet();
@@ -26,13 +55,22 @@ class FavoritesCubit extends Cubit<Set<String>> {
     }
   }
 
+  /// Reload favorites from server
+  Future<void> reload() async {
+    await _loadFavorites();
+  }
+
   bool isFavorite(String productId) => state.contains(productId);
 
   /// Stream of favorite products for displaying in FavoritesScreen
   Stream<List<ProductModel>> favoritesStream() {
+    if (_userId == 'guest') {
+      return Stream.value([]);
+    }
+
     return _firestore
         .collection('favorites')
-        .doc(userId)
+        .doc(_userId)
         .collection('items')
         .snapshots()
         .map((snapshot) {
@@ -71,10 +109,14 @@ class FavoritesCubit extends Cubit<Set<String>> {
 
   /// Toggle favorite status. Returns true if added, false if removed.
   Future<bool> toggleFavorite(ProductModel product) async {
+    if (_userId == 'guest') {
+      throw Exception('Please login to add favorites');
+    }
+
     try {
       final docRef = _firestore
           .collection('favorites')
-          .doc(userId)
+          .doc(_userId)
           .collection('items')
           .doc(product.id);
 

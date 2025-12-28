@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../services/firebase_service.dart';
+import '../controllers/admin_controller.dart';
+import '../widgets/admin_widgets.dart';
 import 'admin_products_screen.dart';
 import 'admin_orders_screen.dart';
 
+/// Admin Dashboard Screen - Main entry point for admin panel
+/// Uses clean architecture with separated controller & widgets
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
 
@@ -18,14 +20,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  final List<Widget> _screens = [
-    const AdminProductsScreen(),
-    const AdminOrdersScreen(),
+  final List<Widget> _screens = const [
+    AdminProductsScreen(),
+    AdminOrdersScreen(),
   ];
 
   @override
   void initState() {
     super.initState();
+    _initAnimations();
+  }
+
+  void _initAnimations() {
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -40,6 +46,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  void _onTabSelected(int index) {
+    if (_selectedIndex != index) {
+      setState(() => _selectedIndex = index);
+    }
+  }
+
+  void _logout() {
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -60,10 +76,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
         child: SafeArea(
           child: Column(
             children: [
-              // Header Section
               _buildHeader(isDark),
-
-              // Statistics Section
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: Padding(
@@ -71,39 +84,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                   child: _buildStatisticsGrid(isDark),
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Tab Navigation - Always visible
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _buildTabBar(isDark),
               ),
-
               const SizedBox(height: 16),
-
-              // Content Area
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.05, 0),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    key: ValueKey(_selectedIndex),
-                    child: _screens[_selectedIndex],
-                  ),
-                ),
-              ),
+              Expanded(child: _buildContent()),
             ],
           ),
         ),
@@ -116,216 +103,135 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          // Logo/Avatar
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withValues(alpha: 0.7),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.admin_panel_settings_rounded,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
+          _buildLogo(),
           const SizedBox(width: 16),
+          Expanded(child: _buildTitleSection(isDark)),
+          _buildLogoutButton(isDark),
+        ],
+      ),
+    );
+  }
 
-          // Title
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Admin Panel',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                Text(
-                  'Manage your store',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isDark ? Colors.grey[400] : Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Logout Button
-          Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.1)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: isDark
-                  ? null
-                  : [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.logout_rounded,
-                color: isDark ? Colors.white70 : Colors.grey[700],
-              ),
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('/login');
-              },
-            ),
+  Widget _buildLogo() {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
+        ),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.4),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
+      ),
+      child: const Icon(
+        Icons.admin_panel_settings_rounded,
+        color: Colors.white,
+        size: 28,
+      ),
+    );
+  }
+
+  Widget _buildTitleSection(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Admin Panel',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+            letterSpacing: -0.5,
+          ),
+        ),
+        Text(
+          'Manage your store',
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? Colors.grey[400] : Colors.grey[600],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLogoutButton(bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+      ),
+      child: IconButton(
+        icon: Icon(
+          Icons.logout_rounded,
+          color: isDark ? Colors.white70 : Colors.grey[700],
+        ),
+        onPressed: _logout,
       ),
     );
   }
 
   Widget _buildStatisticsGrid(bool isDark) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseService.firestore.collection('orders').snapshots(),
-      builder: (context, ordersSnapshot) {
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseService.firestore.collection('products').snapshots(),
-          builder: (context, productsSnapshot) {
-            final totalOrders = ordersSnapshot.data?.docs.length ?? 0;
-            final totalProducts = productsSnapshot.data?.docs.length ?? 0;
+    return StreamBuilder<AdminStats>(
+      stream: AdminController.getStatsStream(),
+      builder: (context, snapshot) {
+        final stats = snapshot.data ?? AdminStats.empty();
 
-            double totalRevenue = 0;
-            int pendingOrders = 0;
-
-            if (ordersSnapshot.hasData) {
-              for (var doc in ordersSnapshot.data!.docs) {
-                final data = doc.data() as Map<String, dynamic>;
-                totalRevenue += (data['totalAmount'] ?? 0).toDouble();
-                if (data['status'] == 'pending') pendingOrders++;
-              }
-            }
-
-            return Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Revenue',
-                    'EGP ${totalRevenue.toStringAsFixed(0)}',
-                    Icons.trending_up_rounded,
-                    const [Color(0xFF00B894), Color(0xFF00CEC9)],
-                    isDark,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Orders',
-                    totalOrders.toString(),
-                    Icons.shopping_bag_rounded,
-                    const [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
-                    isDark,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Products',
-                    totalProducts.toString(),
-                    Icons.inventory_2_rounded,
-                    const [Color(0xFFE17055), Color(0xFFFAB1A0)],
-                    isDark,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Pending',
-                    pendingOrders.toString(),
-                    Icons.pending_actions_rounded,
-                    const [Color(0xFFE84393), Color(0xFFFD79A8)],
-                    isDark,
-                  ),
-                ),
-              ],
-            );
-          },
+        return Row(
+          children: [
+            Expanded(
+              child: AdminStatCard(
+                title: 'Revenue',
+                value: 'EGP ${stats.totalRevenue.toStringAsFixed(0)}',
+                icon: Icons.trending_up_rounded,
+                gradientColors: const [Color(0xFF00B894), Color(0xFF00CEC9)],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AdminStatCard(
+                title: 'Orders',
+                value: stats.totalOrders.toString(),
+                icon: Icons.shopping_bag_rounded,
+                gradientColors: const [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AdminStatCard(
+                title: 'Products',
+                value: stats.totalProducts.toString(),
+                icon: Icons.inventory_2_rounded,
+                gradientColors: const [Color(0xFFE17055), Color(0xFFFAB1A0)],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AdminStatCard(
+                title: 'Pending',
+                value: stats.pendingOrders.toString(),
+                icon: Icons.pending_actions_rounded,
+                gradientColors: const [Color(0xFFE84393), Color(0xFFFD79A8)],
+              ),
+            ),
+          ],
         );
       },
-    );
-  }
-
-  Widget _buildStatCard(
-    String title,
-    String value,
-    IconData icon,
-    List<Color> gradientColors,
-    bool isDark,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: gradientColors,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: gradientColors[0].withValues(alpha: 0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.25),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.9),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -348,20 +254,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
       child: Row(
         children: [
           Expanded(
-            child: _buildTabButton(
-              'Products',
-              Icons.inventory_2_rounded,
-              0,
-              isDark,
+            child: AdminTabButton(
+              label: 'Products',
+              icon: Icons.inventory_2_rounded,
+              isSelected: _selectedIndex == 0,
+              onTap: () => _onTabSelected(0),
+              isDark: isDark,
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildTabButton(
-              'Orders',
-              Icons.receipt_long_rounded,
-              1,
-              isDark,
+            child: AdminTabButton(
+              label: 'Orders',
+              icon: Icons.receipt_long_rounded,
+              isSelected: _selectedIndex == 1,
+              onTap: () => _onTabSelected(1),
+              isDark: isDark,
             ),
           ),
         ],
@@ -369,62 +277,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
     );
   }
 
-  Widget _buildTabButton(String label, IconData icon, int index, bool isDark) {
-    final isSelected = _selectedIndex == index;
-
-    return GestureDetector(
-      onTap: () {
-        if (_selectedIndex != index) {
-          setState(() => _selectedIndex = index);
-        }
+  Widget _buildContent() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.05, 0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primary.withValues(alpha: 0.85),
-                  ],
-                )
-              : null,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isSelected
-                  ? Colors.white
-                  : (isDark ? Colors.grey[400] : Colors.grey[600]),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected
-                    ? Colors.white
-                    : (isDark ? Colors.grey[400] : Colors.grey[600]),
-              ),
-            ),
-          ],
-        ),
+      child: Container(
+        key: ValueKey(_selectedIndex),
+        child: _screens[_selectedIndex],
       ),
     );
   }

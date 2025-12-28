@@ -6,6 +6,8 @@ import 'package:nti_project/core/firebase/firebase_options.dart';
 import '../../features/chatbot/models/chat_message.dart';
 import '../../features/cache/cache_manager.dart';
 import '../../services/hive_service.dart';
+import '../../services/local_notification_service.dart';
+import '../../data/di/service_locator.dart';
 
 /// Handles all app initialization tasks
 class AppInitializer {
@@ -16,6 +18,8 @@ class AppInitializer {
     try {
       await _initializeFirebase();
       await _initializeHive();
+      await _initializeServiceLocator();
+      await _initializeNotifications();
       _initializeCache();
 
       if (kDebugMode) {
@@ -49,11 +53,27 @@ class AppInitializer {
     }
   }
 
+  /// Initialize Service Locator with dependency injection
+  static Future<void> _initializeServiceLocator() async {
+    await ServiceLocator.instance.initialize();
+    if (kDebugMode) {
+      debugPrint('✅ Service Locator initialized');
+    }
+  }
+
   /// Initialize cache manager
   static void _initializeCache() {
     CustomCacheManager();
     if (kDebugMode) {
       debugPrint('✅ Cache manager initialized');
+    }
+  }
+
+  /// Initialize local notifications
+  static Future<void> _initializeNotifications() async {
+    await LocalNotificationService.initialize();
+    if (kDebugMode) {
+      debugPrint('✅ Local notifications initialized');
     }
   }
 }

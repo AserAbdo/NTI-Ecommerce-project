@@ -6,6 +6,8 @@ import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../../auth/cubits/auth_cubit.dart';
 import '../../auth/cubits/auth_state.dart';
+import '../../coupons/models/coupon_model.dart';
+import '../../coupons/services/coupon_service.dart';
 import '../cubits/cart_cubit.dart';
 import '../cubits/cart_state.dart';
 import '../models/cart_item_model.dart';
@@ -20,8 +22,8 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   String? _userId;
   final TextEditingController _promoController = TextEditingController();
-  bool _isPromoApplied = false;
-  double _discount = 0.0;
+  bool _isApplyingCoupon = false;
+  CouponModel? _appliedCoupon;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
 
@@ -52,38 +54,50 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _applyPromoCode() {
+  Future<void> _applyPromoCode() async {
     final code = _promoController.text.trim().toLowerCase();
     if (code.isEmpty) {
-      _showSnackBar('Please enter a promo code', isError: true);
+      _showSnackBar('Please enter a coupon code', isError: true);
       return;
     }
 
-    // Simple promo code validation (you can enhance this)
-    if (code == 'save10') {
+    if (_userId == null) {
+      _showSnackBar('Please login to use coupons', isError: true);
+      return;
+    }
+
+    setState(() {
+      _isApplyingCoupon = true;
+    });
+
+    try {
+      final coupon = await CouponService.validateCoupon(_userId!, code);
+
+      if (coupon != null) {
+        setState(() {
+          _appliedCoupon = coupon;
+        });
+        _showSnackBar(
+          '🎉 Coupon applied! ${coupon.discountPercentage.toInt()}% discount',
+        );
+      } else {
+        _showSnackBar('Invalid or expired coupon code', isError: true);
+      }
+    } catch (e) {
+      _showSnackBar('Error applying coupon', isError: true);
+    } finally {
       setState(() {
-        _isPromoApplied = true;
-        _discount = 0.10; // 10% discount
+        _isApplyingCoupon = false;
       });
-      _showSnackBar('Promo code applied! 10% discount');
-    } else if (code == 'save20') {
-      setState(() {
-        _isPromoApplied = true;
-        _discount = 0.20; // 20% discount
-      });
-      _showSnackBar('Promo code applied! 20% discount');
-    } else {
-      _showSnackBar('Invalid promo code', isError: true);
     }
   }
 
   void _removePromoCode() {
     setState(() {
-      _isPromoApplied = false;
-      _discount = 0.0;
+      _appliedCoupon = null;
       _promoController.clear();
     });
-    _showSnackBar('Promo code removed');
+    _showSnackBar('Coupon removed');
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
@@ -325,7 +339,8 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
 
   Widget _buildCartContent(CartLoaded state) {
     final subtotal = state.totalPrice;
-    final discountAmount = subtotal * _discount;
+    final discountPercent = _appliedCoupon?.discountPercentage ?? 0;
+    final discountAmount = subtotal * (discountPercent / 100);
     final tax = (subtotal - discountAmount) * 0.14; // 14% tax
     final total = subtotal - discountAmount + tax;
 
@@ -426,15 +441,19 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 12),
-          if (!_isPromoApplied)
+          if (_appliedCoupon == null)
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _promoController,
                     decoration: InputDecoration(
-                      hintText: 'Enter code',
+                      hintText: 'Enter coupon code',
                       hintStyle: TextStyle(color: Colors.grey[400]),
+                      prefixIcon: Icon(
+                        Icons.confirmation_number_outlined,
+                        color: AppColors.primary,
+                      ),
                       filled: true,
                       fillColor: Theme.of(context).brightness == Brightness.dark
                           ? Theme.of(context).cardColor.withOpacity(0.5)
@@ -451,49 +470,101 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: _applyPromoCode,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                SizedBox(
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: _isApplyingCoupon ? null : _applyPromoCode,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
+                    child: _isApplyingCoupon
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            'Apply',
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
                   ),
-                  child: const Text('Apply'),
                 ),
               ],
             )
           else
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.success.withOpacity(0.15),
+                    AppColors.success.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: AppColors.success.withOpacity(0.4),
+                  width: 2,
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 20),
-                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.success,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      '${(_discount * 100).toInt()}% discount applied',
-                      style: TextStyle(
-                        color: AppColors.success,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _appliedCoupon!.code.toUpperCase(),
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${_appliedCoupon!.discountPercentage.toInt()}% discount applied',
+                          style: TextStyle(
+                            color: AppColors.success.withOpacity(0.8),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
                     onPressed: _removePromoCode,
-                    icon: const Icon(Icons.close, size: 20),
-                    color: AppColors.success,
+                    icon: const Icon(Icons.close_rounded, size: 22),
+                    color: Colors.grey[600],
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
@@ -502,7 +573,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             ),
           const SizedBox(height: 8),
           Text(
-            'Try: SAVE10 or SAVE20',
+            'Try: elzoz2026 for 50% off!',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
@@ -541,10 +612,10 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             children: [
               // Price Breakdown
               _buildPriceRow('Subtotal', subtotal),
-              if (_isPromoApplied) ...[
+              if (_appliedCoupon != null) ...[
                 const SizedBox(height: 8),
                 _buildPriceRow(
-                  'Discount (${(_discount * 100).toInt()}%)',
+                  'Discount (${_appliedCoupon!.discountPercentage.toInt()}%)',
                   -discountAmount,
                   color: AppColors.success,
                 ),

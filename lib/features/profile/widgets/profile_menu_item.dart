@@ -21,6 +21,8 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -31,7 +33,12 @@ class ProfileMenuItem extends StatelessWidget {
             border: isLast
                 ? null
                 : Border(
-                    bottom: BorderSide(color: Colors.grey.shade200, width: 1),
+                    bottom: BorderSide(
+                      color: isDark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
+                      width: 1,
+                    ),
                   ),
           ),
           child: Row(

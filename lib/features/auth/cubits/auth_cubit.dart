@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import 'auth_state.dart';
+import '../../coupons/services/coupon_service.dart';
+import '../../../services/local_notification_service.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -83,6 +85,15 @@ class AuthCubit extends Cubit<AuthState> {
           .set(user.toJson(), SetOptions(merge: false));
 
       print('✅ User saved to Firestore successfully');
+
+      // Step 4: Add welcome coupon for new user
+      print('🎟️ Adding welcome coupon for new user...');
+      await CouponService.addWelcomeCoupon(user.id);
+      print('✅ Welcome coupon added successfully');
+
+      // Step 5: Show welcome notification about coupon
+      await LocalNotificationService.showWelcomeCouponNotification();
+      print('🔔 Welcome notification sent');
 
       emit(AuthAuthenticated(user));
       print('🎉 Signup completed successfully for: $email');

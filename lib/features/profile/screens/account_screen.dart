@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -15,7 +16,16 @@ import '../widgets/profile_info_tile.dart';
 import '../widgets/profile_menu_item.dart';
 import '../widgets/profile_logout_button.dart';
 import '../widgets/theme_toggle_item.dart';
-import '../models/menu_item_data.dart';
+import 'help_center_screen.dart';
+import 'contact_us_screen.dart';
+import 'rate_app_screen.dart';
+import 'about_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'edit_profile_screen.dart';
+import 'addresses_screen.dart';
+import 'payment_methods_screen.dart';
+import 'change_password_screen.dart';
+import '../../notifications/screens/notifications_screen.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -226,36 +236,87 @@ class _AccountScreenState extends State<AccountScreen>
   }
 
   Widget _buildStatsSection(BuildContext context) {
+    final authState = context.watch<AuthCubit>().state;
+    if (authState is! AuthAuthenticated) {
+      return const SizedBox.shrink();
+    }
+
+    final userId = authState.user.id;
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
       ),
       child: Row(
-        children: const [
+        children: [
+          // Orders Count
           Expanded(
-            child: ProfileStatCard(
-              icon: Icons.shopping_bag_outlined,
-              label: 'Orders',
-              value: '12',
-              color: Colors.blue,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('orders')
+                  .where('userId', isEqualTo: userId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final count = snapshot.data?.docs.length ?? 0;
+                return ProfileStatCard(
+                  icon: Icons.shopping_bag_outlined,
+                  label: 'Orders',
+                  value: count.toString(),
+                  color: Colors.blue,
+                );
+              },
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
+          // Favorites Count
           Expanded(
-            child: ProfileStatCard(
-              icon: Icons.favorite_outline,
-              label: 'Favorites',
-              value: '8',
-              color: Colors.red,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('favorites')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final count = snapshot.data?.docs.length ?? 0;
+                return ProfileStatCard(
+                  icon: Icons.favorite_outline,
+                  label: 'Favorites',
+                  value: count.toString(),
+                  color: Colors.red,
+                );
+              },
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
+          // Coupons Count
           Expanded(
-            child: ProfileStatCard(
-              icon: Icons.local_offer_outlined,
-              label: 'Coupons',
-              value: '1',
-              color: Colors.orange,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('coupons')
+                  .where('isUsed', isEqualTo: false)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                int count = 0;
+                if (snapshot.hasData) {
+                  // Filter for valid coupons (not expired)
+                  final now = DateTime.now();
+                  count = snapshot.data!.docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final expiresAt = data['expiresAt'] != null
+                        ? DateTime.tryParse(data['expiresAt'].toString())
+                        : null;
+                    return expiresAt == null || expiresAt.isAfter(now);
+                  }).length;
+                }
+                return ProfileStatCard(
+                  icon: Icons.local_offer_outlined,
+                  label: 'Coupons',
+                  value: count.toString(),
+                  color: Colors.orange,
+                );
+              },
             ),
           ),
         ],
@@ -299,34 +360,6 @@ class _AccountScreenState extends State<AccountScreen>
   }
 
   Widget _buildAccountSettingsSection(BuildContext context) {
-    final items = [
-      MenuItemData(
-        icon: Icons.edit_outlined,
-        title: 'Edit Profile',
-        subtitle: 'Update your information',
-        color: Colors.blue,
-      ),
-      MenuItemData(
-        icon: Icons.lock_outline,
-        title: 'Change Password',
-        subtitle: 'Update your password',
-        color: Colors.orange,
-      ),
-      MenuItemData(
-        icon: Icons.credit_card_outlined,
-        title: 'Payment Methods',
-        subtitle: 'Manage payment cards',
-        color: Colors.green,
-      ),
-      MenuItemData(
-        icon: Icons.location_city_outlined,
-        title: 'Addresses',
-        subtitle: 'Manage shipping addresses',
-        color: Colors.purple,
-        isLast: true,
-      ),
-    ];
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
@@ -334,18 +367,49 @@ class _AccountScreenState extends State<AccountScreen>
       child: ProfileSectionCard(
         title: 'Account Settings',
         icon: Icons.settings_outlined,
-        children: items
-            .map(
-              (item) => ProfileMenuItem(
-                icon: item.icon,
-                title: item.title,
-                subtitle: item.subtitle,
-                color: item.color,
-                isLast: item.isLast,
-                onTap: () => _showComingSoonSnackBar(context, item.title),
-              ),
-            )
-            .toList(),
+        children: [
+          ProfileMenuItem(
+            icon: Icons.edit_outlined,
+            title: 'Edit Profile',
+            subtitle: 'Update your information',
+            color: Colors.blue,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.lock_outline,
+            title: 'Change Password',
+            subtitle: 'Update your password',
+            color: Colors.orange,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.credit_card_outlined,
+            title: 'Payment Methods',
+            subtitle: 'Manage payment cards',
+            color: Colors.green,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.location_city_outlined,
+            title: 'Addresses',
+            subtitle: 'Manage shipping addresses',
+            color: Colors.purple,
+            isLast: true,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AddressesScreen()),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -362,66 +426,28 @@ class _AccountScreenState extends State<AccountScreen>
           ProfileMenuItem(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
-            subtitle: 'Manage notifications',
+            subtitle: 'View coupons & alerts',
             color: Colors.red,
-            onTap: () => _showComingSoonSnackBar(context, 'Notifications'),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+            ),
           ),
           ProfileMenuItem(
             icon: Icons.language_outlined,
             title: 'Language',
             subtitle: 'English (US)',
             color: Colors.blue,
+            isLast: false,
             onTap: () => _showComingSoonSnackBar(context, 'Language'),
           ),
-          const ThemeToggleItem(),
-          ProfileMenuItem(
-            icon: Icons.privacy_tip_outlined,
-            title: 'Privacy & Security',
-            subtitle: 'Control your privacy',
-            color: Colors.teal,
-            isLast: true,
-            onTap: () => _showComingSoonSnackBar(context, 'Privacy & Security'),
-          ),
+          const ThemeToggleItem(isLast: true),
         ],
       ),
     );
   }
 
   Widget _buildSupportSection(BuildContext context) {
-    final items = [
-      MenuItemData(
-        icon: Icons.help_center_outlined,
-        title: 'Help Center',
-        subtitle: 'Get help and FAQs',
-        color: Colors.cyan,
-      ),
-      MenuItemData(
-        icon: Icons.chat_bubble_outline,
-        title: 'Contact Us',
-        subtitle: 'Chat with support',
-        color: Colors.green,
-      ),
-      MenuItemData(
-        icon: Icons.star_outline,
-        title: 'Rate App',
-        subtitle: 'Share your feedback',
-        color: Colors.amber,
-      ),
-      MenuItemData(
-        icon: Icons.info_outline,
-        title: 'About',
-        subtitle: 'Version 1.0.0',
-        color: Colors.grey,
-      ),
-      MenuItemData(
-        icon: Icons.policy_outlined,
-        title: 'Privacy Policy',
-        subtitle: 'Terms and conditions',
-        color: Colors.blueGrey,
-        isLast: true,
-      ),
-    ];
-
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: ResponsiveHelper.getHorizontalPadding(context),
@@ -429,18 +455,59 @@ class _AccountScreenState extends State<AccountScreen>
       child: ProfileSectionCard(
         title: 'Support & Legal',
         icon: Icons.help_outline,
-        children: items
-            .map(
-              (item) => ProfileMenuItem(
-                icon: item.icon,
-                title: item.title,
-                subtitle: item.subtitle,
-                color: item.color,
-                isLast: item.isLast,
-                onTap: () => _showComingSoonSnackBar(context, item.title),
-              ),
-            )
-            .toList(),
+        children: [
+          ProfileMenuItem(
+            icon: Icons.help_center_outlined,
+            title: 'Help Center',
+            subtitle: 'Get help and FAQs',
+            color: Colors.cyan,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.chat_bubble_outline,
+            title: 'Contact Us',
+            subtitle: 'Chat with support',
+            color: Colors.green,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ContactUsScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.star_outline,
+            title: 'Rate App',
+            subtitle: 'Share your feedback',
+            color: Colors.amber,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RateAppScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.info_outline,
+            title: 'About',
+            subtitle: 'Version 1.0.0',
+            color: Colors.grey,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutScreen()),
+            ),
+          ),
+          ProfileMenuItem(
+            icon: Icons.policy_outlined,
+            title: 'Privacy Policy',
+            subtitle: 'Terms and conditions',
+            color: Colors.blueGrey,
+            isLast: true,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -401,103 +401,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
-  /// Show professional snackbar when adding/removing from favorites
+  /// Show simple snackbar when adding/removing from favorites
   void _showFavoriteSnackBar(bool wasAdded, bool isDark) {
-    // Clear any existing snackbars first
     ScaffoldMessenger.of(context).clearSnackBars();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            // Product Image
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  imageUrl: _product.imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    color: Colors.grey.shade200,
-                    child: Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    color: Colors.grey.shade200,
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 20,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 14),
-            // Text content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    wasAdded ? 'Added to Favorites' : 'Removed from Favorites',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _product.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Icon
             Icon(
               wasAdded ? Icons.favorite : Icons.favorite_border,
-              color: wasAdded ? Colors.redAccent : Colors.white70,
-              size: 24,
+              color: Colors.white,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              wasAdded ? 'Added to Favorites' : 'Removed from Favorites',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
-        backgroundColor: wasAdded
-            ? AppColors.primary
-            : (isDark ? Colors.grey.shade800 : Colors.grey.shade700),
+        backgroundColor: wasAdded ? AppColors.primary : Colors.grey.shade700,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         duration: const Duration(seconds: 2),
-        dismissDirection: DismissDirection.horizontal,
       ),
     );
   }
