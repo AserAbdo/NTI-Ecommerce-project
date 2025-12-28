@@ -18,70 +18,169 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : Colors.grey.shade50,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showProductDialog(context),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add Product', style: TextStyle(color: Colors.white)),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('products').orderBy('name').snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+    return Stack(
+      children: [
+        // Products List
+        StreamBuilder<QuerySnapshot>(
+          stream: _firestore.collection('products').orderBy('name').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return _buildErrorState(snapshot.error.toString(), isDark);
+            }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final products = snapshot.data?.docs ?? [];
+            final products = snapshot.data?.docs ?? [];
 
-          if (products.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.inventory_2_outlined,
-                    size: 64,
-                    color: Colors.grey.shade400,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No products yet',
-                    style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap + to add your first product',
-                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-                  ),
+            if (products.isEmpty) {
+              return _buildEmptyState(isDark);
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final doc = products[index];
+                final data = doc.data() as Map<String, dynamic>;
+
+                return _ProductCard(
+                  id: doc.id,
+                  data: data,
+                  onEdit: () =>
+                      _showProductDialog(context, docId: doc.id, data: data),
+                  onDelete: () => _deleteProduct(doc.id),
+                  isDark: isDark,
+                );
+              },
+            );
+          },
+        ),
+
+        // Floating Add Button
+        Positioned(
+          right: 20,
+          bottom: 20,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.8),
                 ],
               ),
-            );
-          }
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.4),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () => _showProductDialog(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.add_rounded, color: Colors.white, size: 22),
+                      SizedBox(width: 8),
+                      Text(
+                        'Add Product',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              final doc = products[index];
-              final data = doc.data() as Map<String, dynamic>;
+  Widget _buildEmptyState(bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.grey[100],
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.inventory_2_rounded,
+              size: 56,
+              color: isDark ? Colors.grey[600] : Colors.grey[400],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'No products yet',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: isDark ? Colors.grey[300] : Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap the button below to add your first product',
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.grey[500] : Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-              return _ProductCard(
-                id: doc.id,
-                data: data,
-                onEdit: () =>
-                    _showProductDialog(context, docId: doc.id, data: data),
-                onDelete: () => _deleteProduct(doc.id),
-                isDark: isDark,
-              );
-            },
-          );
-        },
+  Widget _buildErrorState(String error, bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline_rounded,
+              size: 48,
+              color: Colors.red,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Error loading products',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.grey[400] : Colors.grey[700],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -90,16 +189,29 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Product?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_rounded, color: Colors.red),
+            SizedBox(width: 12),
+            Text('Delete Product?'),
+          ],
+        ),
         content: const Text('This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -109,9 +221,20 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
       await _firestore.collection('products').doc(productId).delete();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Product deleted'),
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.delete_rounded, color: Colors.white),
+                SizedBox(width: 12),
+                Text('Product deleted'),
+              ],
+            ),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
           ),
         );
       }
@@ -144,65 +267,106 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
       text: data?['category'] ?? '',
     );
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
+        height: MediaQuery.of(context).size.height * 0.9,
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
           children: [
             // Handle bar
             Container(
               margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
+              width: 50,
+              height: 5,
               decoration: BoxDecoration(
-                color: Colors.grey.shade400,
-                borderRadius: BorderRadius.circular(2),
+                color: isDark ? Colors.grey[700] : Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            // Title
+
+            // Header
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    isEdit ? 'Edit Product' : 'Add Product',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      isEdit ? Icons.edit_rounded : Icons.add_rounded,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isEdit ? 'Edit Product' : 'Add Product',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          isEdit
+                              ? 'Update product details'
+                              : 'Create a new product',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(ctx),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    ),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1),
+
+            Divider(
+              color: isDark ? Colors.grey[800] : Colors.grey[200],
+              height: 1,
+            ),
+
             // Form
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
                     _buildTextField(
                       'Product Name',
                       nameController,
-                      Icons.shopping_bag,
+                      Icons.shopping_bag_rounded,
+                      isDark,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       'Description',
                       descController,
-                      Icons.description,
+                      Icons.description_rounded,
+                      isDark,
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
@@ -212,7 +376,8 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           child: _buildTextField(
                             'Price',
                             priceController,
-                            Icons.attach_money,
+                            Icons.attach_money_rounded,
+                            isDark,
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -221,7 +386,8 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           child: _buildTextField(
                             'Old Price',
                             oldPriceController,
-                            Icons.money_off,
+                            Icons.money_off_rounded,
+                            isDark,
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -234,7 +400,8 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           child: _buildTextField(
                             'Stock',
                             stockController,
-                            Icons.inventory,
+                            Icons.inventory_rounded,
+                            isDark,
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -243,7 +410,8 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                           child: _buildTextField(
                             'Category',
                             categoryController,
-                            Icons.category,
+                            Icons.category_rounded,
+                            isDark,
                           ),
                         ),
                       ],
@@ -252,12 +420,15 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                     _buildTextField(
                       'Image URL',
                       imageUrlController,
-                      Icons.image,
+                      Icons.image_rounded,
+                      isDark,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
+
+                    // Submit Button
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: () async {
                           final productData = {
@@ -292,10 +463,28 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                  isEdit ? 'Product updated' : 'Product added',
+                                content: Row(
+                                  children: [
+                                    Icon(
+                                      isEdit
+                                          ? Icons.check_circle
+                                          : Icons.add_circle,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      isEdit
+                                          ? 'Product updated'
+                                          : 'Product added',
+                                    ),
+                                  ],
                                 ),
                                 backgroundColor: AppColors.success,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                margin: const EdgeInsets.all(16),
                               ),
                             );
                           }
@@ -303,14 +492,15 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(16),
                           ),
+                          elevation: 0,
                         ),
                         child: Text(
                           isEdit ? 'Update Product' : 'Add Product',
                           style: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
                         ),
@@ -329,20 +519,32 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
   Widget _buildTextField(
     String label,
     TextEditingController controller,
-    IconData icon, {
+    IconData icon,
+    bool isDark, {
     int maxLines = 1,
     TextInputType? keyboardType,
   }) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey[400] : Colors.grey[600],
+        ),
         prefixIcon: Icon(icon, color: AppColors.primary),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey[100],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
@@ -373,38 +575,66 @@ class _ProductCard extends StatelessWidget {
     final imageUrl = data['imageUrl'] ?? '';
     final category = data['category'] ?? 'No category';
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
+            // Product Image
+            Hero(
+              tag: 'product_$id',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
                   width: 80,
                   height: 80,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.image, color: Colors.grey),
-                ),
-                errorWidget: (_, __, ___) => Container(
-                  width: 80,
-                  height: 80,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.grey[800] : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.image_rounded,
+                      color: isDark ? Colors.grey[600] : Colors.grey[400],
+                    ),
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.grey[800] : Colors.grey[200],
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      color: isDark ? Colors.grey[600] : Colors.grey[400],
+                    ),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
-            // Details
+
+            const SizedBox(width: 16),
+
+            // Product Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,7 +642,7 @@ class _ProductCard extends StatelessWidget {
                   Text(
                     name,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
                       color: isDark ? Colors.white : Colors.black87,
                     ),
@@ -420,17 +650,32 @@ class _ProductCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    category,
-                    style: TextStyle(fontSize: 13, color: AppColors.primary),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Text(
                         'EGP ${price.toStringAsFixed(0)}',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
                           color: AppColors.primary,
                         ),
                       ),
@@ -438,7 +683,7 @@ class _ProductCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 2,
+                          vertical: 4,
                         ),
                         decoration: BoxDecoration(
                           color: stock > 0
@@ -446,13 +691,25 @@ class _ProductCard extends StatelessWidget {
                               : Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          stock > 0 ? 'Stock: $stock' : 'Out of stock',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: stock > 0 ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              stock > 0
+                                  ? Icons.check_circle_rounded
+                                  : Icons.error_rounded,
+                              size: 14,
+                              color: stock > 0 ? Colors.green : Colors.red,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              stock > 0 ? 'In Stock: $stock' : 'Out of Stock',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: stock > 0 ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -460,21 +717,46 @@ class _ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Actions
+
+            // Action Buttons
             Column(
               children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: AppColors.primary),
-                  onPressed: onEdit,
+                _buildActionButton(
+                  Icons.edit_rounded,
+                  AppColors.primary.withValues(alpha: 0.1),
+                  AppColors.primary,
+                  onEdit,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: onDelete,
+                const SizedBox(height: 8),
+                _buildActionButton(
+                  Icons.delete_rounded,
+                  Colors.red.withValues(alpha: 0.1),
+                  Colors.red,
+                  onDelete,
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
     );
   }

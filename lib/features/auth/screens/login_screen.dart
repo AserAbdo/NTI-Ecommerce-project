@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/validators.dart';
+import '../../../services/credentials_storage_service.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/auth_state.dart';
 import '../widgets/widgets.dart';
@@ -34,6 +35,22 @@ class _LoginScreenState extends State<LoginScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
+
+    // Load saved credentials
+    _loadSavedCredentials();
+  }
+
+  /// Load previously saved email and password
+  Future<void> _loadSavedCredentials() async {
+    final email = await CredentialsStorageService.getSavedEmail();
+    final password = await CredentialsStorageService.getSavedPassword();
+
+    if (email != null && password != null) {
+      setState(() {
+        _emailController.text = email;
+        _passwordController.text = password;
+      });
+    }
   }
 
   @override
@@ -44,12 +61,21 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthCubit>().login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      // Save credentials for next time
+      await CredentialsStorageService.saveCredentials(
+        email: email,
+        password: password,
       );
+
+      // Proceed with login
+      if (mounted) {
+        context.read<AuthCubit>().login(email: email, password: password);
+      }
     }
   }
 

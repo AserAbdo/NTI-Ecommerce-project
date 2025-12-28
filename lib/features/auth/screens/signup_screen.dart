@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
 import '../../../core/utils/validators.dart';
+import '../../../services/credentials_storage_service.dart';
 import '../cubits/auth_cubit.dart';
 import '../cubits/auth_state.dart';
 import '../widgets/widgets.dart';
@@ -39,6 +40,27 @@ class _SignupScreenState extends State<SignupScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
+
+    // Load saved credentials (email and password only)
+    _loadSavedCredentials();
+  }
+
+  /// Load previously saved email and password
+  Future<void> _loadSavedCredentials() async {
+    final email = await CredentialsStorageService.getSavedEmail();
+    final password = await CredentialsStorageService.getSavedPassword();
+
+    if (email != null) {
+      setState(() {
+        _emailController.text = email;
+      });
+    }
+    if (password != null) {
+      setState(() {
+        _passwordController.text = password;
+        _confirmPasswordController.text = password;
+      });
+    }
   }
 
   @override
@@ -53,19 +75,32 @@ class _SignupScreenState extends State<SignupScreen>
     super.dispose();
   }
 
-  void _signup() {
+  void _signup() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
         _showError('Passwords do not match');
         return;
       }
-      context.read<AuthCubit>().signUp(
-        name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
-        address: _addressController.text.trim(),
-        password: _passwordController.text,
+
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      // Save credentials for next time
+      await CredentialsStorageService.saveCredentials(
+        email: email,
+        password: password,
       );
+
+      // Proceed with signup
+      if (mounted) {
+        context.read<AuthCubit>().signUp(
+          name: _nameController.text.trim(),
+          email: email,
+          phone: _phoneController.text.trim(),
+          address: _addressController.text.trim(),
+          password: password,
+        );
+      }
     }
   }
 
