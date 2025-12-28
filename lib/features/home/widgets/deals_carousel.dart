@@ -58,6 +58,15 @@ class _DealsCarouselState extends State<DealsCarousel>
     final height = ResponsiveHelper.getCarouselHeight(context);
 
     return BlocBuilder<CarouselCubit, CarouselState>(
+      // Only rebuild when necessary properties change
+      buildWhen: (previous, current) {
+        if (previous is! CarouselLoaded || current is! CarouselLoaded) {
+          return true;
+        }
+        return previous.currentIndex != current.currentIndex ||
+            previous.isUserInteracting != current.isUserInteracting ||
+            previous.progress != current.progress;
+      },
       builder: (context, state) {
         if (state is! CarouselLoaded) {
           return SizedBox(height: height);
@@ -90,13 +99,11 @@ class _DealsCarouselState extends State<DealsCarousel>
                       context.read<CarouselCubit>().onPageChanged(index);
                     },
                     itemBuilder: (context, index) {
-                      return _buildCarouselItem(
-                        context,
-                        state.deals[index],
-                        index,
-                        state.currentIndex,
-                        state.isUserInteracting,
-                        height,
+                      return _CarouselItem(
+                        deal: state.deals[index],
+                        isActive: index == state.currentIndex,
+                        isUserInteracting: state.isUserInteracting,
+                        shimmerController: _shimmerController,
                       );
                     },
                   ),
@@ -106,24 +113,47 @@ class _DealsCarouselState extends State<DealsCarousel>
               const SizedBox(height: 16),
 
               // Horizontal Indicators
-              _buildHorizontalIndicators(state),
+              _CarouselIndicators(
+                itemCount: state.deals.length,
+                currentIndex: state.currentIndex,
+                progress: state.progress,
+                controller: _controller,
+                onIndicatorTap: (index) {
+                  HapticFeedback.selectionClick();
+                  _onUserInteractionStart();
+                  _controller.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOutCubic,
+                  );
+                  context.read<CarouselCubit>().goToPage(index);
+                  _onUserInteractionEnd();
+                },
+              ),
             ],
           ),
         );
       },
     );
   }
+}
 
-  Widget _buildCarouselItem(
-    BuildContext context,
-    DealData deal,
-    int index,
-    int currentIndex,
-    bool isUserInteracting,
-    double height,
-  ) {
-    final isActive = index == currentIndex;
+/// Individual carousel item - Extracted for optimization
+class _CarouselItem extends StatelessWidget {
+  final DealData deal;
+  final bool isActive;
+  final bool isUserInteracting;
+  final AnimationController shimmerController;
 
+  const _CarouselItem({
+    required this.deal,
+    required this.isActive,
+    required this.isUserInteracting,
+    required this.shimmerController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       child: Container(
@@ -132,12 +162,12 @@ class _DealsCarouselState extends State<DealsCarousel>
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -154,7 +184,7 @@ class _DealsCarouselState extends State<DealsCarousel>
               // Shimmer Effect (only on active)
               if (isActive)
                 AnimatedBuilder(
-                  animation: _shimmerController,
+                  animation: shimmerController,
                   builder: (context, child) {
                     return Container(
                       decoration: BoxDecoration(
@@ -162,11 +192,11 @@ class _DealsCarouselState extends State<DealsCarousel>
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Colors.white.withOpacity(0.0),
-                            Colors.white.withOpacity(
-                              0.1 * _shimmerController.value,
+                            Colors.white.withValues(alpha: 0.0),
+                            Colors.white.withValues(
+                              alpha: 0.1 * shimmerController.value,
                             ),
-                            Colors.white.withOpacity(0.0),
+                            Colors.white.withValues(alpha: 0.0),
                           ],
                           stops: const [0.0, 0.5, 1.0],
                         ),
@@ -181,7 +211,10 @@ class _DealsCarouselState extends State<DealsCarousel>
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.3)],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.3),
+                    ],
                     stops: const [0.5, 1.0],
                   ),
                 ),
@@ -201,7 +234,7 @@ class _DealsCarouselState extends State<DealsCarousel>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -241,7 +274,7 @@ class _DealsCarouselState extends State<DealsCarousel>
                     Text(
                       deal.subtitle,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.95),
+                        color: Colors.white.withValues(alpha: 0.95),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         shadows: const [
@@ -261,7 +294,7 @@ class _DealsCarouselState extends State<DealsCarousel>
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -277,24 +310,34 @@ class _DealsCarouselState extends State<DealsCarousel>
       ),
     );
   }
+}
 
-  Widget _buildHorizontalIndicators(CarouselLoaded state) {
+/// Carousel indicators - Extracted for optimization
+class _CarouselIndicators extends StatelessWidget {
+  final int itemCount;
+  final int currentIndex;
+  final double progress;
+  final PageController controller;
+  final Function(int) onIndicatorTap;
+
+  const _CarouselIndicators({
+    required this.itemCount,
+    required this.currentIndex,
+    required this.progress,
+    required this.controller,
+    required this.onIndicatorTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(state.deals.length, (i) {
-        final selected = i == state.currentIndex;
+      children: List.generate(itemCount, (i) {
+        final selected = i == currentIndex;
         return GestureDetector(
-          onTap: () {
-            HapticFeedback.selectionClick();
-            _onUserInteractionStart();
-            _controller.animateToPage(
-              i,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOutCubic,
-            );
-            context.read<CarouselCubit>().goToPage(i);
-            _onUserInteractionEnd();
-          },
+          onTap: () => onIndicatorTap(i),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 4),
             child: AnimatedContainer(
@@ -306,9 +349,7 @@ class _DealsCarouselState extends State<DealsCarousel>
                 borderRadius: BorderRadius.circular(4),
                 color: selected
                     ? AppColors.primary
-                    : (Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade700
-                          : Colors.grey.shade300),
+                    : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
               ),
               child: selected
                   ? ClipRRect(
@@ -320,10 +361,10 @@ class _DealsCarouselState extends State<DealsCarousel>
                             alignment: Alignment.centerLeft,
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 50),
-                              width: 32 * state.progress,
+                              width: 32 * progress,
                               height: 8,
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.5),
+                                color: AppColors.primary.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),

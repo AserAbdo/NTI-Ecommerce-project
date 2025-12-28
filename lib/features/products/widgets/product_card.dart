@@ -353,7 +353,7 @@ class _ProductCardState extends State<ProductCard>
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withOpacity(0.3),
+            color: Colors.orange.withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -379,7 +379,7 @@ class _ProductCardState extends State<ProductCard>
 
   Widget _buildOutOfStockOverlay() {
     return Container(
-      color: Colors.black.withOpacity(0.6),
+      color: Colors.black.withValues(alpha: 0.6),
       child: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -387,7 +387,10 @@ class _ProductCardState extends State<ProductCard>
             color: Colors.red.shade600,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.red.withOpacity(0.4), blurRadius: 12),
+              BoxShadow(
+                color: Colors.red.withValues(alpha: 0.4),
+                blurRadius: 12,
+              ),
             ],
           ),
           child: const Text(
@@ -461,7 +464,7 @@ class _ProductCardState extends State<ProductCard>
                     fontSize: currencyFont - 1,
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey.shade500
-                        : AppColors.textSecondary.withOpacity(0.6),
+                        : AppColors.textSecondary.withValues(alpha: 0.6),
                     decoration: TextDecoration.lineThrough,
                     decorationThickness: 2,
                   ),
@@ -485,7 +488,7 @@ class _ProductCardState extends State<ProductCard>
                     AppStrings.egp,
                     style: TextStyle(
                       fontSize: currencyFont,
-                      color: AppColors.primary.withOpacity(0.7),
+                      color: AppColors.primary.withValues(alpha: 0.7),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -544,7 +547,7 @@ class _ProductCardState extends State<ProductCard>
                 }
               },
               borderRadius: BorderRadius.circular(20),
-              splashColor: AppColors.primary.withOpacity(0.3),
+              splashColor: AppColors.primary.withValues(alpha: 0.3),
               child: Container(
                 width: ResponsiveHelper.getAddToCartButtonSize(context),
                 height: ResponsiveHelper.getAddToCartButtonSize(context),
@@ -552,7 +555,7 @@ class _ProductCardState extends State<ProductCard>
                   gradient: LinearGradient(
                     colors: [
                       AppColors.primary,
-                      AppColors.primary.withOpacity(0.8),
+                      AppColors.primary.withValues(alpha: 0.8),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -560,7 +563,7 @@ class _ProductCardState extends State<ProductCard>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.4),
+                      color: AppColors.primary.withValues(alpha: 0.4),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
