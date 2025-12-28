@@ -45,7 +45,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Container(
@@ -251,6 +250,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen>
                     totalProducts.toString(),
                     Icons.inventory_2_rounded,
                     const [Color(0xFFE17055), Color(0xFFFAB1A0)],
+                    isDark,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildStatCard(
+                    'Pending',
+                    pendingOrders.toString(),
+                    Icons.pending_actions_rounded,
+                    const [Color(0xFFE84393), Color(0xFFFD79A8)],
                     isDark,
                   ),
                 ),

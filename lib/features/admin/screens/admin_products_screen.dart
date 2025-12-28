@@ -263,9 +263,22 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     final imageUrlController = TextEditingController(
       text: data?['imageUrl'] ?? '',
     );
-    final categoryController = TextEditingController(
-      text: data?['category'] ?? '',
-    );
+
+    // Predefined categories
+    final List<String> categories = [
+      'Electronics',
+      'Fashion',
+      'Home',
+      'Beauty',
+      'Grocery',
+    ];
+
+    // Selected category (default to first or existing value)
+    String selectedCategory = data?['category'] ?? categories.first;
+    // Ensure the saved category is in our list, otherwise use first
+    if (!categories.contains(selectedCategory)) {
+      selectedCategory = categories.first;
+    }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -407,11 +420,94 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: _buildTextField(
-                            'Category',
-                            categoryController,
-                            Icons.category_rounded,
-                            isDark,
+                          child: StatefulBuilder(
+                            builder: (context, setDropdownState) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.05)
+                                      : Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: selectedCategory,
+                                    isExpanded: true,
+                                    icon: Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      color: isDark
+                                          ? Colors.grey[400]
+                                          : Colors.grey[600],
+                                    ),
+                                    dropdownColor: isDark
+                                        ? const Color(0xFF2D2D3F)
+                                        : Colors.white,
+                                    hint: Text(
+                                      'Category',
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.grey[400]
+                                            : Colors.grey[600],
+                                      ),
+                                    ),
+                                    items: categories.map((category) {
+                                      IconData icon;
+                                      switch (category) {
+                                        case 'Electronics':
+                                          icon = Icons.devices_rounded;
+                                          break;
+                                        case 'Fashion':
+                                          icon = Icons.checkroom_rounded;
+                                          break;
+                                        case 'Home':
+                                          icon = Icons.home_rounded;
+                                          break;
+                                        case 'Beauty':
+                                          icon = Icons.spa_rounded;
+                                          break;
+                                        case 'Grocery':
+                                          icon = Icons.shopping_basket_rounded;
+                                          break;
+                                        default:
+                                          icon = Icons.category_rounded;
+                                      }
+                                      return DropdownMenuItem<String>(
+                                        value: category,
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              icon,
+                                              size: 20,
+                                              color: AppColors.primary,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              category,
+                                              style: TextStyle(
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black87,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setDropdownState(() {
+                                          selectedCategory = value;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -440,7 +536,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                             ),
                             'stock': int.tryParse(stockController.text) ?? 0,
                             'imageUrl': imageUrlController.text.trim(),
-                            'category': categoryController.text.trim(),
+                            'category': selectedCategory,
                             'rating': data?['rating'] ?? 0.0,
                             'reviewsCount': data?['reviewsCount'] ?? 0,
                             'updatedAt': FieldValue.serverTimestamp(),
