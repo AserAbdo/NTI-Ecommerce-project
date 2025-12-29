@@ -65,13 +65,14 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
   @override
   Widget build(BuildContext context) {
     final itemCount = widget.order.itemCount;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Order Confirmed'),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        foregroundColor: isDark ? Colors.white : AppColors.textPrimary,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -93,7 +94,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: Colors.green.shade50,
+                      color: isDark
+                          ? Colors.green.shade900.withOpacity(0.3)
+                          : Colors.green.shade50,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -118,7 +121,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                           fontSize:
                               ResponsiveHelper.getTitleFontSize(context) + 2,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
+                          color: isDark ? Colors.white : AppColors.textPrimary,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -138,17 +141,17 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                 const SizedBox(height: 32),
 
                 // Order Details Card
-                _buildOrderDetailsCard(itemCount),
+                _buildOrderDetailsCard(itemCount, isDark),
 
                 const SizedBox(height: 16),
 
                 // Shipping Address Card
-                _buildShippingAddressCard(),
+                _buildShippingAddressCard(isDark),
 
                 const SizedBox(height: 16),
 
                 // Order Items Card
-                _buildOrderItemsCard(),
+                _buildOrderItemsCard(isDark),
 
                 const SizedBox(height: 32),
 
@@ -185,15 +188,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
     );
   }
 
-  Widget _buildOrderDetailsCard(int itemCount) {
+  Widget _buildOrderDetailsCard(int itemCount, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -217,43 +220,56 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Order Details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
               ),
             ],
           ),
           const Divider(height: 24),
-          _buildDetailRow('Order Number', widget.order.orderNumber),
+          _buildDetailRow(
+            'Order Number',
+            widget.order.orderNumber,
+            isDark: isDark,
+          ),
           const SizedBox(height: 12),
-          _buildDetailRow('Order ID', widget.order.orderId),
+          _buildDetailRow('Order ID', widget.order.orderId, isDark: isDark),
           const SizedBox(height: 12),
           _buildDetailRow(
             'Items',
             '$itemCount item${itemCount > 1 ? 's' : ''}',
+            isDark: isDark,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             'Total Amount',
             'EGP ${widget.order.totalPrice.toStringAsFixed(0)}',
             isHighlighted: true,
+            isDark: isDark,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             'Payment Method',
             _getPaymentMethodName(widget.order.paymentMethod),
+            isDark: isDark,
           ),
           const SizedBox(height: 12),
           _buildDetailRow(
             'Status',
             widget.order.status.toUpperCase(),
             statusColor: OrderUtils.getOrderStatusColor(widget.order.status),
+            isDark: isDark,
           ),
           if (widget.order.estimatedDeliveryDate != null) ...[
             const SizedBox(height: 12),
             _buildDetailRow(
               'Estimated Delivery',
               OrderUtils.formatFullDateTime(widget.order.estimatedDeliveryDate),
+              isDark: isDark,
             ),
           ],
         ],
@@ -261,16 +277,16 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
     );
   }
 
-  Widget _buildShippingAddressCard() {
+  Widget _buildShippingAddressCard(bool isDark) {
     final address = widget.order.shippingAddress;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -284,7 +300,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: isDark
+                      ? Colors.blue.shade900.withOpacity(0.3)
+                      : Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -294,16 +312,24 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Shipping Address',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
               ),
             ],
           ),
           const Divider(height: 24),
           Text(
             address.fullName,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -325,15 +351,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
     );
   }
 
-  Widget _buildOrderItemsCard() {
+  Widget _buildOrderItemsCard(bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -347,7 +373,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
+                  color: isDark
+                      ? Colors.orange.shade900.withOpacity(0.3)
+                      : Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -357,9 +385,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
+              Text(
                 'Order Items',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
               ),
             ],
           ),
@@ -379,8 +411,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                       errorBuilder: (_, __, ___) => Container(
                         width: 50,
                         height: 50,
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image),
+                        color: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade200,
+                        child: Icon(
+                          Icons.image,
+                          color: isDark
+                              ? Colors.grey.shade600
+                              : Colors.grey.shade400,
+                        ),
                       ),
                     ),
                   ),
@@ -391,7 +430,12 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                       children: [
                         Text(
                           item.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.textPrimary,
+                          ),
                         ),
                         Text(
                           'Qty: ${item.quantity}',
@@ -405,7 +449,10 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
                   ),
                   Text(
                     'EGP ${(item.price * item.quantity).toStringAsFixed(0)}',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -481,6 +528,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
     String value, {
     bool isHighlighted = false,
     Color? statusColor,
+    bool isDark = false,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -489,7 +537,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
           label,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: isDark ? Colors.grey[400] : AppColors.textSecondary,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -503,7 +551,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen>
               fontWeight: isHighlighted ? FontWeight.w800 : FontWeight.w600,
               color:
                   statusColor ??
-                  (isHighlighted ? AppColors.primary : AppColors.textPrimary),
+                  (isHighlighted
+                      ? AppColors.primary
+                      : (isDark ? Colors.white : AppColors.textPrimary)),
             ),
           ),
         ),

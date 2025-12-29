@@ -13,6 +13,8 @@ class OrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Order Details'),
@@ -88,16 +90,25 @@ class OrderDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Order Items',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   ...order.items.map((item) {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.grey.shade700
+                              : Colors.grey.shade300,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Padding(
@@ -117,9 +128,14 @@ class OrderDetailsScreen extends StatelessWidget {
                                   return Container(
                                     width: 70,
                                     height: 70,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(
+                                    color: isDark
+                                        ? Colors.grey.shade800
+                                        : Colors.grey.shade200,
+                                    child: Icon(
                                       Icons.image_not_supported,
+                                      color: isDark
+                                          ? Colors.grey.shade600
+                                          : Colors.grey.shade400,
                                     ),
                                   );
                                 },
@@ -133,9 +149,12 @@ class OrderDetailsScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     item.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
+                                      color: isDark
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -148,7 +167,9 @@ class OrderDetailsScreen extends StatelessWidget {
                                       Text(
                                         'Qty: ${item.quantity}',
                                         style: TextStyle(
-                                          color: AppColors.textSecondary,
+                                          color: isDark
+                                              ? Colors.grey[400]
+                                              : AppColors.textSecondary,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -169,23 +190,33 @@ class OrderDetailsScreen extends StatelessWidget {
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   const SizedBox(height: 20),
 
                   // Shipping Address
-                  const Text(
+                  Text(
                     'Shipping Address',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: isDark
+                          ? const Color(0xFF1E1E2E)
+                          : Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,9 +231,12 @@ class OrderDetailsScreen extends StatelessWidget {
                             const SizedBox(width: 8),
                             Text(
                               order.shippingAddress.fullName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15,
+                                color: isDark
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
                               ),
                             ),
                           ],
@@ -219,7 +253,9 @@ class OrderDetailsScreen extends StatelessWidget {
                             Text(
                               order.shippingAddress.phone,
                               style: TextStyle(
-                                color: AppColors.textSecondary,
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : AppColors.textSecondary,
                                 fontSize: 14,
                               ),
                             ),
@@ -239,7 +275,9 @@ class OrderDetailsScreen extends StatelessWidget {
                               child: Text(
                                 '${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.postalCode}',
                                 style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: isDark
+                                      ? Colors.grey[400]
+                                      : AppColors.textSecondary,
                                   fontSize: 14,
                                 ),
                               ),
@@ -253,31 +291,46 @@ class OrderDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Price Breakdown
-                  const Text(
+                  Text(
                     'Price Details',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: isDark
+                          ? const Color(0xFF1E1E2E)
+                          : Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                      ),
                     ),
                     child: Column(
                       children: [
-                        _buildPriceRow('Subtotal', order.subtotal),
+                        _buildPriceRow('Subtotal', order.subtotal, isDark),
                         const SizedBox(height: 8),
-                        _buildPriceRow('Tax (10%)', order.tax),
+                        _buildPriceRow('Tax (10%)', order.tax, isDark),
                         const SizedBox(height: 8),
-                        _buildPriceRow('Shipping Fee', order.shippingFee),
+                        _buildPriceRow(
+                          'Shipping Fee',
+                          order.shippingFee,
+                          isDark,
+                        ),
                         if (order.discount > 0) ...[
                           const SizedBox(height: 8),
                           _buildPriceRow(
                             'Discount',
                             -order.discount,
+                            isDark,
                             isDiscount: true,
                           ),
                         ],
@@ -285,11 +338,14 @@ class OrderDetailsScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Total',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
                               ),
                             ),
                             Text(
@@ -309,18 +365,28 @@ class OrderDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Payment Info
-                  const Text(
+                  Text(
                     'Payment Information',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: isDark
+                          ? const Color(0xFF1E1E2E)
+                          : Colors.grey.shade50,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,10 +394,12 @@ class OrderDetailsScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Payment Method',
                               style: TextStyle(
-                                color: Colors.black54,
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : Colors.black54,
                                 fontSize: 14,
                               ),
                             ),
@@ -339,9 +407,12 @@ class OrderDetailsScreen extends StatelessWidget {
                               order.paymentMethod
                                   .replaceAll('_', ' ')
                                   .toUpperCase(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
+                                color: isDark
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
                               ),
                             ),
                           ],
@@ -350,10 +421,12 @@ class OrderDetailsScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Payment Status',
                               style: TextStyle(
-                                color: Colors.black54,
+                                color: isDark
+                                    ? Colors.grey[400]
+                                    : Colors.black54,
                                 fontSize: 14,
                               ),
                             ),
@@ -397,7 +470,8 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildPriceRow(
     String label,
-    double amount, {
+    double amount,
+    bool isDark, {
     bool isDiscount = false,
   }) {
     return Row(
@@ -405,14 +479,19 @@ class OrderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.black54, fontSize: 14),
+          style: TextStyle(
+            color: isDark ? Colors.grey[400] : Colors.black54,
+            fontSize: 14,
+          ),
         ),
         Text(
           '${isDiscount ? '-' : ''}${amount.abs().toStringAsFixed(0)} ${AppStrings.egp}',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: isDiscount ? Colors.green : Colors.black87,
+            color: isDiscount
+                ? Colors.green
+                : (isDark ? Colors.white : Colors.black87),
           ),
         ),
       ],

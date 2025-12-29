@@ -189,8 +189,11 @@ class _OrdersScreenState extends State<OrdersScreen>
                   },
                   color: AppColors.primary,
                   child: ListView.separated(
-                    padding: EdgeInsets.all(
-                      ResponsiveHelper.getHorizontalPadding(context),
+                    padding: EdgeInsets.only(
+                      left: ResponsiveHelper.getHorizontalPadding(context),
+                      right: ResponsiveHelper.getHorizontalPadding(context),
+                      top: ResponsiveHelper.getHorizontalPadding(context),
+                      bottom: 100, // Extra padding for bottom navbar
                     ),
                     itemCount: orders.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 12),

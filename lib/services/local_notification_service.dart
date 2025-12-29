@@ -77,9 +77,9 @@ class LocalNotificationService {
   static Future<void> showWelcomeCouponNotification() async {
     await showNotification(
       id: 1001,
-      title: '🎁 Welcome Gift Inside!',
+      title: '🎉🎁 WELCOME TO THE FAMILY! 🎁🎉',
       body:
-          'You\'ve received a special 50% OFF coupon "ELZOZ2026" on your first order! Don\'t let it expire! 🛍️',
+          '🔥 WOW! You just unlocked 50% OFF on your FIRST ORDER! 🛍️✨\n\nUse code: ELZOZ2026 💎\n\nDon\'t miss out - this is HUGE! 🚀💰',
       payload: 'welcome_coupon',
     );
   }

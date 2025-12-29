@@ -3,7 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/app_snackbar.dart';
 import '../../../core/widgets/snow_effect.dart';
+import '../../auth/cubits/auth_cubit.dart';
+import '../../auth/cubits/auth_state.dart';
+import '../../coupons/models/coupon_model.dart';
+import '../../coupons/services/coupon_service.dart';
 import '../../search/cubits/search_cubit.dart';
 import '../../search/screens/search_page.dart';
 
@@ -17,6 +22,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final authState = context.watch<AuthCubit>().state;
+    final isAuthenticated = authState is AuthAuthenticated;
+    final userId = isAuthenticated ? authState.user.id : null;
 
     return AppBar(
       backgroundColor: isDark ? const Color(0xFF1E3A5F) : AppColors.primary,
@@ -62,33 +70,52 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
         ),
 
-        // Notification Icon with Coupon
-        IconButton(
-          icon: Stack(
-            children: [
-              const Icon(Icons.notifications_outlined, color: Colors.white),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  constraints: const BoxConstraints(minWidth: 8, minHeight: 8),
+        // Notification Icon with Coupon - shows badge based on active coupons
+        if (isAuthenticated && userId != null)
+          StreamBuilder<int>(
+            stream: CouponService.getActiveCouponsCountStream(userId),
+            builder: (context, snapshot) {
+              final activeCoupons = snapshot.data ?? 0;
+              return IconButton(
+                icon: Stack(
+                  children: [
+                    const Icon(
+                      Icons.notifications_outlined,
+                      color: Colors.white,
+                    ),
+                    if (activeCoupons > 0)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 8,
+                            minHeight: 8,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ),
-            ],
+                onPressed: () => _showNotificationsSheet(context, userId),
+              );
+            },
+          )
+        else
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            onPressed: () => _showNotificationsSheet(context, null),
           ),
-          onPressed: () => _showNotificationsSheet(context),
-        ),
         const SizedBox(width: 8),
       ],
     );
   }
 
-  void _showNotificationsSheet(BuildContext context) {
+  void _showNotificationsSheet(BuildContext context, String? userId) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
@@ -131,10 +158,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const Divider(height: 1),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [_buildCouponNotification(context, isDark)],
-              ),
+              child: userId != null
+                  ? _buildCouponsList(context, userId, isDark)
+                  : _buildLoginPrompt(isDark),
             ),
           ],
         ),
@@ -142,18 +168,123 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildCouponNotification(BuildContext context, bool isDark) {
+  Widget _buildLoginPrompt(bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.notifications_off_outlined,
+            size: 64,
+            color: isDark ? Colors.grey[600] : Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Login to see notifications',
+            style: TextStyle(
+              fontSize: 16,
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCouponsList(BuildContext context, String userId, bool isDark) {
+    return StreamBuilder<List<CouponModel>>(
+      stream: CouponService.getUserCouponsStream(userId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final coupons = snapshot.data ?? [];
+
+        if (coupons.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.notifications_none_rounded,
+                  size: 64,
+                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No notifications',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: coupons.length,
+          itemBuilder: (context, index) {
+            return _buildCouponNotification(context, coupons[index], isDark);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCouponNotification(
+    BuildContext context,
+    CouponModel coupon,
+    bool isDark,
+  ) {
+    final isActive = coupon.isValid;
+    final isUsed = coupon.isUsed;
+    final isExpired = coupon.isExpired;
+
+    Color statusColor;
+    IconData statusIcon;
+    String statusText;
+    String subtitle;
+
+    if (isUsed) {
+      statusColor = Colors.grey;
+      statusIcon = Icons.check_circle_rounded;
+      statusText = 'USED';
+      subtitle = 'This coupon has been used';
+    } else if (isExpired) {
+      statusColor = Colors.red;
+      statusIcon = Icons.error_rounded;
+      statusText = 'EXPIRED';
+      subtitle = 'This coupon has expired';
+    } else {
+      statusColor = Colors.green;
+      statusIcon = Icons.local_offer_rounded;
+      statusText = 'ACTIVE';
+      subtitle = 'Use this coupon at checkout';
+    }
+
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.1),
-            AppColors.primary.withValues(alpha: 0.05),
-          ],
-        ),
+        gradient: isActive
+            ? LinearGradient(
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.1),
+                  AppColors.primary.withValues(alpha: 0.05),
+                ],
+              )
+            : null,
+        color: isActive
+            ? null
+            : (isDark ? const Color(0xFF252536) : Colors.grey.shade100),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        border: isActive
+            ? Border.all(color: AppColors.primary.withValues(alpha: 0.3))
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,34 +294,58 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
-                  Icons.local_offer_rounded,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
+                child: Icon(statusIcon, color: statusColor, size: 24),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '🎉 Welcome Gift!',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : AppColors.textPrimary,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '🎉 ${coupon.discountPercentage.toInt()}% OFF Coupon',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            statusText,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: statusColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'New user exclusive - 50% OFF!',
+                      subtitle,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: isDark
+                            ? Colors.grey[400]
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -198,61 +353,57 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {
-              Clipboard.setData(const ClipboardData(text: 'elzoz2026'));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.white),
-                      SizedBox(width: 12),
-                      Text('Coupon code copied!'),
-                    ],
-                  ),
-                  backgroundColor: AppColors.success,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  margin: const EdgeInsets.all(16),
-                  duration: const Duration(seconds: 2),
+          if (isActive) ...[
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: coupon.code));
+                Navigator.pop(context);
+                AppSnackBar.showSuccess(
+                  context,
+                  'Coupon "${coupon.code.toUpperCase()}" copied!',
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.black26 : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'elzoz2026',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
-                      letterSpacing: 2,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.black26 : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primary),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      coupon.code.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        letterSpacing: 2,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Icon(Icons.copy_rounded, color: AppColors.primary, size: 20),
-                ],
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.copy_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              'Tap to copy • Valid for first order',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            const SizedBox(height: 12),
+            Center(
+              child: Text(
+                'Tap to copy • Valid for first order',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
