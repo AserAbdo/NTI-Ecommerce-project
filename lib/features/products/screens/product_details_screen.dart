@@ -136,97 +136,94 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   Widget _buildProductImage(bool isDark) {
-    return Hero(
-      tag: 'product-${widget.product.id}',
-      child: Container(
-        width: double.infinity,
-        height: ResponsiveHelper.getScreenHeight(context) * 0.35,
-        color: isDark ? Colors.black : Colors.white,
-        child: Stack(
-          children: [
-            // Main Image - Centered with contain
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: CachedNetworkImage(
-                  imageUrl: widget.product.imageUrl,
-                  fit: BoxFit.contain,
-                  placeholder: (context, url) => Center(
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                        strokeWidth: 2,
-                      ),
+    return Container(
+      width: double.infinity,
+      height: ResponsiveHelper.getScreenHeight(context) * 0.35,
+      color: isDark ? Colors.black : Colors.white,
+      child: Stack(
+        children: [
+          // Main Image - Centered with contain
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: CachedNetworkImage(
+                imageUrl: widget.product.imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => Center(
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                      strokeWidth: 2,
                     ),
                   ),
-                  errorWidget: (context, url, error) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 60,
+                ),
+                errorWidget: (context, url, error) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 60,
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Image not available',
+                        style: TextStyle(
                           color: isDark
-                              ? Colors.grey.shade700
-                              : Colors.grey.shade300,
+                              ? Colors.grey.shade600
+                              : Colors.grey.shade400,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Image not available',
-                          style: TextStyle(
-                            color: isDark
-                                ? Colors.grey.shade600
-                                : Colors.grey.shade400,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
+          ),
 
-            // Discount Badge - Primary Color
-            if (widget.product.oldPrice != null &&
-                widget.product.oldPrice! > widget.product.price)
-              Positioned(
-                top: 16,
-                left: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.primary,
-                        AppColors.primary.withValues(alpha: 0.8),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
+          // Discount Badge - Primary Color
+          if (widget.product.oldPrice != null &&
+              widget.product.oldPrice! > widget.product.price)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withValues(alpha: 0.8),
                     ],
                   ),
-                  child: Text(
-                    '-${(((widget.product.oldPrice! - widget.product.price) / widget.product.oldPrice!) * 100).round()}%',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
+                  ],
+                ),
+                child: Text(
+                  '-${(((widget.product.oldPrice! - widget.product.price) / widget.product.oldPrice!) * 100).round()}%',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -585,52 +582,105 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
+        gradient: LinearGradient(
+          colors: isDark
+              ? [const Color(0xFF252536), const Color(0xFF1E1E2E)]
+              : [Colors.grey.shade50, Colors.grey.shade100],
+        ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Quantity',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : AppColors.textPrimary,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Quantity',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${_product.stock} items available',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark
+                      ? Colors.grey.shade500
+                      : AppColors.textSecondary,
+                ),
+              ),
+            ],
           ),
           Container(
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey.shade700 : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? AppColors.primary.withOpacity(0.3)
+                    : AppColors.primary.withOpacity(0.2),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: isDark
+                      ? Colors.black.withOpacity(0.3)
+                      : Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: Row(
               children: [
-                _buildQuantityButton(Icons.remove, () {
-                  if (_quantity > 1) setState(() => _quantity--);
-                }, isDark),
+                _buildQuantityButton(
+                  Icons.remove,
+                  () {
+                    if (_quantity > 1) setState(() => _quantity--);
+                  },
+                  isDark,
+                  isEnabled: _quantity > 1,
+                ),
                 Container(
-                  width: 50,
+                  width: 56,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.primary.withOpacity(0.15)
+                        : AppColors.primary.withOpacity(0.08),
+                    border: Border.symmetric(
+                      vertical: BorderSide(
+                        color: isDark
+                            ? AppColors.primary.withOpacity(0.2)
+                            : AppColors.primary.withOpacity(0.1),
+                      ),
+                    ),
+                  ),
                   alignment: Alignment.center,
                   child: Text(
                     '$_quantity',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : AppColors.textPrimary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : AppColors.primary,
                     ),
                   ),
                 ),
-                _buildQuantityButton(Icons.add, () {
-                  if (_quantity < _product.stock) setState(() => _quantity++);
-                }, isDark),
+                _buildQuantityButton(
+                  Icons.add,
+                  () {
+                    if (_quantity < _product.stock) setState(() => _quantity++);
+                  },
+                  isDark,
+                  isEnabled: _quantity < _product.stock,
+                ),
               ],
             ),
           ),
@@ -639,15 +689,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
-  Widget _buildQuantityButton(IconData icon, VoidCallback onTap, bool isDark) {
+  Widget _buildQuantityButton(
+    IconData icon,
+    VoidCallback onTap,
+    bool isDark, {
+    bool isEnabled = true,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: isEnabled ? onTap : null,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Icon(icon, size: 20, color: AppColors.primary),
+          padding: const EdgeInsets.all(12),
+          child: Icon(
+            icon,
+            size: 22,
+            color: isEnabled
+                ? AppColors.primary
+                : (isDark ? Colors.grey.shade700 : Colors.grey.shade400),
+          ),
         ),
       ),
     );

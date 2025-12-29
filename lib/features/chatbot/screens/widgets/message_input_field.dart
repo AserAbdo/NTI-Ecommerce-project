@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
 
 class MessageInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -14,8 +15,16 @@ class MessageInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final inputBgColor = isDark ? const Color(0xFF252536) : Colors.white;
+    final borderColor = isDark ? Colors.grey.shade700 : const Color(0xFF99A8C2);
+    final hintColor = isDark ? Colors.grey.shade500 : const Color(0xFF99A8C2);
+    final textColor = isDark ? Colors.white : Colors.black87;
+
     return Container(
-      color: Colors.white, // This makes the entire input field area white
+      color: backgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
         children: [
@@ -24,8 +33,8 @@ class MessageInputField extends StatelessWidget {
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.white, // White background for the input container
-                border: Border.all(color: const Color(0xFF99A8C2)),
+                color: inputBgColor,
+                border: Border.all(color: borderColor),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Row(
@@ -33,16 +42,13 @@ class MessageInputField extends StatelessWidget {
                   Expanded(
                     child: TextField(
                       controller: controller,
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: textColor),
+                      decoration: InputDecoration(
                         hintText: 'Type here...',
-                        hintStyle: TextStyle(
-                          color: Color(0xFF99A8C2),
-                          fontSize: 16,
-                        ),
+                        hintStyle: TextStyle(color: hintColor, fontSize: 16),
                         border: InputBorder.none,
                         filled: true,
-                        fillColor:
-                            Colors.white, // White background for the TextField
+                        fillColor: inputBgColor,
                       ),
                     ),
                   ),
@@ -53,9 +59,9 @@ class MessageInputField extends StatelessWidget {
           const SizedBox(width: 20),
           InkWell(
             onTap: isLoading ? () {} : onSend,
-            child: const CircleAvatar(
-              backgroundColor: Color(0xFF3A4D6F),
-              child: Icon(Icons.send, color: Colors.white, size: 25),
+            child: CircleAvatar(
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.send, color: Colors.white, size: 25),
             ),
           ),
         ],

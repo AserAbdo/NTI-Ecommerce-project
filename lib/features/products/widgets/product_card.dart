@@ -14,7 +14,15 @@ class ProductCard extends StatefulWidget {
   final ProductModel product;
   final VoidCallback onTap;
 
-  const ProductCard({super.key, required this.product, required this.onTap});
+  /// Optional suffix to make Hero tag unique when same product appears multiple times
+  final String? heroTagSuffix;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.onTap,
+    this.heroTagSuffix,
+  });
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -194,8 +202,11 @@ class _ProductCardState extends State<ProductCard>
   }
 
   Widget _buildProductImage() {
+    final heroTag = widget.heroTagSuffix != null
+        ? 'product-${widget.product.id}-${widget.heroTagSuffix}'
+        : 'product-${widget.product.id}';
     return Hero(
-      tag: 'product-${widget.product.id}',
+      tag: heroTag,
       child: CachedNetworkImage(
         imageUrl: widget.product.imageUrl,
         fit: BoxFit.cover,

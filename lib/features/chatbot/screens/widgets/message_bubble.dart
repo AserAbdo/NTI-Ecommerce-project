@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_cushed_image.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -19,8 +20,19 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Colors for dark mode
+    final userBubbleColor = isDark
+        ? AppColors.primary.withOpacity(0.3)
+        : const Color(0xFFCFD9E9);
+    final botBubbleBorderColor = isDark
+        ? Colors.grey.shade700
+        : const Color(0xFFCFD9E9);
+    final textColor = isDark ? Colors.white : const Color(0xFF15243F);
+
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: isUser
@@ -42,12 +54,10 @@ class MessageBubble extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                    color: isUser
-                        ? const Color(0xFFCFD9E9)
-                        : Colors.transparent,
+                    color: isUser ? userBubbleColor : Colors.transparent,
                     border: isUser
                         ? null
-                        : Border.all(color: const Color(0xFFCFD9E9)),
+                        : Border.all(color: botBubbleBorderColor),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(12),
                       topRight: const Radius.circular(12),
@@ -57,10 +67,10 @@ class MessageBubble extends StatelessWidget {
                   ),
                   child: Text(
                     text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF15243F),
+                      color: textColor,
                     ),
                   ),
                 ),
@@ -69,7 +79,10 @@ class MessageBubble extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
                       time!,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: isDark ? Colors.grey.shade500 : Colors.grey,
+                      ),
                     ),
                   ),
               ],

@@ -392,6 +392,7 @@ class _SearchPageState extends State<SearchPage>
                 final product = state.recentProducts[index];
                 return ProductCard(
                   product: product,
+                  heroTagSuffix: 'recent',
                   onTap: () {
                     Navigator.pushNamed(
                       context,
@@ -603,6 +604,7 @@ class _SearchPageState extends State<SearchPage>
                     final product = results[index];
                     return ProductCard(
                       product: product,
+                      heroTagSuffix: 'search',
                       onTap: () {
                         Navigator.pushNamed(
                           context,

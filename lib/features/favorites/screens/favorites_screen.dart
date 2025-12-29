@@ -80,6 +80,7 @@ class FavoritesScreen extends StatelessWidget {
               final product = products[index];
               return ProductCard(
                 product: product,
+                heroTagSuffix: 'favorites',
                 onTap: () {
                   Navigator.pushNamed(
                     context,

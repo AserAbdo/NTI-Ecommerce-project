@@ -30,7 +30,7 @@ class CartFloatingButton extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       // Move down when navbar is hidden to take its space
-      margin: EdgeInsets.only(bottom: isNavbarHidden ? 0 : navbarHeight / 2),
+      margin: EdgeInsets.only(bottom: isNavbarHidden ? 0 : 0),
       child: ScaleTransition(
         scale: CurvedAnimation(
           parent: animationController,
