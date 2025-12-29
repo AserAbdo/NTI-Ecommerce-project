@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_routes.dart';
+import '../../../core/utils/responsive_helper.dart';
 import '../../../core/utils/validators.dart';
 import '../../../services/credentials_storage_service.dart';
 import '../cubits/auth_cubit.dart';
@@ -81,6 +82,10 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = ResponsiveHelper.getScreenHeight(context);
+    final verticalPadding = ResponsiveHelper.getVerticalPadding(context);
+    final horizontalPadding = ResponsiveHelper.getHorizontalPadding(context);
+
     return Scaffold(
       body: AuthBackground(
         child: SafeArea(
@@ -88,63 +93,91 @@ class _LoginScreenState extends State<LoginScreen>
             listener: _handleAuthState,
             builder: (context, state) {
               return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding,
+                  vertical: verticalPadding,
                 ),
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        const AuthLogo(),
-                        const SizedBox(height: 40),
-                        _buildHeader(),
-                        const SizedBox(height: 40),
-                        AuthFormCard(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight:
+                        screenHeight -
+                        MediaQuery.of(context).padding.top -
+                        MediaQuery.of(context).padding.bottom -
+                        (verticalPadding * 2),
+                  ),
+                  child: IntrinsicHeight(
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AuthInputField(
-                              controller: _emailController,
-                              label: 'Email Address',
-                              hint: 'Enter your email',
-                              icon: Icons.email_rounded,
-                              keyboardType: TextInputType.emailAddress,
-                              validator: Validators.validateEmail,
+                            const Spacer(flex: 1),
+                            const AuthLogo(),
+                            SizedBox(
+                              height: ResponsiveHelper.getSpacing(context, 40),
                             ),
-                            const SizedBox(height: 20),
-                            AuthInputField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              hint: 'Enter your password',
-                              icon: Icons.lock_rounded,
-                              obscureText: _obscurePassword,
-                              validator: Validators.validatePassword,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_rounded
-                                      : Icons.visibility_off_rounded,
-                                  color: AppColors.textSecondary,
+                            _buildHeader(),
+                            SizedBox(
+                              height: ResponsiveHelper.getSpacing(context, 40),
+                            ),
+                            AuthFormCard(
+                              children: [
+                                AuthInputField(
+                                  controller: _emailController,
+                                  label: 'Email Address',
+                                  hint: 'Enter your email',
+                                  icon: Icons.email_rounded,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: Validators.validateEmail,
                                 ),
-                                onPressed: () {
-                                  setState(
-                                    () => _obscurePassword = !_obscurePassword,
-                                  );
-                                },
-                              ),
+                                SizedBox(
+                                  height: ResponsiveHelper.getSpacing(
+                                    context,
+                                    20,
+                                  ),
+                                ),
+                                AuthInputField(
+                                  controller: _passwordController,
+                                  label: 'Password',
+                                  hint: 'Enter your password',
+                                  icon: Icons.lock_rounded,
+                                  obscureText: _obscurePassword,
+                                  validator: Validators.validatePassword,
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword
+                                          ? Icons.visibility_rounded
+                                          : Icons.visibility_off_rounded,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                    onPressed: () {
+                                      setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
+                            SizedBox(
+                              height: ResponsiveHelper.getSpacing(context, 32),
+                            ),
+                            AuthGradientButton(
+                              text: 'Login',
+                              onPressed: _login,
+                              isLoading: state is AuthLoading,
+                            ),
+                            SizedBox(
+                              height: ResponsiveHelper.getSpacing(context, 24),
+                            ),
+                            _buildSignupLink(),
+                            const Spacer(flex: 1),
                           ],
                         ),
-                        const SizedBox(height: 32),
-                        AuthGradientButton(
-                          text: 'Login',
-                          onPressed: _login,
-                          isLoading: state is AuthLoading,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSignupLink(),
-                      ],
+                      ),
                     ),
                   ),
                 ),

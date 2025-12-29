@@ -19,6 +19,7 @@ class FavoritesScreen extends StatelessWidget {
     final authState = context.watch<AuthCubit>().state;
 
     if (authState is! AuthAuthenticated) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -31,7 +32,14 @@ class FavoritesScreen extends StatelessWidget {
           foregroundColor: Colors.white,
           automaticallyImplyLeading: false,
         ),
-        body: const Center(child: Text('Please login to see favorites')),
+        body: Center(
+          child: Text(
+            'Please login to see favorites',
+            style: TextStyle(
+              color: isDark ? Colors.white : AppColors.textPrimary,
+            ),
+          ),
+        ),
       );
     }
 
@@ -54,7 +62,15 @@ class FavoritesScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                style: TextStyle(
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                ),
+              ),
+            );
           }
           final products = snapshot.data ?? [];
           if (products.isEmpty) {

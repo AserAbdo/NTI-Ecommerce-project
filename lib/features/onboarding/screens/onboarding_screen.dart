@@ -28,31 +28,23 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           'Explore thousands of products from top brands. Find exactly what you\'re looking for with our smart search.',
       icon: Icons.explore_rounded,
       primaryColor: AppColors.primary,
-      secondaryColor: const Color(0xFF9C27B0),
+      secondaryColor: AppColors.primary.withValues(alpha: 0.7),
     ),
     OnboardingItem(
       title: 'Easy Shopping',
       description:
           'Add items to your cart with a single tap. Enjoy a seamless shopping experience like never before.',
       icon: Icons.shopping_cart_rounded,
-      primaryColor: const Color(0xFF00BCD4),
-      secondaryColor: const Color(0xFF2196F3),
+      primaryColor: AppColors.primary,
+      secondaryColor: AppColors.primary.withValues(alpha: 0.7),
     ),
     OnboardingItem(
-      title: 'Fast Delivery',
+      title: 'Fast & Secure',
       description:
-          'Get your orders delivered right to your doorstep. Track your packages in real-time.',
-      icon: Icons.local_shipping_rounded,
-      primaryColor: const Color(0xFFFF9800),
-      secondaryColor: const Color(0xFFFF5722),
-    ),
-    OnboardingItem(
-      title: 'Secure Payments',
-      description:
-          'Shop with confidence using our secure payment system. Multiple payment options available.',
-      icon: Icons.security_rounded,
-      primaryColor: const Color(0xFF4CAF50),
-      secondaryColor: const Color(0xFF009688),
+          'Get your orders delivered right to your doorstep. Shop with confidence using our secure payment system.',
+      icon: Icons.verified_user_rounded,
+      primaryColor: AppColors.primary,
+      secondaryColor: AppColors.primary.withValues(alpha: 0.7),
     ),
   ];
 
