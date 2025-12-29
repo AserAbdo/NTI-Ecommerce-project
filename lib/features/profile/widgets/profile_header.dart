@@ -80,100 +80,131 @@ class ProfileHeader extends StatelessWidget {
               opacity: fadeAnimation,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + kToolbarHeight,
-                  left: 20,
-                  right: 20,
+                  top: MediaQuery.of(context).padding.top + kToolbarHeight + 8,
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Enhanced Profile Avatar
-                      _buildAvatar(),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate if we need to scale down
+                    final availableHeight = constraints.maxHeight;
+                    final isCompact = availableHeight < 220;
+                    final avatarSize = isCompact ? 70.0 : 80.0;
+                    final outerRingSize = isCompact ? 90.0 : 110.0;
+                    final middleRingSize = isCompact ? 82.0 : 100.0;
+                    final titleFontSize = isCompact ? 18.0 : 22.0;
+                    final spacing = isCompact ? 8.0 : 16.0;
 
-                      const SizedBox(height: 16),
-
-                      // User Name with verified badge - Fixed overflow
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              userName,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
+                    return SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: availableHeight),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Enhanced Profile Avatar
+                              _buildAvatarResponsive(
+                                avatarSize,
+                                outerRingSize,
+                                middleRingSize,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.check_circle,
-                              color: AppColors.success,
-                              size: 16,
-                            ),
-                          ),
-                        ],
-                      ),
 
-                      const SizedBox(height: 12),
+                              SizedBox(height: spacing),
 
-                      // Member badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.amber.shade400,
-                              Colors.amber.shade600,
+                              // User Name with verified badge - Fixed overflow
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        userName,
+                                        style: TextStyle(
+                                          fontSize: titleFontSize,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                          letterSpacing: 0.5,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.check_circle,
+                                        color: AppColors.success,
+                                        size: isCompact ? 14 : 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              SizedBox(height: spacing * 0.75),
+
+                              // Member badge
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isCompact ? 10 : 12,
+                                  vertical: isCompact ? 3 : 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.amber.shade400,
+                                      Colors.amber.shade600,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.amber.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.workspace_premium_rounded,
+                                      color: Colors.white,
+                                      size: isCompact ? 12 : 14,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Premium Member',
+                                      style: TextStyle(
+                                        fontSize: isCompact ? 10 : 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.amber.withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.workspace_premium_rounded,
-                              color: Colors.white,
-                              size: 14,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'Premium Member',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -183,14 +214,21 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatarResponsive(
+    double avatarSize,
+    double outerRingSize,
+    double middleRingSize,
+  ) {
+    final fontSize = avatarSize * 0.475;
+    final indicatorSize = avatarSize * 0.275;
+
     return Stack(
       alignment: Alignment.center,
       children: [
         // Outer glow ring
         Container(
-          width: 110,
-          height: 110,
+          width: outerRingSize,
+          height: outerRingSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -206,8 +244,8 @@ class ProfileHeader extends StatelessWidget {
 
         // Middle ring
         Container(
-          width: 100,
-          height: 100,
+          width: middleRingSize,
+          height: middleRingSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
@@ -232,8 +270,8 @@ class ProfileHeader extends StatelessWidget {
             ],
           ),
           child: Container(
-            width: 80,
-            height: 80,
+            width: avatarSize,
+            height: avatarSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.primary,
@@ -241,8 +279,8 @@ class ProfileHeader extends StatelessWidget {
             child: Center(
               child: Text(
                 userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  fontSize: 38,
+                style: TextStyle(
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w800,
                   color: Colors.white,
                 ),
@@ -253,15 +291,15 @@ class ProfileHeader extends StatelessWidget {
 
         // Online indicator
         Positioned(
-          bottom: 6,
-          right: 6,
+          bottom: 4,
+          right: 4,
           child: Container(
-            width: 22,
-            height: 22,
+            width: indicatorSize,
+            height: indicatorSize,
             decoration: BoxDecoration(
               color: AppColors.success,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 3),
+              border: Border.all(color: Colors.white, width: 2.5),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.success.withValues(alpha: 0.5),
