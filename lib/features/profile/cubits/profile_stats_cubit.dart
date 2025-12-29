@@ -89,10 +89,11 @@ class ProfileStatsCubit extends Cubit<ProfileStatsState> {
         );
 
     // Subscribe to favorites count
+    // Path: favorites/{userId}/items (matches FavoritesCubit)
     _favoritesSubscription = _firestore
-        .collection('users')
-        .doc(userId)
         .collection('favorites')
+        .doc(userId)
+        .collection('items')
         .snapshots()
         .listen(
           (snapshot) {

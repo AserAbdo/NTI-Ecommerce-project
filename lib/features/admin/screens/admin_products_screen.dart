@@ -479,7 +479,7 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
 
                           if (isEdit) {
                             await AdminController.updateProduct(
-                              docId!,
+                              docId,
                               productData,
                             );
                           } else {
@@ -631,7 +631,7 @@ class _ProductCard extends StatelessWidget {
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
+                  placeholder: (_, _) => Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
@@ -643,7 +643,7 @@ class _ProductCard extends StatelessWidget {
                       color: isDark ? Colors.grey[600] : Colors.grey[400],
                     ),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  errorWidget: (_, _, _) => Container(
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
