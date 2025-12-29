@@ -1,7 +1,7 @@
 # 🛍️ Vendora - E-Commerce Mobile Application
 
 <p align="center">
-  <img src="assets/images/logo.png" alt="Vendora Logo" width="120" height="120"/>
+  <img src="screenshots/logo.png" alt="Vendora Logo" width="120" height="120"/>
 </p>
 
 <p align="center">
