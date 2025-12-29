@@ -67,7 +67,7 @@ class ChatCubit extends Cubit<ChatState> {
       final effectiveUserId = userId ?? "guest_user";
 
       final response = await _dio.post(
-        'https://zooz-n8n.duckdns.org/webhook-test/3cfa783e-2d8d-45eb-a8b7-3da10eabd8be',
+        'https://zooz-n8n.duckdns.org/webhook/3cfa783e-2d8d-45eb-a8b7-3da10eabd8be',
         options: Options(headers: {'Content-Type': 'application/json'}),
         data: {"userId": effectiveUserId, "message": text},
       );
