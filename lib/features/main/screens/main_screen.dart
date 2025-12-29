@@ -118,6 +118,7 @@ class _MainScreenState extends State<MainScreen>
     final navbarHeight = ResponsiveHelper.isSmallMobile(context) ? 60.0 : 70.0;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           // Main content screens

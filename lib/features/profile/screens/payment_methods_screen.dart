@@ -51,6 +51,17 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Saved Cards Section Header
+                Text(
+                  'Saved Cards',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // Payment Methods List
                 if (cards.isEmpty)
                   _buildEmptyState(isDark)
@@ -371,7 +382,8 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                           gradient: LinearGradient(
                             colors: [
                               AppColors.primary,
-                              AppColors.primary.withValues(alpha: 0.7),
+                              AppColors.primary.withValues(alpha: 0.8),
+                              AppColors.primary.withValues(alpha: 0.6),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -686,12 +698,16 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         ),
         prefixIcon: Icon(icon, color: AppColors.primary),
         filled: true,
-        fillColor: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : Colors.grey[100],
+        fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF3D3D3D) : Colors.transparent,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -727,16 +743,20 @@ class _PaymentCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.7)],
+          colors: [
+            AppColors.primary,
+            AppColors.primary.withValues(alpha: 0.8),
+            AppColors.primary.withValues(alpha: 0.6),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withValues(alpha: 0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -836,22 +856,40 @@ class _PaymentCard extends StatelessWidget {
   }
 
   Future<void> _deleteCard(BuildContext context) async {
+    final dialogIsDark = Theme.of(context).brightness == Brightness.dark;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: dialogIsDark ? const Color(0xFF1E1E2E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_rounded, color: Colors.red),
-            SizedBox(width: 12),
-            Text('Remove Card?'),
+            const Icon(Icons.warning_rounded, color: Colors.red),
+            const SizedBox(width: 12),
+            Text(
+              'Remove Card?',
+              style: TextStyle(
+                color: dialogIsDark ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
-        content: const Text('This card will be removed from your account.'),
+        content: Text(
+          'This card will be removed from your account.',
+          style: TextStyle(
+            color: dialogIsDark ? Colors.grey[300] : Colors.grey[700],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: dialogIsDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),

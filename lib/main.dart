@@ -15,6 +15,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // Enable edge-to-edge display - app renders behind system bars
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
   // Initialize all services
   await AppInitializer.initialize();
 

@@ -110,7 +110,11 @@ class _ChatViewState extends State<_ChatView> {
                               ),
                             );
                           }
+                          List<dynamic> messages = [];
 
+                          if (state is ChatSuccess) {
+                            messages = state.messages;
+                          }
                           if (state is ChatError) {
                             return Center(
                               child: Column(
@@ -141,12 +145,6 @@ class _ChatViewState extends State<_ChatView> {
                                 ],
                               ),
                             );
-                          }
-
-                          List<dynamic> messages = [];
-
-                          if (state is ChatSuccess) {
-                            messages = state.messages;
                           }
 
                           if (messages.isEmpty) {

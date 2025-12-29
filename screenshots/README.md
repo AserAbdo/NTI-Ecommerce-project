@@ -12,7 +12,6 @@ Place your app screenshots in this directory with the following naming conventio
 
 ### Home & Products
 - `home.png` - Home screen
-- `categories.png` - Categories view
 - `products.png` - Product grid/list
 - `product_details.png` - Product details page
 

@@ -23,25 +23,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   final List<OnboardingItem> _items = [
     OnboardingItem(
-      title: 'Discover Products',
-      description:
-          'Explore thousands of products from top brands. Find exactly what you\'re looking for with our smart search.',
+      title: 'Discover',
+      description: 'Top brands. Smart search. Endless possibilities.',
       icon: Icons.explore_rounded,
       primaryColor: AppColors.primary,
       secondaryColor: AppColors.primary.withValues(alpha: 0.7),
     ),
     OnboardingItem(
-      title: 'Easy Shopping',
-      description:
-          'Add items to your cart with a single tap. Enjoy a seamless shopping experience like never before.',
+      title: 'Shop Effortlessly',
+      description: 'One tap. Your cart. Done.',
       icon: Icons.shopping_cart_rounded,
       primaryColor: AppColors.primary,
       secondaryColor: AppColors.primary.withValues(alpha: 0.7),
     ),
     OnboardingItem(
       title: 'Fast & Secure',
-      description:
-          'Get your orders delivered right to your doorstep. Shop with confidence using our secure payment system.',
+      description: 'Quick delivery. Safe payments. Peace of mind.',
       icon: Icons.verified_user_rounded,
       primaryColor: AppColors.primary,
       secondaryColor: AppColors.primary.withValues(alpha: 0.7),
@@ -114,6 +111,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final currentItem = _items[_currentPage];
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
       body: Stack(
         children: [
           // Animated gradient background
@@ -209,6 +208,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Widget _buildPage(int index) {
     final item = _items[index];
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.height < 700;
+    final isVerySmallScreen = size.height < 600;
+
+    // Responsive sizes
+    final iconContainerSize = isVerySmallScreen
+        ? 120.0
+        : (isSmallScreen ? 150.0 : 180.0);
+    final iconSize = isVerySmallScreen ? 50.0 : (isSmallScreen ? 65.0 : 80.0);
+    final ringSize = iconContainerSize - 20;
+    final titleFontSize = isVerySmallScreen
+        ? 22.0
+        : (isSmallScreen ? 26.0 : 32.0);
+    final descFontSize = isVerySmallScreen
+        ? 13.0
+        : (isSmallScreen ? 14.0 : 16.0);
+    final spacing = isVerySmallScreen ? 30.0 : (isSmallScreen ? 40.0 : 60.0);
+    final horizontalPadding = isSmallScreen ? 24.0 : 32.0;
 
     return AnimatedBuilder(
       animation: _contentAnimationController,
@@ -243,7 +260,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           child: FadeTransition(
             opacity: fadeAnimation,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -251,8 +268,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ScaleTransition(
                     scale: scaleAnimation,
                     child: Container(
-                      width: 180,
-                      height: 180,
+                      width: iconContainerSize,
+                      height: iconContainerSize,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -282,8 +299,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                     2 *
                                     math.pi,
                                 child: Container(
-                                  width: 160,
-                                  height: 160,
+                                  width: ringSize,
+                                  height: ringSize,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
@@ -313,7 +330,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             ).createShader(bounds),
                             child: Icon(
                               item.icon,
-                              size: 80,
+                              size: iconSize,
                               color: Colors.white,
                             ),
                           ),
@@ -322,18 +339,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 60),
+                  SizedBox(height: spacing),
 
                   // Title
                   Text(
                     item.title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 32,
+                    style: TextStyle(
+                      fontSize: titleFontSize,
                       fontWeight: FontWeight.w800,
                       color: Colors.white,
                       letterSpacing: 0.5,
-                      shadows: [
+                      shadows: const [
                         Shadow(
                           color: Colors.black26,
                           blurRadius: 10,
@@ -343,13 +360,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  SizedBox(height: isSmallScreen ? 12 : 20),
 
                   // Description
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isSmallScreen ? 16 : 20,
+                      vertical: isSmallScreen ? 12 : 16,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.15),
@@ -362,8 +379,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       item.description,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
-                        height: 1.6,
+                        fontSize: descFontSize,
+                        height: 1.5,
                         color: Colors.white.withValues(alpha: 0.95),
                         fontWeight: FontWeight.w500,
                       ),
@@ -379,8 +396,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Widget _buildBottomNavigation() {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenHeight < 700;
+    final padding = isSmallScreen ? 20.0 : 32.0;
+    final buttonHeight = isSmallScreen ? 54.0 : 64.0;
+    final buttonWidth = _currentPage == _items.length - 1
+        ? (isSmallScreen ? 160.0 : 200.0)
+        : (isSmallScreen ? 54.0 : 64.0);
+
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(padding),
       child: Column(
         children: [
           // Page indicators
@@ -392,18 +417,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: isSmallScreen ? 20 : 32),
 
           // Next/Get Started button
           GestureDetector(
             onTap: _nextPage,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _currentPage == _items.length - 1 ? 200 : 64,
-              height: 64,
+              width: buttonWidth,
+              height: buttonHeight,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(buttonHeight / 2),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
@@ -421,10 +446,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             _items[_currentPage].secondaryColor,
                           ],
                         ).createShader(bounds),
-                        child: const Text(
+                        child: Text(
                           'Get Started',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: isSmallScreen ? 16 : 18,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -437,9 +462,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             _items[_currentPage].secondaryColor,
                           ],
                         ).createShader(bounds),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_forward_rounded,
-                          size: 28,
+                          size: isSmallScreen ? 24 : 28,
                           color: Colors.white,
                         ),
                       ),

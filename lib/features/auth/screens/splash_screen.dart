@@ -179,6 +179,8 @@ class _SplashScreenState extends State<SplashScreen>
         }
       },
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        extendBody: true,
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

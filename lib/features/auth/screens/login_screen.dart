@@ -87,6 +87,8 @@ class _LoginScreenState extends State<LoginScreen>
     final horizontalPadding = ResponsiveHelper.getHorizontalPadding(context);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
       body: AuthBackground(
         child: SafeArea(
           child: BlocConsumer<AuthCubit, AuthState>(

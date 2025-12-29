@@ -99,7 +99,7 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   Color _getPaymentColor() {
     switch (widget.order.paymentMethod) {
       case 'credit_card':
-        return Colors.blue;
+        return AppColors.primary;
       case 'paypal':
         return Colors.indigo;
       default:
@@ -149,7 +149,9 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -301,10 +303,11 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildAmountSection() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -321,7 +324,7 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
             'Total Amount',
             style: TextStyle(
               fontSize: 16,
-              color: AppColors.textSecondary,
+              color: isDark ? Colors.grey[400] : AppColors.textSecondary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -339,23 +342,33 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildCardNumberField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: _cardNumberController,
       keyboardType: TextInputType.number,
       maxLength: 19,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: 'Card Number',
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey[400] : Colors.grey[600],
+        ),
         hintText: '1234 5678 9012 3456',
+        hintStyle: TextStyle(
+          color: isDark ? Colors.grey[600] : Colors.grey[400],
+        ),
         prefixIcon: Icon(Icons.credit_card, color: _getPaymentColor()),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF3D3D3D) : Colors.grey.shade200,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -379,22 +392,32 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildCardHolderField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: _cardHolderController,
       textCapitalization: TextCapitalization.characters,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: 'Cardholder Name',
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey[400] : Colors.grey[600],
+        ),
         hintText: 'JOHN DOE',
+        hintStyle: TextStyle(
+          color: isDark ? Colors.grey[600] : Colors.grey[400],
+        ),
         prefixIcon: Icon(Icons.person_outline, color: _getPaymentColor()),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF3D3D3D) : Colors.grey.shade200,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -410,23 +433,33 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildExpiryField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: _expiryController,
       keyboardType: TextInputType.number,
       maxLength: 5,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: 'Expiry',
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey[400] : Colors.grey[600],
+        ),
         hintText: 'MM/YY',
+        hintStyle: TextStyle(
+          color: isDark ? Colors.grey[600] : Colors.grey[400],
+        ),
         prefixIcon: Icon(Icons.calendar_today, color: _getPaymentColor()),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF3D3D3D) : Colors.grey.shade200,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -448,24 +481,34 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildCVVField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: _cvvController,
       keyboardType: TextInputType.number,
       maxLength: 3,
       obscureText: true,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: 'CVV',
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey[400] : Colors.grey[600],
+        ),
         hintText: '123',
+        hintStyle: TextStyle(
+          color: isDark ? Colors.grey[600] : Colors.grey[400],
+        ),
         prefixIcon: Icon(Icons.lock_outline, color: _getPaymentColor()),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF3D3D3D) : Colors.grey.shade200,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -518,6 +561,7 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
   }
 
   Widget _buildProcessingIndicator() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         SizedBox(
@@ -534,19 +578,23 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: isDark ? Colors.white : AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Please wait',
-          style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? Colors.grey[400] : AppColors.textSecondary,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildSuccessView() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: ScaleTransition(
         scale: _scaleAnimation,
@@ -579,7 +627,7 @@ class _MockPaymentScreenState extends State<MockPaymentScreen>
               'Your order has been confirmed',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: isDark ? Colors.grey[400] : AppColors.textSecondary,
                 fontWeight: FontWeight.w600,
               ),
             ),

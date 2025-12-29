@@ -127,6 +127,8 @@ class _SignupScreenState extends State<SignupScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
       body: AuthBackground(
         child: SafeArea(
           child: BlocConsumer<AuthCubit, AuthState>(
