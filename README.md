@@ -1,7 +1,7 @@
 # 🛍️ Vendora - E-Commerce Mobile Application
 
 <p align="center">
-  <img src="assets/app_icon.png" alt="Vendora Logo" width="120" height="120"/>
+  <img src="assets/images/logo.png" alt="Vendora Logo" width="120" height="120"/>
 </p>
 
 <p align="center">
@@ -103,45 +103,21 @@
 
 ### Authentication
 
-| Splash Screen | Onboarding | Login | Register |
+| Splash Screen | Onboarding | Login | Sign Up |
 |:---:|:---:|:---:|:---:|
-| ![Splash](screenshots/splash.png) | ![Onboarding](screenshots/onboarding.png) | ![Login](screenshots/login.png) | ![Register](screenshots/register.png) |
+| ![Splash](screenshots/splash.png) | ![Onboarding](screenshots/onboarding.png) | ![Login](screenshots/login.png) | ![Sign Up](screenshots/signup.jpg) |
 
 ### Home & Products
 
-| Home Screen | Categories | Product Grid | Product Details |
-|:---:|:---:|:---:|:---:|
-| ![Home](screenshots/home.png) | ![Categories](screenshots/categories.png) | ![Products](screenshots/products.png) | ![Details](screenshots/product_details.png) |
+| Home Screen | Products | Product Details |
+|:---:|:---:|:---:|
+| ![Home](screenshots/home.png) | ![Products](screenshots/products.png) | ![Details](screenshots/product_details.png) |
 
 ### Shopping
 
-| Cart | Checkout | Order Confirmation | Order History |
-|:---:|:---:|:---:|:---:|
-| ![Cart](screenshots/cart.png) | ![Checkout](screenshots/checkout.png) | ![Confirmation](screenshots/order_confirmation.png) | ![Orders](screenshots/orders.png) |
-
-### User Profile
-
-| Profile | Edit Profile | Addresses | Payment Methods |
-|:---:|:---:|:---:|:---:|
-| ![Profile](screenshots/profile.png) | ![Edit](screenshots/edit_profile.png) | ![Addresses](screenshots/addresses.png) | ![Payment](screenshots/payment_methods.png) |
-
-### Favorites & Coupons
-
-| Favorites | Coupons/Notifications | Search | Reviews |
-|:---:|:---:|:---:|:---:|
-| ![Favorites](screenshots/favorites.png) | ![Coupons](screenshots/coupons.png) | ![Search](screenshots/search.png) | ![Reviews](screenshots/reviews.png) |
-
-### Admin Panel
-
-| Dashboard | Manage Products | Manage Orders | Add Product |
-|:---:|:---:|:---:|:---:|
-| ![Dashboard](screenshots/admin_dashboard.png) | ![Products](screenshots/admin_products.png) | ![Orders](screenshots/admin_orders.png) | ![Add](screenshots/admin_add_product.png) |
-
-### Theme Support
-
-| Light Mode | Dark Mode |
-|:---:|:---:|
-| ![Light](screenshots/light_mode.png) | ![Dark](screenshots/dark_mode.png) |
+| Cart |
+|:---:|
+| ![Cart](screenshots/cart.png) |
 
 ---
 
