@@ -1,4 +1,4 @@
-# 🛍️ Vendora - E-Commerce Mobile Application
+# 🛍️ Vendora - AI E-Commerce Mobile Application
 
 <p align="center">
   <img src="screenshots/logo.png" alt="Vendora Logo" width="120" height="120"/>
@@ -112,12 +112,6 @@
 | Home Screen | Products | Product Details |
 |:---:|:---:|:---:|
 | ![Home](screenshots/home.png) | ![Products](screenshots/products.png) | ![Details](screenshots/product_details.png) |
-
-### Shopping
-
-| Cart |
-|:---:|
-| ![Cart](screenshots/cart.png) |
 
 ---
 
