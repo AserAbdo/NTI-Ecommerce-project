@@ -41,7 +41,7 @@ class MainBottomNavBar extends StatelessWidget {
             child: Container(
               height: ResponsiveHelper.isSmallMobile(context) ? 60 : 70,
               padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.isSmallMobile(context) ? 4 : 8,
+                horizontal: ResponsiveHelper.isSmallMobile(context) ? 8 : 12,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +49,7 @@ class MainBottomNavBar extends StatelessWidget {
                   // Left side nav items
                   Expanded(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         NavItem(
                           itemData: NavItems.items[0],
@@ -67,13 +67,13 @@ class MainBottomNavBar extends StatelessWidget {
 
                   // Spacer for center FAB
                   SizedBox(
-                    width: ResponsiveHelper.isSmallMobile(context) ? 100 : 80,
+                    width: ResponsiveHelper.isSmallMobile(context) ? 50 : 80,
                   ),
 
                   // Right side nav items
                   Expanded(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         NavItem(
                           itemData: NavItems.items[2],
