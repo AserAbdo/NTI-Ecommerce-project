@@ -23,9 +23,9 @@ class AuthBackground extends StatelessWidget {
                   const Color(0xFF0F3460),
                 ]
               : [
-                  AppColors.primary.withValues(alpha: 0.05),
-                  Colors.white,
-                  AppColors.primary.withValues(alpha: 0.02),
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.85),
+                  AppColors.primary.withValues(alpha: 0.7),
                 ],
         ),
       ),

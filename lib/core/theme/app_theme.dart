@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 
@@ -17,14 +16,6 @@ class AppTheme {
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.dark,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarContrastEnforced: false,
-        ),
       ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
@@ -81,14 +72,6 @@ class AppTheme {
         centerTitle: false,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
-          systemNavigationBarContrastEnforced: false,
-        ),
       ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,

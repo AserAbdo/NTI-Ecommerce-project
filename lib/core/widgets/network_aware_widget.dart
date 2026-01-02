@@ -62,56 +62,61 @@ class _NetworkAwareWidgetState extends State<NetworkAwareWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        // Offline banner
-        SlideTransition(
-          position: _slideAnimation,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            color: Colors.orange.shade700,
-            child: SafeArea(
-              bottom: false,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.wifi_off_rounded,
-                    color: Colors.white,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'You are offline',
-                    style: TextStyle(
+        // Main content - fills entire screen
+        widget.child,
+        // Offline banner - overlays on top
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              color: Colors.orange.shade700,
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.wifi_off_rounded,
                       color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      size: 18,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
+                    const SizedBox(width: 8),
+                    const Text(
+                      'You are offline',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'Using cached data',
+                        style: TextStyle(color: Colors.white70, fontSize: 11),
+                      ),
                     ),
-                    child: const Text(
-                      'Using cached data',
-                      style: TextStyle(color: Colors.white70, fontSize: 11),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
-        // Main content
-        Expanded(child: widget.child),
       ],
     );
   }

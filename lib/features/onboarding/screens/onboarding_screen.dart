@@ -111,8 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final currentItem = _items[_currentPage];
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
+      backgroundColor: currentItem.primaryColor,
       body: Stack(
         children: [
           // Animated gradient background
@@ -148,58 +147,59 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           // Background decorative shapes
           _buildBackgroundShapes(),
 
-          // Main content
-          SafeArea(
-            child: Column(
-              children: [
-                // Skip button
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: TextButton(
-                      onPressed: _skipOnboarding,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+          // Main content - with padding for status bar
+          Column(
+            children: [
+              // Skip button with top padding for status bar
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + 8,
+                    right: 16,
+                  ),
+                  child: TextButton(
+                    onPressed: _skipOnboarding,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: const Text(
-                          'Skip',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
+                      ),
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
                         ),
                       ),
                     ),
                   ),
                 ),
+              ),
 
-                // Page view content
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: _onPageChanged,
-                    itemCount: _items.length,
-                    itemBuilder: (context, index) {
-                      return _buildPage(index);
-                    },
-                  ),
+              // Page view content
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  itemCount: _items.length,
+                  itemBuilder: (context, index) {
+                    return _buildPage(index);
+                  },
                 ),
+              ),
 
-                // Bottom navigation
-                _buildBottomNavigation(),
-              ],
-            ),
+              // Bottom navigation
+              _buildBottomNavigation(),
+            ],
           ),
         ],
       ),
@@ -397,6 +397,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Widget _buildBottomNavigation() {
     final screenHeight = MediaQuery.of(context).size.height;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
     final isSmallScreen = screenHeight < 700;
     final padding = isSmallScreen ? 20.0 : 32.0;
     final buttonHeight = isSmallScreen ? 54.0 : 64.0;
@@ -405,7 +406,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         : (isSmallScreen ? 54.0 : 64.0);
 
     return Container(
-      padding: EdgeInsets.all(padding),
+      padding: EdgeInsets.only(
+        left: padding,
+        right: padding,
+        top: padding,
+        bottom: padding + bottomPadding,
+      ),
       child: Column(
         children: [
           // Page indicators

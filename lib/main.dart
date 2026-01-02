@@ -15,8 +15,17 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Enable edge-to-edge display - app renders behind system bars
+  // Enable edge-to-edge mode with transparent system bars
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
 
   // Initialize all services
   await AppInitializer.initialize();

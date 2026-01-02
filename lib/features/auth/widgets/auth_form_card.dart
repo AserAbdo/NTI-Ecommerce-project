@@ -13,20 +13,18 @@ class AuthFormCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 40,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-        border: isDark
-            ? Border.all(color: Colors.white.withValues(alpha: 0.1))
-            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 40,
+            offset: const Offset(0, 10),
+          ),
+        ],
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Column(children: children),
     );

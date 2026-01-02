@@ -3,21 +3,25 @@
     <!-- Theme applied to the Android Window while the process is starting (Android 12+) -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">@drawable/launch_background</item>
-        <!-- Enable edge-to-edge display -->
+        <!-- Standard system bar configuration for Android 12+ -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:enforceStatusBarContrast">false</item>
         <item name="android:enforceNavigationBarContrast">false</item>
+        <!-- Disable window light status bar to let Flutter control it -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
     
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
-        <!-- Enable edge-to-edge display -->
+        <!-- Standard system bar configuration for Android 12+ -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:enforceStatusBarContrast">false</item>
         <item name="android:enforceNavigationBarContrast">false</item>
+        <!-- Disable window light status bar to let Flutter control it -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

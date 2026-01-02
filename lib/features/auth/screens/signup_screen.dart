@@ -195,24 +195,13 @@ class _SignupScreenState extends State<SignupScreen>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.white,
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(14),
-                boxShadow: isDark
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 18,
-                color: isDark ? Colors.white : AppColors.textPrimary,
+                color: Colors.white,
               ),
             ),
           ),
@@ -224,19 +213,22 @@ class _SignupScreenState extends State<SignupScreen>
   Widget _buildHeader(bool isDark) {
     return Column(
       children: [
-        Text(
+        const Text(
           'Create Account',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : AppColors.textPrimary,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Join us and start your shopping adventure',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.white.withValues(alpha: 0.8),
+          ),
         ),
       ],
     );
@@ -327,22 +319,19 @@ class _SignupScreenState extends State<SignupScreen>
     return Text.rich(
       TextSpan(
         text: 'By signing up, you agree to our ',
-        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-        children: [
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: 0.8),
+          fontSize: 13,
+        ),
+        children: const [
           TextSpan(
             text: 'Terms',
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
-          const TextSpan(text: ' and '),
+          TextSpan(text: ' and '),
           TextSpan(
             text: 'Privacy Policy',
-            style: TextStyle(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -356,14 +345,17 @@ class _SignupScreenState extends State<SignupScreen>
       children: [
         Text(
           'Already have an account? ',
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.8),
+            fontSize: 15,
+          ),
         ),
         GestureDetector(
           onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
-          child: Text(
+          child: const Text(
             'Sign In',
             style: TextStyle(
-              color: AppColors.primary,
+              color: Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),

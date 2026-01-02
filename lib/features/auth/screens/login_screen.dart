@@ -221,22 +221,24 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildHeader() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
-        Text(
+        const Text(
           'Welcome Back!',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : AppColors.textPrimary,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Sign in to continue your shopping journey',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: AppColors.textSecondary),
+          style: TextStyle(
+            fontSize: 15,
+            color: Colors.white.withValues(alpha: 0.8),
+          ),
         ),
       ],
     );
@@ -248,15 +250,18 @@ class _LoginScreenState extends State<LoginScreen>
       children: [
         Text(
           "Don't have an account? ",
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.8),
+            fontSize: 15,
+          ),
         ),
         GestureDetector(
           onTap: () =>
               Navigator.pushReplacementNamed(context, AppRoutes.signup),
-          child: Text(
+          child: const Text(
             'Sign Up',
             style: TextStyle(
-              color: AppColors.primary,
+              color: Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),

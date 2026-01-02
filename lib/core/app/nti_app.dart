@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/app/app_router.dart';
@@ -41,46 +40,25 @@ class NTIApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
-          final isDark =
-              themeState.themeMode == ThemeMode.dark ||
-              (themeState.themeMode == ThemeMode.system &&
-                  WidgetsBinding
-                          .instance
-                          .platformDispatcher
-                          .platformBrightness ==
-                      Brightness.dark);
-
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarIconBrightness: Brightness.light,
-              statusBarBrightness: isDark ? Brightness.light : Brightness.dark,
-              systemNavigationBarColor: Colors.transparent,
-              systemNavigationBarIconBrightness: isDark
-                  ? Brightness.light
-                  : Brightness.dark,
-              systemNavigationBarContrastEnforced: false,
-            ),
-            child: MaterialApp(
-              title: AppStrings.appName,
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: themeState.themeMode,
-              initialRoute: AppRoutes.splash,
-              onGenerateRoute: AppRouter.onGenerateRoute,
-              builder: (context, child) {
-                // Wrap with listeners for auth state changes
-                return BlocListener<AuthCubit, AuthState>(
-                  listener: (context, authState) {
-                    _onAuthStateChanged(context, authState);
-                  },
-                  child: NetworkAwareWidget(
-                    child: child ?? const SizedBox.shrink(),
-                  ),
-                );
-              },
-            ),
+          return MaterialApp(
+            title: AppStrings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeState.themeMode,
+            initialRoute: AppRoutes.splash,
+            onGenerateRoute: AppRouter.onGenerateRoute,
+            builder: (context, child) {
+              // Wrap with listeners for auth state changes
+              return BlocListener<AuthCubit, AuthState>(
+                listener: (context, authState) {
+                  _onAuthStateChanged(context, authState);
+                },
+                child: NetworkAwareWidget(
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              );
+            },
           );
         },
       ),
