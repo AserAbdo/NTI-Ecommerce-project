@@ -40,27 +40,6 @@ class _SignupScreenState extends State<SignupScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
-
-    // Load saved credentials (email and password only)
-    _loadSavedCredentials();
-  }
-
-  /// Load previously saved email and password
-  Future<void> _loadSavedCredentials() async {
-    final email = await CredentialsStorageService.getSavedEmail();
-    final password = await CredentialsStorageService.getSavedPassword();
-
-    if (email != null) {
-      setState(() {
-        _emailController.text = email;
-      });
-    }
-    if (password != null) {
-      setState(() {
-        _passwordController.text = password;
-        _confirmPasswordController.text = password;
-      });
-    }
   }
 
   @override
@@ -195,13 +174,25 @@ class _SignupScreenState extends State<SignupScreen>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.2)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(14),
+                boxShadow: isDark
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                border: isDark ? null : Border.all(color: Colors.grey.shade200),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 18,
-                color: Colors.white,
+                color: isDark ? Colors.white : AppColors.textPrimary,
               ),
             ),
           ),
@@ -213,12 +204,12 @@ class _SignupScreenState extends State<SignupScreen>
   Widget _buildHeader(bool isDark) {
     return Column(
       children: [
-        const Text(
+        Text(
           'Create Account',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: isDark ? Colors.white : AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -227,7 +218,9 @@ class _SignupScreenState extends State<SignupScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.8)
+                : AppColors.textSecondary,
           ),
         ),
       ],
@@ -296,8 +289,9 @@ class _SignupScreenState extends State<SignupScreen>
         obscureText: _obscureConfirmPassword,
         validator: (value) {
           if (value?.isEmpty ?? true) return 'Please confirm your password';
-          if (value != _passwordController.text)
+          if (value != _passwordController.text) {
             return 'Passwords do not match';
+          }
           return null;
         },
         suffixIcon: IconButton(
@@ -316,22 +310,31 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildTermsText() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Text.rich(
       TextSpan(
         text: 'By signing up, you agree to our ',
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.8),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.8)
+              : AppColors.textSecondary,
           fontSize: 13,
         ),
-        children: const [
+        children: [
           TextSpan(
             text: 'Terms',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          TextSpan(text: ' and '),
+          const TextSpan(text: ' and '),
           TextSpan(
             text: 'Privacy Policy',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -340,22 +343,25 @@ class _SignupScreenState extends State<SignupScreen>
   }
 
   Widget _buildLoginLink() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           'Already have an account? ',
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.8),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.8)
+                : AppColors.textSecondary,
             fontSize: 15,
           ),
         ),
         GestureDetector(
           onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
-          child: const Text(
+          child: Text(
             'Sign In',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.primary,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),

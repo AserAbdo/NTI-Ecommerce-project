@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 
 /// Gradient background container for auth screens
 class AuthBackground extends StatelessWidget {
@@ -13,21 +12,18 @@ class AuthBackground extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF1A1A2E),
-                  const Color(0xFF16213E),
-                  const Color(0xFF0F3460),
-                ]
-              : [
-                  AppColors.primary,
-                  AppColors.primary.withValues(alpha: 0.85),
-                  AppColors.primary.withValues(alpha: 0.7),
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF1A1A2E),
+                  Color(0xFF16213E),
+                  Color(0xFF0F3460),
                 ],
-        ),
+              )
+            : null,
       ),
       child: child,
     );

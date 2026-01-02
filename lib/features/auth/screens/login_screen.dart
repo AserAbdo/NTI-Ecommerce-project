@@ -221,14 +221,15 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
-        const Text(
+        Text(
           'Welcome Back!',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: Colors.white,
+            color: isDark ? Colors.white : AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -237,7 +238,9 @@ class _LoginScreenState extends State<LoginScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.8)
+                : AppColors.textSecondary,
           ),
         ),
       ],
@@ -245,23 +248,26 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildSignupLink() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           "Don't have an account? ",
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.8),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.8)
+                : AppColors.textSecondary,
             fontSize: 15,
           ),
         ),
         GestureDetector(
           onTap: () =>
               Navigator.pushReplacementNamed(context, AppRoutes.signup),
-          child: const Text(
+          child: Text(
             'Sign Up',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.primary,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
