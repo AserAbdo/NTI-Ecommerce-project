@@ -109,9 +109,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final currentItem = _items[_currentPage];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Dark mode colors
+    final darkPrimaryColor = const Color(0xFF1A1A2E);
+    final darkSecondaryColor = const Color(0xFF0F3460);
+
+    // Get colors based on theme
+    final primaryColor = isDark ? darkPrimaryColor : currentItem.primaryColor;
+    final secondaryColor = isDark
+        ? darkSecondaryColor
+        : currentItem.secondaryColor;
 
     return Scaffold(
-      backgroundColor: currentItem.primaryColor,
+      backgroundColor: primaryColor,
       body: Stack(
         children: [
           // Animated gradient background
@@ -124,13 +135,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      currentItem.primaryColor,
-                      Color.lerp(
-                        currentItem.primaryColor,
-                        currentItem.secondaryColor,
-                        0.5,
-                      )!,
-                      currentItem.secondaryColor,
+                      primaryColor,
+                      Color.lerp(primaryColor, secondaryColor, 0.5)!,
+                      secondaryColor,
                     ],
                     transform: GradientRotation(
                       _backgroundAnimationController.value * 2 * math.pi,
@@ -211,6 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.height < 700;
     final isVerySmallScreen = size.height < 600;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Responsive sizes
     final iconContainerSize = isVerySmallScreen
@@ -271,19 +279,28 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       width: iconContainerSize,
                       height: iconContainerSize,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : Colors.white,
                         shape: BoxShape.circle,
+                        border: isDark
+                            ? Border.all(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                width: 2,
+                              )
+                            : null,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 40,
                             offset: const Offset(0, 20),
                           ),
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            blurRadius: 60,
-                            spreadRadius: 10,
-                          ),
+                          if (!isDark)
+                            BoxShadow(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              blurRadius: 60,
+                              spreadRadius: 10,
+                            ),
                         ],
                       ),
                       child: Stack(
@@ -304,17 +321,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: item.primaryColor.withValues(
-                                        alpha: 0.3,
-                                      ),
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.3)
+                                          : item.primaryColor.withValues(
+                                              alpha: 0.3,
+                                            ),
                                       width: 2,
                                     ),
                                   ),
                                   child: CustomPaint(
                                     painter: DottedCirclePainter(
-                                      color: item.primaryColor.withValues(
-                                        alpha: 0.5,
-                                      ),
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.5)
+                                          : item.primaryColor.withValues(
+                                              alpha: 0.5,
+                                            ),
                                     ),
                                   ),
                                 ),
@@ -324,7 +345,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           // Main icon
                           ShaderMask(
                             shaderCallback: (bounds) => LinearGradient(
-                              colors: [item.primaryColor, item.secondaryColor],
+                              colors: isDark
+                                  ? [
+                                      Colors.white,
+                                      Colors.white.withValues(alpha: 0.7),
+                                    ]
+                                  : [item.primaryColor, item.secondaryColor],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ).createShader(bounds),
@@ -399,6 +425,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final screenHeight = MediaQuery.of(context).size.height;
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final isSmallScreen = screenHeight < 700;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final padding = isSmallScreen ? 20.0 : 32.0;
     final buttonHeight = isSmallScreen ? 54.0 : 64.0;
     final buttonWidth = _currentPage == _items.length - 1
@@ -433,8 +460,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               width: buttonWidth,
               height: buttonHeight,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.15)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(buttonHeight / 2),
+                border: isDark
+                    ? Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1.5,
+                      )
+                    : null,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
@@ -445,34 +480,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
               child: Center(
                 child: _currentPage == _items.length - 1
-                    ? ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            _items[_currentPage].primaryColor,
-                            _items[_currentPage].secondaryColor,
-                          ],
-                        ).createShader(bounds),
-                        child: Text(
-                          'Get Started',
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 16 : 18,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    : ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            _items[_currentPage].primaryColor,
-                            _items[_currentPage].secondaryColor,
-                          ],
-                        ).createShader(bounds),
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          size: isSmallScreen ? 24 : 28,
+                    ? Text(
+                        'Get Started',
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 16 : 18,
+                          fontWeight: FontWeight.w700,
                           color: Colors.white,
                         ),
+                      )
+                    : Icon(
+                        Icons.arrow_forward_rounded,
+                        size: isSmallScreen ? 24 : 28,
+                        color: Colors.white,
                       ),
               ),
             ),

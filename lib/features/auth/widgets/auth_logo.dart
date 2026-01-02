@@ -9,23 +9,31 @@ class AuthLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.white.withValues(alpha: 0.15) : Colors.white,
         borderRadius: BorderRadius.circular(size * 0.2),
+        border: isDark
+            ? Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5)
+            : null,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 30,
             offset: const Offset(0, 15),
           ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.8),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 20,
+              spreadRadius: 5,
+            ),
         ],
       ),
       padding: EdgeInsets.all(size * 0.15),

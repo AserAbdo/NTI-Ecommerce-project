@@ -184,331 +184,360 @@ class _SplashScreenState extends State<SplashScreen>
       child: Scaffold(
         extendBodyBehindAppBar: true,
         extendBody: true,
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primary.withOpacity(0.95),
-                AppColors.primary.withOpacity(0.85),
-                AppColors.primary.withOpacity(0.75),
-              ],
-              stops: const [0.0, 0.4, 0.7, 1.0],
-            ),
-          ),
-          child: Stack(
-            children: [
-              // Animated floating e-commerce items
-              AnimatedBuilder(
-                animation: _floatingItemsController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    size: size,
-                    painter: FloatingItemsPainter(
-                      items: _floatingItems,
-                      progress: _floatingItemsController.value,
-                    ),
-                  );
-                },
+        body: Builder(
+          builder: (context) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [
+                          const Color(0xFF1A1A2E),
+                          const Color(0xFF16213E),
+                          const Color(0xFF0F3460),
+                          const Color(0xFF1A1A2E),
+                        ]
+                      : [
+                          AppColors.primary,
+                          AppColors.primary.withOpacity(0.95),
+                          AppColors.primary.withOpacity(0.85),
+                          AppColors.primary.withOpacity(0.75),
+                        ],
+                  stops: const [0.0, 0.4, 0.7, 1.0],
+                ),
               ),
-
-              // Background effects
-              _buildBackgroundEffects(),
-
-              // Main content
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo with shopping bag icon
-                    FadeTransition(
-                      opacity: _logoFadeAnimation,
-                      child: ScaleTransition(
-                        scale: _logoScaleAnimation,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Outer glow
-                            Container(
-                              width: 200,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(32),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white.withOpacity(0.3),
-                                    blurRadius: 50,
-                                    spreadRadius: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Middle container with border
-                            Container(
-                              width: 170,
-                              height: 170,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            // Inner container with logo
-                            Container(
-                              width: 140,
-                              height: 140,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 30,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ],
+              child: Stack(
+                children: [
+                  // Animated floating e-commerce items
+                  AnimatedBuilder(
+                    animation: _floatingItemsController,
+                    builder: (context, child) {
+                      return CustomPaint(
+                        size: size,
+                        painter: FloatingItemsPainter(
+                          items: _floatingItems,
+                          progress: _floatingItemsController.value,
                         ),
-                      ),
-                    ),
+                      );
+                    },
+                  ),
 
-                    SizedBox(height: ResponsiveHelper.getSpacing(context, 40)),
+                  // Background effects
+                  _buildBackgroundEffects(),
 
-                    // App name with shine effect
-                    SlideTransition(
-                      position: _textSlideAnimation,
-                      child: FadeTransition(
-                        opacity: _textFadeAnimation,
-                        child: Column(
-                          children: [
-                            // Vendora text with shine
-                            AnimatedBuilder(
-                              animation: _shineAnimation,
-                              builder: (context, child) {
-                                return ShaderMask(
-                                  shaderCallback: (bounds) {
-                                    return LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: const [
-                                        Colors.white,
-                                        Colors.white70,
-                                        Colors.white,
-                                      ],
-                                      stops: [
-                                        _shineAnimation.value - 0.3,
-                                        _shineAnimation.value,
-                                        _shineAnimation.value + 0.3,
-                                      ],
-                                    ).createShader(bounds);
-                                  },
-                                  child: Text(
-                                    'Vendora',
-                                    style: TextStyle(
-                                      fontSize:
-                                          ResponsiveHelper.getTitleFontSize(
-                                            context,
-                                          ) +
-                                          12,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white,
-                                      letterSpacing: 3,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black.withOpacity(0.4),
-                                          blurRadius: 25,
-                                          offset: const Offset(0, 5),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            SizedBox(
-                              height: ResponsiveHelper.getSpacing(context, 12),
-                            ),
-
-                            // Tagline
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                'Your Premium Shopping Destination',
-                                style: TextStyle(
-                                  fontSize: ResponsiveHelper.getBodyFontSize(
-                                    context,
-                                  ),
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white.withOpacity(0.95),
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: ResponsiveHelper.getSpacing(context, 60)),
-
-                    // Custom loading indicator
-                    FadeTransition(
-                      opacity: _progressFadeAnimation,
-                      child: Column(
-                        children: [
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Background ring
-                              SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white.withOpacity(0.3),
-                                  ),
-                                  value: 1.0,
-                                ),
-                              ),
-                              // Animated progress
-                              SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white.withOpacity(0.95),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: ResponsiveHelper.getSpacing(context, 20),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                  // Main content
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo with shopping bag icon
+                        FadeTransition(
+                          opacity: _logoFadeAnimation,
+                          child: ScaleTransition(
+                            scale: _logoScaleAnimation,
+                            child: Stack(
+                              alignment: Alignment.center,
                               children: [
+                                // Outer glow
                                 Container(
-                                  width: 6,
-                                  height: 6,
+                                  width: 200,
+                                  height: 200,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.9),
-                                    shape: BoxShape.circle,
+                                    borderRadius: BorderRadius.circular(32),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: isDark
+                                            ? Colors.white.withOpacity(0.1)
+                                            : Colors.white.withOpacity(0.3),
+                                        blurRadius: 50,
+                                        spreadRadius: 20,
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Loading amazing deals',
-                                  style: TextStyle(
-                                    fontSize:
-                                        ResponsiveHelper.getBodyFontSize(
-                                          context,
-                                        ) -
-                                        1,
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
+
+                                // Inner container with logo
+                                Container(
+                                  width: 140,
+                                  height: 140,
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.white.withOpacity(0.15)
+                                        : Colors.white,
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: isDark
+                                        ? Border.all(
+                                            color: Colors.white.withOpacity(
+                                              0.3,
+                                            ),
+                                            width: 1.5,
+                                          )
+                                        : null,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 30,
+                                        offset: const Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/logo.png',
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                        ),
+
+                        SizedBox(
+                          height: ResponsiveHelper.getSpacing(context, 40),
+                        ),
+
+                        // App name with shine effect
+                        SlideTransition(
+                          position: _textSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _textFadeAnimation,
+                            child: Column(
+                              children: [
+                                // Vendora text with shine
+                                AnimatedBuilder(
+                                  animation: _shineAnimation,
+                                  builder: (context, child) {
+                                    return ShaderMask(
+                                      shaderCallback: (bounds) {
+                                        return LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: const [
+                                            Colors.white,
+                                            Colors.white70,
+                                            Colors.white,
+                                          ],
+                                          stops: [
+                                            _shineAnimation.value - 0.3,
+                                            _shineAnimation.value,
+                                            _shineAnimation.value + 0.3,
+                                          ],
+                                        ).createShader(bounds);
+                                      },
+                                      child: Text(
+                                        'Vendora',
+                                        style: TextStyle(
+                                          fontSize:
+                                              ResponsiveHelper.getTitleFontSize(
+                                                context,
+                                              ) +
+                                              12,
+                                          fontWeight: FontWeight.w900,
+                                          color: Colors.white,
+                                          letterSpacing: 3,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black.withOpacity(
+                                                0.4,
+                                              ),
+                                              blurRadius: 25,
+                                              offset: const Offset(0, 5),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(
+                                  height: ResponsiveHelper.getSpacing(
+                                    context,
+                                    12,
+                                  ),
+                                ),
+
+                                // Tagline
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Your Premium Shopping Destination',
+                                    style: TextStyle(
+                                      fontSize:
+                                          ResponsiveHelper.getBodyFontSize(
+                                            context,
+                                          ),
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white.withOpacity(0.95),
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: ResponsiveHelper.getSpacing(context, 60),
+                        ),
+
+                        // Custom loading indicator
+                        FadeTransition(
+                          opacity: _progressFadeAnimation,
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Background ring
+                                  SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white.withOpacity(0.3),
+                                      ),
+                                      value: 1.0,
+                                    ),
+                                  ),
+                                  // Animated progress
+                                  SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white.withOpacity(0.95),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: ResponsiveHelper.getSpacing(
+                                  context,
+                                  20,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.9),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Loading amazing deals',
+                                      style: TextStyle(
+                                        fontSize:
+                                            ResponsiveHelper.getBodyFontSize(
+                                              context,
+                                            ) -
+                                            1,
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Bottom branding
+                  Positioned(
+                    bottom: 50,
+                    left: 0,
+                    right: 0,
+                    child: FadeTransition(
+                      opacity: _textFadeAnimation,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 30,
+                                height: 1,
+                                color: Colors.white.withOpacity(0.4),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                child: Text(
+                                  'Premium Quality',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize:
+                                        ResponsiveHelper.getBodyFontSize(
+                                          context,
+                                        ) -
+                                        3,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                width: 30,
+                                height: 1,
+                                color: Colors.white.withOpacity(0.4),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Version 1.0.0',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.5),
+                              fontSize:
+                                  ResponsiveHelper.getBodyFontSize(context) - 3,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              // Bottom branding
-              Positioned(
-                bottom: 50,
-                left: 0,
-                right: 0,
-                child: FadeTransition(
-                  opacity: _textFadeAnimation,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 30,
-                            height: 1,
-                            color: Colors.white.withOpacity(0.4),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              'Premium Quality',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
-                                fontSize:
-                                    ResponsiveHelper.getBodyFontSize(context) -
-                                    3,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 30,
-                            height: 1,
-                            color: Colors.white.withOpacity(0.4),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Version 1.0.0',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
-                          fontSize:
-                              ResponsiveHelper.getBodyFontSize(context) - 3,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
