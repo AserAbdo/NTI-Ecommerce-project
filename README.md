@@ -1,6 +1,10 @@
 # 🛍️ Vendora - AI E-Commerce Mobile Application
 
 <p align="center">
+  <img src="screenshots//banner.gif" alt="Vendora Banner" width="100%"/>
+</p>
+
+<p align="center">
   <img src="screenshots/logo.png" alt="Vendora Logo" width="120" height="120"/>
 </p>
 
@@ -46,6 +50,7 @@
 - 🔒 **Secure** - Firebase Authentication with input validation
 - 📴 **Offline Support** - Browse products without internet
 - 🔔 **Notifications** - Local notifications for coupons and orders
+- 🤖 **AI Chatbot** - Intelligent assistant for shopping help
 
 ---
 
@@ -97,21 +102,73 @@
 - Order management
 - Status updates
 
+### 🤖 AI Chatbot
+- Intelligent shopping assistant
+- Product recommendations
+- Order inquiries
+- General support
+
 ---
 
 ## 📱 Screenshots
 
-### Authentication
+### 🚀 Onboarding & Authentication
 
 | Splash Screen | Onboarding | Login | Sign Up |
 |:---:|:---:|:---:|:---:|
-| ![Splash](screenshots/splash.png) | ![Onboarding](screenshots/onboarding.png) | ![Login](screenshots/login.png) | ![Sign Up](screenshots/signup.jpg) |
+| ![Splash](screenshots/splash.png) | ![Onboarding](screenshots/onboarding.png) | ![Login](screenshots/login.png) | ![Sign Up](screenshots/signup.png) |
 
-### Home & Products
+### 🏠 Home & Products
 
-| Home Screen | Products | Product Details |
+| Home Screen | Products | Product Details | Search |
+|:---:|:---:|:---:|:---:|
+| ![Home](screenshots/home.png) | ![Products](screenshots/products.png) | ![Product Details](screenshots/product_details.png) | ![Search](screenshots/search.png) |
+
+### 🛒 Shopping
+
+| Cart | Checkout | Payment | Order Confirmation |
+|:---:|:---:|:---:|:---:|
+| ![Cart](screenshots/cart.png) | ![Checkout](screenshots/checkout.png) | ![Payment](screenshots/payment.png) | ![Order Confirmation](screenshots/order_confirmation.png) |
+
+### ❤️ Favorites & Orders
+
+| Favorites | My Orders | Order Details |
 |:---:|:---:|:---:|
-| ![Home](screenshots/home.png) | ![Products](screenshots/products.png) | ![Details](screenshots/product_details.png) |
+| ![Favorites](screenshots/favorites.png) | ![My Orders](screenshots/orders.png) | ![Order Details](screenshots/order_details.png) |
+
+### 👤 Profile & Settings
+
+| Account | Edit Profile | Addresses | Address Form |
+|:---:|:---:|:---:|:---:|
+| ![Account](screenshots/account.png) | ![Edit Profile](screenshots/edit_profile.png) | ![Addresses](screenshots/addresses.png) | ![Address](screenshots/address.png) |
+
+| Payment Methods | Change Password | Privacy Policy | About |
+|:---:|:---:|:---:|:---:|
+| ![Payment Methods](screenshots/payment_methods.png) | ![Change Password](screenshots/change_password.png) | ![Privacy Policy](screenshots/privacy_policy.png) | ![About](screenshots/about.png) |
+
+### 📞 Support & Help
+
+| Help Center | Contact Us | Rate App |
+|:---:|:---:|:---:|
+| ![Help Center](screenshots/help_center.png) | ![Contact Us](screenshots/contact_us.png) | ![Rate App](screenshots/rate_app.png) |
+
+### 🤖 AI Chatbot
+
+| Chat Menu | Chatbot |
+|:---:|:---:|
+| ![Chat Menu](screenshots/main_chat.png) | ![Chatbot](screenshots/chatbot.png) |
+
+### 🔔 Notifications
+
+| Notifications |
+|:---:|
+| ![Notifications](screenshots/notifications.png) |
+
+### 👨‍💼 Admin Panel
+
+| Admin Dashboard | Admin Products | Admin Orders |
+|:---:|:---:|:---:|
+| ![Admin Dashboard](screenshots/admin_dashboard.png) | ![Admin Products](screenshots/admin_products.png) | ![Admin Orders](screenshots/admin_orders.png) |
 
 ---
 
@@ -206,24 +263,66 @@ lib/
 │
 ├── features/                      # Feature modules
 │   ├── admin/                     # Admin panel
-│   │   ├── controllers/
 │   │   ├── screens/
+│   │   │   ├── admin_dashboard_screen.dart
+│   │   │   ├── admin_orders_screen.dart
+│   │   │   └── admin_products_screen.dart
 │   │   ├── widgets/
 │   │   └── constants/
 │   ├── auth/                      # Authentication
 │   │   ├── cubits/
 │   │   ├── models/
 │   │   └── screens/
+│   │       ├── login_screen.dart
+│   │       ├── signup_screen.dart
+│   │       └── splash_screen.dart
 │   ├── cart/                      # Shopping cart
+│   │   └── screens/
+│   │       └── cart_screen.dart
+│   ├── chatbot/                   # AI Chatbot
+│   │   └── screens/
+│   │       ├── chat_screen.dart
+│   │       └── main_chat_screen.dart
 │   ├── favorites/                 # Wishlist
-│   ├── home/                      # Home screen
-│   ├── orders/                    # Order management
-│   ├── products/                  # Product catalog
-│   ├── profile/                   # User profile
-│   ├── search/                    # Search functionality
-│   ├── coupons/                   # Coupon system
+│   │   └── screens/
+│   │       └── favorites_screen.dart
+│   ├── main/                      # Main navigation
+│   │   └── screens/
+│   │       └── main_screen.dart
 │   ├── notifications/             # Notifications
-│   └── chatbot/                   # AI assistant
+│   │   └── screens/
+│   │       └── notifications_screen.dart
+│   ├── onboarding/               # Onboarding
+│   │   └── screens/
+│   │       └── onboarding_screen.dart
+│   ├── orders/                    # Order management
+│   │   └── screens/
+│   │       ├── checkout_screen.dart
+│   │       ├── mock_payment_screen.dart
+│   │       ├── my_order_screen.dart
+│   │       ├── order_confirmation_screen.dart
+│   │       ├── order_details_screen.dart
+│   │       └── orders_screen.dart
+│   ├── products/                  # Product catalog
+│   │   └── screens/
+│   │       ├── home_screen.dart
+│   │       └── product_details_screen.dart
+│   ├── profile/                   # User profile
+│   │   └── screens/
+│   │       ├── about_screen.dart
+│   │       ├── account_screen.dart
+│   │       ├── address_screen.dart
+│   │       ├── addresses_screen.dart
+│   │       ├── change_password_screen.dart
+│   │       ├── contact_us_screen.dart
+│   │       ├── edit_profile_screen.dart
+│   │       ├── help_center_screen.dart
+│   │       ├── payment_methods_screen.dart
+│   │       ├── privacy_policy_screen.dart
+│   │       └── rate_app_screen.dart
+│   └── search/                    # Search functionality
+│       └── screens/
+│           └── search_page.dart
 │
 ├── services/                      # App services
 │   ├── firebase_service.dart
@@ -389,7 +488,7 @@ class Env {
 
 | Metric | Value |
 |--------|-------|
-| **Total Screens** | 25+ |
+| **Total Screens** | 33+ |
 | **Cubits/State Managers** | 10+ |
 | **Code Lines** | 50,000+ |
 | **Features** | 20+ |
