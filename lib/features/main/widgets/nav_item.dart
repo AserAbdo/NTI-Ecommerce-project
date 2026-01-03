@@ -61,72 +61,41 @@ class NavItem extends StatelessWidget {
     final inactiveColor = isDark
         ? Colors.white.withValues(alpha: 0.7)
         : AppColors.textSecondary;
+    final isSmall = ResponsiveHelper.isSmallMobile(context);
 
     return RepaintBoundary(
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           splashColor: AppColors.primary.withValues(alpha: 0.1),
           highlightColor: AppColors.primary.withValues(alpha: 0.05),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+          child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveHelper.isSmallMobile(context)
-                  ? (isSelected ? 10 : 8)
-                  : (isSelected ? 16 : 12),
-              vertical: ResponsiveHelper.isSmallMobile(context) ? 6 : 8,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.primary.withValues(alpha: 0.12)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
+              horizontal: isSmall ? 4 : 8,
+              vertical: isSmall ? 4 : 6,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Icon with background
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: ResponsiveHelper.isSmallMobile(context) ? 36 : 40,
-                  height: ResponsiveHelper.isSmallMobile(context) ? 36 : 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected
-                        ? AppColors.primary.withValues(alpha: 0.15)
-                        : Colors.transparent,
-                  ),
-                  child: Icon(
-                    isSelected ? itemData.activeIcon : itemData.icon,
-                    color: isSelected ? AppColors.primary : inactiveColor,
-                    size: ResponsiveHelper.isSmallMobile(context)
-                        ? (isSelected ? 22 : 20)
-                        : (isSelected ? 26 : 24),
-                  ),
+                // Icon
+                Icon(
+                  isSelected ? itemData.activeIcon : itemData.icon,
+                  color: isSelected ? AppColors.primary : inactiveColor,
+                  size: isSmall ? 22 : 24,
                 ),
-                const SizedBox(height: 4),
-                // Label
+                const SizedBox(height: 2),
+                // Label with overflow handling
                 Text(
                   itemData.label,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                   style: TextStyle(
-                    fontSize: ResponsiveHelper.isSmallMobile(context) ? 10 : 11,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: isSmall ? 10 : 11,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? AppColors.primary : inactiveColor,
-                    letterSpacing: isSelected ? 0.2 : 0,
-                  ),
-                ),
-                // Active indicator
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.only(top: 2),
-                  width: isSelected ? 4 : 0,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ],

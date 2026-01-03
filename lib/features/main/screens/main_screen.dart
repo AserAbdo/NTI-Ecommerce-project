@@ -115,18 +115,18 @@ class _MainScreenState extends State<MainScreen>
   Widget build(BuildContext context) {
     final bottomNavIndex = _getBottomNavIndexFromScreen();
     final isNavbarHidden = !_scrollController.isNavbarVisible;
-    final navbarHeight = ResponsiveHelper.isSmallMobile(context) ? 60.0 : 70.0;
+    final navbarHeight = ResponsiveHelper.isSmallMobile(context) ? 60.0 : 90.0;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Main content screens
+          // Main content screenss
           IndexedStack(index: _currentIndex, children: _screens),
 
           // Chat floating button - positioned at bottom right
           Positioned(
-            bottom: ResponsiveHelper.isSmallMobile(context) ? 20 : 30,
+            bottom: ResponsiveHelper.isSmallMobile(context) ? 0 : 0,
             right: ResponsiveHelper.isSmallMobile(context) ? 12 : 20,
             child: ChatFloatingButton(
               isNavbarHidden: isNavbarHidden,

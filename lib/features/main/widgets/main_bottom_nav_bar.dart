@@ -17,78 +17,71 @@ class MainBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSmall = ResponsiveHelper.isSmallMobile(context);
+
     return AnimatedSlide(
       duration: const Duration(milliseconds: 200),
       offset: isVisible ? Offset.zero : const Offset(0, 1),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
         opacity: isVisible ? 1.0 : 0.0,
-        child: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, -5),
-              ),
-            ],
-          ),
-          child: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 5,
-            elevation: 0,
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: Container(
-              height: ResponsiveHelper.isSmallMobile(context) ? 60 : 70,
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.isSmallMobile(context) ? 8 : 12,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Left side nav items
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        NavItem(
-                          itemData: NavItems.items[0],
-                          isSelected: currentIndex == 0,
-                          onTap: () => onTap(0),
-                        ),
-                        NavItem(
-                          itemData: NavItems.items[1],
-                          isSelected: currentIndex == 1,
-                          onTap: () => onTap(1),
-                        ),
-                      ],
+        child: SafeArea(
+          top: false,
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: BottomAppBar(
+              shape: const CircularNotchedRectangle(),
+              notchMargin: 5,
+              elevation: 0,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: SizedBox(
+                height: isSmall ? 50 : 60,
+                child: Row(
+                  children: [
+                    // Left side: Home
+                    Expanded(
+                      child: NavItem(
+                        itemData: NavItems.items[0],
+                        isSelected: currentIndex == 0,
+                        onTap: () => onTap(0),
+                      ),
                     ),
-                  ),
-
-                  // Spacer for center FAB
-                  SizedBox(
-                    width: ResponsiveHelper.isSmallMobile(context) ? 50 : 80,
-                  ),
-
-                  // Right side nav items
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        NavItem(
-                          itemData: NavItems.items[2],
-                          isSelected: currentIndex == 2,
-                          onTap: () => onTap(2),
-                        ),
-                        NavItem(
-                          itemData: NavItems.items[3],
-                          isSelected: currentIndex == 3,
-                          onTap: () => onTap(3),
-                        ),
-                      ],
+                    // Left side: Orders
+                    Expanded(
+                      child: NavItem(
+                        itemData: NavItems.items[1],
+                        isSelected: currentIndex == 1,
+                        onTap: () => onTap(1),
+                      ),
                     ),
-                  ),
-                ],
+                    // Center spacer for FAB
+                    SizedBox(width: isSmall ? 56 : 72),
+                    // Right side: Favorites
+                    Expanded(
+                      child: NavItem(
+                        itemData: NavItems.items[2],
+                        isSelected: currentIndex == 2,
+                        onTap: () => onTap(2),
+                      ),
+                    ),
+                    // Right side: Profile
+                    Expanded(
+                      child: NavItem(
+                        itemData: NavItems.items[3],
+                        isSelected: currentIndex == 3,
+                        onTap: () => onTap(3),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

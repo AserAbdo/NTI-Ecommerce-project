@@ -24,8 +24,8 @@ class ChatFloatingButton extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
-      // Move down when navbar is hidden to take its space
-      margin: EdgeInsets.only(bottom: isNavbarHidden ? 0 : navbarHeight),
+      // Position directly above the bottom navigation bar
+      margin: EdgeInsets.only(bottom: isNavbarHidden ? 16 : navbarHeight + 8),
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0.0, end: 1.0),
         duration: const Duration(milliseconds: 600),
