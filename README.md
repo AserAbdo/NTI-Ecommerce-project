@@ -1,11 +1,7 @@
 # 🛍️ Vendora - AI E-Commerce Mobile Application
 
 <p align="center">
-  <img src="screenshots//banner.gif" alt="Vendora Banner" width="100%"/>
-</p>
-
-<p align="center">
-  <img src="screenshots/logo.png" alt="Vendora Logo" width="120" height="120"/>
+  <img src="screenshots/banner.gif" alt="Vendora Banner" width="100%"/>
 </p>
 
 <p align="center">
@@ -116,7 +112,7 @@
 
 | Splash Screen | Onboarding | Login | Sign Up |
 |:---:|:---:|:---:|:---:|
-| ![Splash](screenshots/splash.png) | ![Onboarding](screenshots/onboarding.png) | ![Login](screenshots/login.png) | ![Sign Up](screenshots/signup.png) |
+| ![Splash](screenshots/splash.gif) | ![Onboarding](screenshots/onboarding.gif) | ![Login](screenshots/login.jpg) | ![Sign Up](screenshots/create-account.jpg) |
 
 ### 🏠 Home & Products
 
