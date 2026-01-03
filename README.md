@@ -112,59 +112,35 @@
 
 | Splash Screen | Onboarding | Login |
 |:---:|:---:|:---:|
-| <img src="screenshots/splash.gif" alt="Splash" width="300"/> | <img src="screenshots/onboarding.gif" alt="Onboarding" width="300"/> | <img src="screenshots/login.jpg" alt="Login" width="300"/> |
-
-### 🏠 Home & Products
-
-| Home Screen | Products | Product Details | Search |
-|:---:|:---:|:---:|:---:|
-| ![Home](screenshots/home.png) | ![Products](screenshots/products.png) | ![Product Details](screenshots/product_details.png) | ![Search](screenshots/search.png) |
-
-### 🛒 Shopping
-
-| Cart | Checkout | Payment | Order Confirmation |
-|:---:|:---:|:---:|:---:|
-| ![Cart](screenshots/cart.png) | ![Checkout](screenshots/checkout.png) | ![Payment](screenshots/payment.png) | ![Order Confirmation](screenshots/order_confirmation.png) |
+| <img src="screenshots/splash.gif" alt="Splash" width="200"/> | <img src="screenshots/onboarding.gif" alt="Onboarding" width="200"/> | <img src="screenshots/login.jpg" alt="Login" width="200"/> |
 
 ### ❤️ Favorites & Orders
 
 | Favorites |
 |:---:|
-| <img src="screenshots/favourites.jpg" alt="Favorites" width="300"/> |
+| <img src="screenshots/favourites.jpg" alt="Favorites" width="200"/> |
 
 ### 👤 Profile & Settings
 
 | Edit Profile | Addresses | Change Password |
 |:---:|:---:|:---:|
-| <img src="screenshots/edit-profile.jpg" alt="Edit Profile" width="300"/> | <img src="screenshots/addresses.jpg" alt="Addresses" width="300"/> | <img src="screenshots/change-password.jpg" alt="Change Password" width="300"/> |
+| <img src="screenshots/edit-profile.jpg" alt="Edit Profile" width="200"/> | <img src="screenshots/addresses.jpg" alt="Addresses" width="200"/> | <img src="screenshots/change-password.jpg" alt="Change Password" width="200"/> |
 
 | Payment Methods | Privacy Policy |
 |:---:|:---:|
-| <img src="screenshots/payment-methods.jpg" alt="Payment Methods" width="300"/> | <img src="screenshots/privacy-policy.jpg" alt="Privacy Policy" width="300"/> |
+| <img src="screenshots/payment-methods.jpg" alt="Payment Methods" width="200"/> | <img src="screenshots/privacy-policy.jpg" alt="Privacy Policy" width="200"/> |
 
 ### 📞 Support & Help
 
 | Help Center | Contact Us | Rate App |
 |:---:|:---:|:---:|
-| <img src="screenshots/help-center.jpg" alt="Help Center" width="300"/> | <img src="screenshots/contact-us.jpg" alt="Contact Us" width="300"/> | <img src="screenshots/rate.jpg" alt="Rate App" width="300"/> |
+| <img src="screenshots/help-center.jpg" alt="Help Center" width="200"/> | <img src="screenshots/contact-us.jpg" alt="Contact Us" width="200"/> | <img src="screenshots/rate.jpg" alt="Rate App" width="200"/> |
 
 ### 🤖 AI Chatbot
 
 | Chatbot 1 | Chatbot 2 |
 |:---:|:---:|
-| <img src="screenshots/chatbot1.jpg" alt="Chatbot 1" width="300"/> | <img src="screenshots/chatbot2.jpg" alt="Chatbot 2" width="300"/> |
-
-### 🔔 Notifications
-
-| Notifications |
-|:---:|
-| ![Notifications](screenshots/notifications.png) |
-
-### 👨‍💼 Admin Panel
-
-| Admin Dashboard | Admin Products | Admin Orders |
-|:---:|:---:|:---:|
-| ![Admin Dashboard](screenshots/admin_dashboard.png) | ![Admin Products](screenshots/admin_products.png) | ![Admin Orders](screenshots/admin_orders.png) |
+| <img src="screenshots/chatbot1.jpg" alt="Chatbot 1" width="200"/> | <img src="screenshots/chatbot2.jpg" alt="Chatbot 2" width="200"/> |
 
 ---
 
