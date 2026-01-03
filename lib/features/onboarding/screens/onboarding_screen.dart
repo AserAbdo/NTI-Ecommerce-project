@@ -480,19 +480,50 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
               child: Center(
                 child: _currentPage == _items.length - 1
-                    ? Text(
-                        'Get Started',
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 16 : 18,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      )
-                    : Icon(
-                        Icons.arrow_forward_rounded,
-                        size: isSmallScreen ? 24 : 28,
-                        color: Colors.white,
-                      ),
+                    ? (isDark
+                          ? Text(
+                              'Get Started',
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 16 : 18,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            )
+                          : ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                colors: [
+                                  _items[_currentPage].primaryColor,
+                                  _items[_currentPage].secondaryColor,
+                                ],
+                              ).createShader(bounds),
+                              child: Text(
+                                'Get Started',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen ? 16 : 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ))
+                    : (isDark
+                          ? Icon(
+                              Icons.arrow_forward_rounded,
+                              size: isSmallScreen ? 24 : 28,
+                              color: Colors.white,
+                            )
+                          : ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                colors: [
+                                  _items[_currentPage].primaryColor,
+                                  _items[_currentPage].secondaryColor,
+                                ],
+                              ).createShader(bounds),
+                              child: Icon(
+                                Icons.arrow_forward_rounded,
+                                size: isSmallScreen ? 24 : 28,
+                                color: Colors.white,
+                              ),
+                            )),
               ),
             ),
           ),
