@@ -110,9 +110,9 @@
 
 ### 🚀 Onboarding & Authentication
 
-| Splash Screen | Onboarding | Login | Sign Up |
-|:---:|:---:|:---:|:---:|
-| ![Splash](screenshots/splash.gif) | ![Onboarding](screenshots/onboarding.gif) | ![Login](screenshots/login.jpg) | ![Sign Up](screenshots/create-account.jpg) |
+| Splash Screen | Onboarding | Login |
+|:---:|:---:|:---:|
+| <img src="screenshots/splash.gif" alt="Splash" width="300"/> | <img src="screenshots/onboarding.gif" alt="Onboarding" width="300"/> | <img src="screenshots/login.jpg" alt="Login" width="300"/> |
 
 ### 🏠 Home & Products
 
