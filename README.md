@@ -128,31 +128,31 @@
 
 ### ❤️ Favorites & Orders
 
-| Favorites | My Orders | Order Details |
-|:---:|:---:|:---:|
-| ![Favorites](screenshots/favorites.png) | ![My Orders](screenshots/orders.png) | ![Order Details](screenshots/order_details.png) |
+| Favorites |
+|:---:|
+| <img src="screenshots/favourites.jpg" alt="Favorites" width="300"/> |
 
 ### 👤 Profile & Settings
 
-| Account | Edit Profile | Addresses | Address Form |
-|:---:|:---:|:---:|:---:|
-| ![Account](screenshots/account.png) | ![Edit Profile](screenshots/edit_profile.png) | ![Addresses](screenshots/addresses.png) | ![Address](screenshots/address.png) |
+| Edit Profile | Addresses | Change Password |
+|:---:|:---:|:---:|
+| <img src="screenshots/edit-profile.jpg" alt="Edit Profile" width="300"/> | <img src="screenshots/addresses.jpg" alt="Addresses" width="300"/> | <img src="screenshots/change-password.jpg" alt="Change Password" width="300"/> |
 
-| Payment Methods | Change Password | Privacy Policy | About |
-|:---:|:---:|:---:|:---:|
-| ![Payment Methods](screenshots/payment_methods.png) | ![Change Password](screenshots/change_password.png) | ![Privacy Policy](screenshots/privacy_policy.png) | ![About](screenshots/about.png) |
+| Payment Methods | Privacy Policy |
+|:---:|:---:|
+| <img src="screenshots/payment-methods.jpg" alt="Payment Methods" width="300"/> | <img src="screenshots/privacy-policy.jpg" alt="Privacy Policy" width="300"/> |
 
 ### 📞 Support & Help
 
 | Help Center | Contact Us | Rate App |
 |:---:|:---:|:---:|
-| ![Help Center](screenshots/help_center.png) | ![Contact Us](screenshots/contact_us.png) | ![Rate App](screenshots/rate_app.png) |
+| <img src="screenshots/help-center.jpg" alt="Help Center" width="300"/> | <img src="screenshots/contact-us.jpg" alt="Contact Us" width="300"/> | <img src="screenshots/rate.jpg" alt="Rate App" width="300"/> |
 
 ### 🤖 AI Chatbot
 
-| Chat Menu | Chatbot |
+| Chatbot 1 | Chatbot 2 |
 |:---:|:---:|
-| ![Chat Menu](screenshots/main_chat.png) | ![Chatbot](screenshots/chatbot.png) |
+| <img src="screenshots/chatbot1.jpg" alt="Chatbot 1" width="300"/> | <img src="screenshots/chatbot2.jpg" alt="Chatbot 2" width="300"/> |
 
 ### 🔔 Notifications
 
