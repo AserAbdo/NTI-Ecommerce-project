@@ -9,28 +9,28 @@
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#screenshots">Screenshots</a> •
-  <a href="#architecture">Architecture</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#team">Team</a>
+  <a href="#-features">Features</a> •
+  <a href="#-screenshots">Screenshots</a> •
+  <a href="#️-architecture">Architecture</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#️-tech-stack">Tech Stack</a> •
+  <a href="#-team">Team</a>
 </p>
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Team](#team)
-- [License](#license)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Architecture](#️-architecture)
+- [Project Structure](#-project-structure)
+- [Tech Stack](#️-tech-stack)
+- [Installation](#-installation)
+- [Configuration](#️-configuration)
+- [Team](#-team)
+- [License](#-license)
 
 ---
 
@@ -155,7 +155,7 @@
 
 | About |
 |:---:|
-| <img src="screenshots/about .gif" alt="About" width="150"/> |
+| <img src="screenshots/about.gif" alt="About" width="150"/> |
 
 ### 📞 Support & Help
 
