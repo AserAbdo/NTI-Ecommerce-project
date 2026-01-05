@@ -104,31 +104,58 @@
 - Order inquiries
 - General support
 
+### 📴 Offline & Caching
+- Offline product browsing
+- Cache management for better performance
+- Hive local database storage
+- Network-aware functionality
+
+### 🔐 Security
+- Secure credentials storage
+- Firebase Authentication
+- Input validation
+
 ---
 
 ## 📱 Screenshots
 
 ### 🚀 Onboarding & Authentication
 
-| Splash Screen | Onboarding | Login |
+| Splash Screen | Onboarding | Login | Sign Up |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/splash.gif" alt="Splash" width="150"/> | <img src="screenshots/onboarding.gif" alt="Onboarding" width="150"/> | <img src="screenshots/login.jpg" alt="Login" width="150"/> | <img src="screenshots/create-account.jpg" alt="Sign Up" width="150"/> |
+
+### 🏠 Home & Products
+
+| Home | Product Details |
+|:---:|:---:|
+| <img src="screenshots/home.gif" alt="Home" width="150"/> | <img src="screenshots/product-details.gif" alt="Product Details" width="150"/> |
+
+### 🛒 Shopping
+
+| Cart | Checkout | Order Checkout |
 |:---:|:---:|:---:|
-| <img src="screenshots/splash.gif" alt="Splash" width="150"/> | <img src="screenshots/onboarding.gif" alt="Onboarding" width="150"/> | <img src="screenshots/login.jpg" alt="Login" width="150"/> |
+| <img src="screenshots/cart.gif" alt="Cart" width="150"/> | <img src="screenshots/checkout.gif" alt="Checkout" width="150"/> | <img src="screenshots/orderchechout.gif" alt="Order Checkout" width="150"/> |
 
 ### ❤️ Favorites & Orders
 
-| Favorites |
-|:---:|
-| <img src="screenshots/favourites.jpg" alt="Favorites" width="150"/> |
+| Favorites | Orders |
+|:---:|:---:|
+| <img src="screenshots/favourites.jpg" alt="Favorites" width="150"/> | <img src="screenshots/orders.gif" alt="Orders" width="150"/> |
 
 ### 👤 Profile & Settings
 
-| Edit Profile | Addresses | Change Password |
+| Profile | Edit Profile | Addresses |
 |:---:|:---:|:---:|
-| <img src="screenshots/edit-profile.jpg" alt="Edit Profile" width="150"/> | <img src="screenshots/addresses.jpg" alt="Addresses" width="150"/> | <img src="screenshots/change-password.jpg" alt="Change Password" width="150"/> |
+| <img src="screenshots/profile.gif" alt="Profile" width="150"/> | <img src="screenshots/edit-profile.jpg" alt="Edit Profile" width="150"/> | <img src="screenshots/addresses.jpg" alt="Addresses" width="150"/> |
 
-| Payment Methods | Privacy Policy |
-|:---:|:---:|
-| <img src="screenshots/payment-methods.jpg" alt="Payment Methods" width="150"/> | <img src="screenshots/privacy-policy.jpg" alt="Privacy Policy" width="150"/> |
+| Change Password | Payment Methods | Privacy Policy |
+|:---:|:---:|:---:|
+| <img src="screenshots/change-password.jpg" alt="Change Password" width="150"/> | <img src="screenshots/payment-methods.jpg" alt="Payment Methods" width="150"/> | <img src="screenshots/privacy-policy.jpg" alt="Privacy Policy" width="150"/> |
+
+| About |
+|:---:|
+| <img src="screenshots/about .gif" alt="About" width="150"/> |
 
 ### 📞 Support & Help
 
@@ -228,15 +255,14 @@ lib/
 │   │   ├── app_colors.dart
 │   │   ├── app_routes.dart
 │   │   └── app_strings.dart
+│   ├── firebase/                  # Firebase configuration
 │   ├── theme/                     # Theming
 │   │   ├── app_theme.dart
 │   │   ├── theme_cubit.dart
 │   │   └── theme_state.dart
 │   ├── utils/                     # Utilities
-│   │   ├── validators.dart
-│   │   └── responsive_helper.dart
+│   │   └── validators.dart
 │   └── widgets/                   # Shared widgets
-│       └── network_aware_widget.dart
 │
 ├── data/                          # Data layer
 │   ├── datasources/
@@ -250,72 +276,35 @@ lib/
 │
 ├── features/                      # Feature modules
 │   ├── admin/                     # Admin panel
-│   │   ├── screens/
-│   │   │   ├── admin_dashboard_screen.dart
-│   │   │   ├── admin_orders_screen.dart
-│   │   │   └── admin_products_screen.dart
-│   │   ├── widgets/
-│   │   └── constants/
 │   ├── auth/                      # Authentication
-│   │   ├── cubits/
-│   │   ├── models/
-│   │   └── screens/
-│   │       ├── login_screen.dart
-│   │       ├── signup_screen.dart
-│   │       └── splash_screen.dart
+│   ├── cache/                     # Cache management
+│   │   └── cache_manager.dart
 │   ├── cart/                      # Shopping cart
-│   │   └── screens/
-│   │       └── cart_screen.dart
 │   ├── chatbot/                   # AI Chatbot
-│   │   └── screens/
-│   │       ├── chat_screen.dart
-│   │       └── main_chat_screen.dart
+│   ├── coupons/                   # Coupon system
+│   │   ├── models/
+│   │   └── services/
 │   ├── favorites/                 # Wishlist
-│   │   └── screens/
-│   │       └── favorites_screen.dart
+│   ├── home/                      # Home screen
 │   ├── main/                      # Main navigation
-│   │   └── screens/
-│   │       └── main_screen.dart
 │   ├── notifications/             # Notifications
-│   │   └── screens/
-│   │       └── notifications_screen.dart
-│   ├── onboarding/               # Onboarding
-│   │   └── screens/
-│   │       └── onboarding_screen.dart
+│   ├── onboarding/                # Onboarding
 │   ├── orders/                    # Order management
-│   │   └── screens/
-│   │       ├── checkout_screen.dart
-│   │       ├── mock_payment_screen.dart
-│   │       ├── my_order_screen.dart
-│   │       ├── order_confirmation_screen.dart
-│   │       ├── order_details_screen.dart
-│   │       └── orders_screen.dart
 │   ├── products/                  # Product catalog
-│   │   └── screens/
-│   │       ├── home_screen.dart
-│   │       └── product_details_screen.dart
 │   ├── profile/                   # User profile
-│   │   └── screens/
-│   │       ├── about_screen.dart
-│   │       ├── account_screen.dart
-│   │       ├── address_screen.dart
-│   │       ├── addresses_screen.dart
-│   │       ├── change_password_screen.dart
-│   │       ├── contact_us_screen.dart
-│   │       ├── edit_profile_screen.dart
-│   │       ├── help_center_screen.dart
-│   │       ├── payment_methods_screen.dart
-│   │       ├── privacy_policy_screen.dart
-│   │       └── rate_app_screen.dart
+│   ├── reviews/                   # Product reviews
+│   │   └── models/
 │   └── search/                    # Search functionality
-│       └── screens/
-│           └── search_page.dart
 │
 ├── services/                      # App services
+│   ├── credentials_storage_service.dart  # Secure storage
 │   ├── firebase_service.dart
 │   ├── hive_service.dart
 │   ├── local_notification_service.dart
-│   └── network_service.dart
+│   ├── network_service.dart
+│   └── seed_service.dart          # Data seeding
+│
+├── widgets/                       # Global widgets
 │
 └── main.dart                      # Entry point
 ```
